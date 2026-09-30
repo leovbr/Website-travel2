@@ -1,120 +1,73 @@
-/* LocalStorage data layer — designed to be replaceable by Supabase later. */
-const TravelStore = (() => {
-  const KEY = 'nusa_travel_demo_v1';
-  const defaults = { user:null, wishlist:[], bookings:[], reviews:[], profile:{name:'',email:'',photo:''} };
-  const load = () => { try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return {...defaults}} };
-  const save = state => localStorage.setItem(KEY,JSON.stringify(state));
-  let state=load();
-  const get=()=>JSON.parse(JSON.stringify(state));
-  const set=patch=>{state={...state,...patch};save(state);return get()};
-  const toggleWishlist=id=>{const wishlist=state.wishlist.includes(id)?state.wishlist.filter(x=>x!==id):[...state.wishlist,id];return set({wishlist}).wishlist};
-  const addBooking=booking=>{const bookings=[...state.bookings,{...booking,id:crypto.randomUUID?.()||Date.now().toString(),createdAt:new Date().toISOString()}];return set({bookings}).bookings};
-  const addReview=review=>{const reviews=[...state.reviews,{...review,id:crypto.randomUUID?.()||Date.now().toString(),createdAt:new Date().toISOString()}];return set({reviews}).reviews};
-  const login=(name,email)=>set({user:{name,email},profile:{...state.profile,name,email}}).user;
-  const logout=()=>set({user:null});
-  const updateProfile=patch=>set({profile:{...state.profile,...patch},user:state.user?{...state.user,...patch}:state.user}).profile;
-  const reset=()=>{state={...defaults};save(state);return get()};
-  return {get,set,toggleWishlist,addBooking,addReview,login,logout,updateProfile,reset};
+/* NUSA LocalStorage data layer + premium account pages */
+const TravelStore=(()=>{
+ const KEY='nusa_travel_demo_v2';
+ const defaults={user:null,wishlist:[],bookings:[],reviews:[],journal:[],notifications:[],profile:{name:'',email:'',photo:''},settings:{notifications:true,publicJournal:true}};
+ const load=()=>{try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return {...defaults}}};
+ let state=load();
+ const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+ const get=()=>JSON.parse(JSON.stringify(state));
+ const set=patch=>{state={...state,...patch};save();return get()};
+ const toggleWishlist=id=>set({wishlist:state.wishlist.includes(id)?state.wishlist.filter(x=>x!==id):[...state.wishlist,id]}).wishlist;
+ const addBooking=booking=>{state.bookings=[...state.bookings,{...booking,id:crypto.randomUUID?.()||Date.now().toString(),status:'confirmed',createdAt:new Date().toISOString()}];save();return get().bookings};
+ const cancelBooking=(id,reason)=>{state.bookings=state.bookings.map(b=>b.id===id?{...b,status:'cancelled',cancellationReason:reason,cancelledAt:new Date().toISOString()}:b);save();return get().bookings};
+ const addReview=review=>{state.reviews=[...state.reviews,{...review,id:crypto.randomUUID?.()||Date.now().toString(),createdAt:new Date().toISOString()}];save();return get().reviews};
+ const login=(name,email)=>set({user:{name,email},profile:{...state.profile,name,email}}).user;
+ const logout=()=>set({user:null});
+ const updateProfile=patch=>set({profile:{...state.profile,...patch},user:state.user?{...state.user,...patch}:state.user}).profile;
+ const addJournal=entry=>{state.journal=[...state.journal,{...entry,id:crypto.randomUUID?.()||Date.now().toString(),createdAt:new Date().toISOString(),shared:entry.shared??true}];save();return get().journal};
+ const updateJournal=(id,patch)=>{state.journal=state.journal.map(x=>x.id===id?{...x,...patch}:x);save();return get().journal};
+ const deleteJournal=id=>{state.journal=state.journal.filter(x=>x.id!==id);save();return get().journal};
+ const setSettings=patch=>set({settings:{...state.settings,...patch}}).settings;
+ const reset=()=>{state={...defaults};save();return get()};
+ return {get,set,toggleWishlist,addBooking,cancelBooking,addReview,login,logout,updateProfile,addJournal,updateJournal,deleteJournal,setSettings,reset};
 })();
 window.TravelStore=TravelStore;
 
-/* NUSA Premium UI layer — demo only, still 100% LocalStorage. */
-(() => {
-  const LANG_KEY='nusa_language';
-  const languages=[
-    ['id','🇮🇩','Indonesia'],['en','🇬🇧','English'],['ja','🇯🇵','日本語'],
-    ['zh','🇨🇳','中文'],['ko','🇰🇷','한국어'],['de','🇩🇪','Deutsch'],['fr','🇫🇷','Français']
-  ];
-  const copy={
-    id:{explore:'Jelajahi',dest:'Destinasi',reviews:'Ulasan',how:'Cara kerja',wishlist:'Wishlist',login:'Masuk',account:'Akun Anda',orders:'Pesanan & Booking',journal:'Jurnal Anda',notifications:'Notifikasi',settings:'Pengaturan',help:'Bantuan',language:'Bahasa',logout:'Keluar',close:'Tutup'},
-    en:{explore:'Explore',dest:'Destinations',reviews:'Reviews',how:'How it works',wishlist:'Wishlist',login:'Log in',account:'Your account',orders:'Orders & Bookings',journal:'Your journal',notifications:'Notifications',settings:'Settings',help:'Help',language:'Language',logout:'Log out',close:'Close'},
-    ja:{explore:'探索',dest:'目的地',reviews:'レビュー',how:'利用方法',wishlist:'お気に入り',login:'ログイン',account:'アカウント',orders:'予約・注文',journal:'あなたの旅日記',notifications:'通知',settings:'設定',help:'ヘルプ',language:'言語',logout:'ログアウト',close:'閉じる'},
-    zh:{explore:'探索',dest:'目的地',reviews:'评价',how:'使用方式',wishlist:'收藏',login:'登录',account:'我的账户',orders:'订单与预订',journal:'我的旅行日志',notifications:'通知',settings:'设置',help:'帮助',language:'语言',logout:'退出登录',close:'关闭'},
-    ko:{explore:'탐색',dest:'여행지',reviews:'후기',how:'이용 방법',wishlist:'위시리스트',login:'로그인',account:'내 계정',orders:'주문 및 예약',journal:'나의 여행일지',notifications:'알림',settings:'설정',help:'도움말',language:'언어',logout:'로그아웃',close:'닫기'},
-    de:{explore:'Entdecken',dest:'Reiseziele',reviews:'Bewertungen',how:'So funktioniert es',wishlist:'Wunschliste',login:'Anmelden',account:'Ihr Konto',orders:'Bestellungen & Buchungen',journal:'Ihr Reisetagebuch',notifications:'Benachrichtigungen',settings:'Einstellungen',help:'Hilfe',language:'Sprache',logout:'Abmelden',close:'Schließen'},
-    fr:{explore:'Explorer',dest:'Destinations',reviews:'Avis',how:'Comment ça marche',wishlist:'Favoris',login:'Connexion',account:'Votre compte',orders:'Commandes & réservations',journal:'Votre journal',notifications:'Notifications',settings:'Paramètres',help:'Aide',language:'Langue',logout:'Déconnexion',close:'Fermer'}
-  };
-  const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const inject=()=>{
-    const style=document.createElement('style');
-    style.textContent=`
-      :root{--ink:#171114;--muted:#766b70;--bg:#faf7f7;--card:#fff;--line:#eadcdf;--accent:#b51f3b;--dark:#260b13;--red:#b51f3b;--gold:#f2b900}
-      body{background:var(--bg);color:var(--ink)}
-      .top{background:linear-gradient(90deg,#220810,#5d1021,#220810);color:#fff1f4;letter-spacing:.04em}
-      .nav{background:#fffafbef;border-bottom:1px solid #ecdfe2;box-shadow:0 8px 35px #5d10210b}
-      .logo{color:#8f1530;letter-spacing:.25em}
-      .links a:hover{color:var(--red)}
-      .navright{gap:10px}
-      .navbtn{border-color:#ead7dc;background:#fff;color:#531323}
-      .premium-menu-btn{width:43px;height:43px;border-radius:50%;background:#8f1530;color:#fff;display:grid;place-items:center;font-size:21px;box-shadow:0 8px 25px #8f153044}
-      .premium-account{font-size:12px;font-weight:800;color:#531323;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      .hero{background:linear-gradient(90deg,#250812e8,#5d10216e),url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=2200&q=85') center/cover}
-      .eyebrow,.kicker{color:#a81735}.hero .eyebrow{color:#ffd7df}
-      .btn.dark{background:#8f1530;box-shadow:0 8px 24px #8f153033}.btn.dark:hover{background:#741027}
-      .chip.active,.chip:hover{background:#8f1530}.detail{border-color:#8f1530}.heart.saved{color:#b51f3b}
-      .rating{color:#f2b900!important}.rating span{color:var(--muted)!important}
-      .range{accent-color:#8f1530}
-      .steps{background:linear-gradient(135deg,#260b13,#551022)}
-      .cta{background:linear-gradient(90deg,#260b13e8,#5d10218a),url('https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85') center/cover}
-      .premium-drawer{position:fixed;inset:0;z-index:1000;background:#18070ca8;backdrop-filter:blur(9px);display:none;justify-content:flex-end}
-      .premium-drawer.open{display:flex}.premium-panel{width:min(390px,92vw);height:100%;background:#fffafa;box-shadow:-20px 0 70px #0004;padding:22px;overflow:auto;animation:drawerIn .24s ease}
-      @keyframes drawerIn{from{transform:translateX(100%)}to{transform:none}}
-      .premium-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid #eadcdf}.premium-head b{font:500 27px 'Playfair Display',serif;color:#671328}.premium-close{width:38px;height:38px;border-radius:50%;background:#f7e9ed;color:#7b1730;font-size:20px}
-      .premium-user{display:flex;gap:12px;align-items:center;padding:18px 0}.premium-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#eadcdf}.premium-user small{color:#8a7b81}.premium-list{display:grid;gap:6px}.premium-item{width:100%;display:flex;align-items:center;gap:13px;text-align:left;padding:13px 12px;border-radius:10px;background:transparent;color:#3e2830;font-size:13px;font-weight:700}.premium-item:hover{background:#f7e9ed;color:#8f1530}.premium-item .ico{width:24px;text-align:center;font-size:18px}.premium-divider{height:1px;background:#eadcdf;margin:12px 0}.premium-language{display:none;padding:8px 0 5px 38px}.premium-language.open{display:grid;gap:4px}.lang-option{border:0;background:transparent;text-align:left;padding:9px;border-radius:8px;font-size:12px}.lang-option.active{background:#f7e9ed;color:#8f1530;font-weight:800}
-      @media(max-width:560px){.premium-account{max-width:80px}.premium-panel{width:94vw}}
-    `;
-    document.head.appendChild(style);
-  };
-  const current=()=>localStorage.getItem(LANG_KEY)||'id';
-  const setLang=lang=>{localStorage.setItem(LANG_KEY,lang);applyLanguage(lang);buildDrawer();};
-  const applyLanguage=lang=>{
-    const c=copy[lang]||copy.id;
-    const links=document.querySelectorAll('.links a');
-    if(links[0])links[0].textContent=c.explore;if(links[1])links[1].textContent=c.dest;if(links[2])links[2].textContent=c.reviews;if(links[3])links[3].textContent=c.how;
-    const old=document.querySelector('.navright .navbtn'); if(old)old.remove();
-    const authBtn=document.getElementById('authBtn');if(authBtn)authBtn.textContent=TravelStore.get().user?TravelStore.get().user.name.split(' ')[0]:c.login;
-    document.documentElement.lang=lang;
-  };
-  const buildDrawer=()=>{
-    let d=document.getElementById('premiumDrawer');if(!d){d=document.createElement('div');d.id='premiumDrawer';d.className='premium-drawer';document.body.appendChild(d);d.addEventListener('click',e=>{if(e.target===d)toggleDrawer(false)});}
-    const s=TravelStore.get(),u=s.user, c=copy[current()];
-    d.innerHTML=`<aside class="premium-panel"><div class="premium-head"><b>NUSA</b><button class="premium-close" onclick="window.NUSAMenu(false)">×</button></div><div class="premium-user"><img class="premium-avatar" src="${esc(s.profile.photo||'https://i.pravatar.cc/100?u=nusa')}"><div><b>${esc(u?.name||c.account)}</b><br><small>${esc(u?.email||c.login)}</small></div></div><div class="premium-list">
-      <button class="premium-item" onclick="window.NUSAProfile()"><span class="ico">👤</span>${c.account}</button>
-      <button class="premium-item" onclick="window.NUSAWishlist()"><span class="ico">♥</span>${c.wishlist}</button>
-      <button class="premium-item" onclick="window.NUSAOrders()"><span class="ico">🎫</span>${c.orders}</button>
-      <button class="premium-item" onclick="window.NUSAJournal()"><span class="ico">📖</span>${c.journal}</button>
-      <button class="premium-item" onclick="window.NUSANotify()"><span class="ico">🔔</span>${c.notifications}</button>
-      <button class="premium-item" onclick="window.NUSAToggleLang()"><span class="ico">🌐</span>${c.language}<span style="margin-left:auto">⌄</span></button>
-      <div id="premiumLanguages" class="premium-language ${localStorage.getItem(LANG_KEY)?'open':''}">${languages.map(x=>`<button class="lang-option ${current()===x[0]?'active':''}" onclick="window.NUSALang('${x[0]}')">${x[1]} &nbsp; ${x[2]}</button>`).join('')}</div>
-      <button class="premium-item" onclick="window.NUSASettings()"><span class="ico">⚙️</span>${c.settings}</button>
-      <button class="premium-item" onclick="window.NUSAHelp()"><span class="ico">❓</span>${c.help}</button>
-      <div class="premium-divider"></div>
-      <button class="premium-item" style="color:#a21735" onclick="window.NUSALogout()"><span class="ico">🚪</span>${c.logout}</button>
-    </div></aside>`;
-  };
-  const toggleDrawer=open=>{const d=document.getElementById('premiumDrawer');if(d)d.classList.toggle('open',open)};
-  const toastSafe=t=>{if(typeof toast==='function')toast(t);else alert(t)};
-  window.NUSAMenu=toggleDrawer;
-  window.NUSALang=setLang;
-  window.NUSAToggleLang=()=>document.getElementById('premiumLanguages')?.classList.toggle('open');
-  window.NUSAProfile=()=>{toggleDrawer(false);if(typeof auth==='function')auth()};
-  window.NUSAWishlist=()=>{toggleDrawer(false);if(typeof wishlist==='function')wishlist()};
-  window.NUSAOrders=()=>{toggleDrawer(false);if(typeof profile==='function')profile()};
-  window.NUSAJournal=()=>{toggleDrawer(false);toastSafe('Jurnal Anda — fitur demo siap dikembangkan dan dapat dibagikan nanti.')};
-  window.NUSANotify=()=>{toggleDrawer(false);toastSafe('Belum ada notifikasi baru.')};
-  window.NUSASettings=()=>{toggleDrawer(false);toastSafe('Pengaturan akun tersedia di mode demo.')};
-  window.NUSAHelp=()=>{toggleDrawer(false);toastSafe('Bantuan — hubungkan WhatsApp agent pada versi client.')};
-  window.NUSALogout=()=>{TravelStore.logout();toggleDrawer(false);if(typeof updateAuth==='function')updateAuth();toastSafe('Berhasil keluar.')};
-  const boot=()=>{
-    inject();
-    const nav=document.querySelector('.nav');if(!nav)return;
-    const old=nav.querySelector('.navright');
-    if(old){old.innerHTML=`<span class="premium-account" id="premiumAccount"></span><button class="premium-menu-btn" aria-label="Menu" onclick="window.NUSAMenu(true)">☰</button>`;}
-    buildDrawer();
-    applyLanguage(current());
-    const update=()=>{const el=document.getElementById('premiumAccount'),u=TravelStore.get().user;if(el)el.textContent=u?.name||'Guest';};
-    update();
-    const observer=new MutationObserver(update);observer.observe(nav,{subtree:true,childList:true});
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+(()=>{
+ const LANG_KEY='nusa_language';
+ const languages=[['id','🇮🇩','Indonesia'],['en','🇬🇧','English'],['ja','🇯🇵','日本語'],['zh','🇨🇳','中文'],['ko','🇰🇷','한국어'],['de','🇩🇪','Deutsch'],['fr','🇫🇷','Français']];
+ const copy={
+ id:{account:'Pengaturan akun',wishlist:'Wishlist',orders:'Pesanan & Booking',journal:'Jurnal Anda',notifications:'Notifikasi',language:'Bahasa',settings:'Pengaturan',help:'Bantuan',logout:'Keluar',back:'Kembali',save:'Simpan perubahan',empty:'Belum ada data.',cancel:'Batalkan pesanan',rebook:'Pesan lagi',share:'Bagikan',edit:'Edit',delete:'Hapus'},
+ en:{account:'Account settings',wishlist:'Wishlist',orders:'Orders & Bookings',journal:'Your journal',notifications:'Notifications',language:'Language',settings:'Settings',help:'Help',logout:'Log out',back:'Back',save:'Save changes',empty:'No data yet.',cancel:'Cancel booking',rebook:'Book again',share:'Share',edit:'Edit',delete:'Delete'},
+ ja:{account:'アカウント設定',wishlist:'お気に入り',orders:'注文・予約',journal:'あなたの旅日記',notifications:'通知',language:'言語',settings:'設定',help:'ヘルプ',logout:'ログアウト',back:'戻る',save:'変更を保存',empty:'データはありません。',cancel:'予約をキャンセル',rebook:'もう一度予約',share:'共有',edit:'編集',delete:'削除'},
+ zh:{account:'账户设置',wishlist:'收藏',orders:'订单与预订',journal:'我的旅行日志',notifications:'通知',language:'语言',settings:'设置',help:'帮助',logout:'退出登录',back:'返回',save:'保存更改',empty:'暂无数据。',cancel:'取消预订',rebook:'再次预订',share:'分享',edit:'编辑',delete:'删除'},
+ ko:{account:'계정 설정',wishlist:'위시리스트',orders:'주문 및 예약',journal:'나의 여행일지',notifications:'알림',language:'언어',settings:'설정',help:'도움말',logout:'로그아웃',back:'뒤로',save:'변경 저장',empty:'데이터가 없습니다.',cancel:'예약 취소',rebook:'다시 예약',share:'공유',edit:'편집',delete:'삭제'},
+ de:{account:'Kontoeinstellungen',wishlist:'Wunschliste',orders:'Bestellungen & Buchungen',journal:'Ihr Reisetagebuch',notifications:'Benachrichtigungen',language:'Sprache',settings:'Einstellungen',help:'Hilfe',logout:'Abmelden',back:'Zurück',save:'Änderungen speichern',empty:'Noch keine Daten.',cancel:'Buchung stornieren',rebook:'Erneut buchen',share:'Teilen',edit:'Bearbeiten',delete:'Löschen'},
+ fr:{account:'Paramètres du compte',wishlist:'Favoris',orders:'Commandes & réservations',journal:'Votre journal',notifications:'Notifications',language:'Langue',settings:'Paramètres',help:'Aide',logout:'Déconnexion',back:'Retour',save:'Enregistrer',empty:'Aucune donnée.',cancel:'Annuler la réservation',rebook:'Réserver à nouveau',share:'Partager',edit:'Modifier',delete:'Supprimer'}
+ };
+ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const t=k=>(copy[localStorage.getItem(LANG_KEY)||'id']||copy.id)[k]||copy.id[k]||k;
+ const toastSafe=x=>typeof toast==='function'?toast(x):alert(x);
+ const pageStyle=`
+ .nusa-page{position:fixed;inset:0;z-index:900;background:linear-gradient(145deg,#21070f 0%,#641126 45%,#a71938 100%);color:#fff;overflow:auto;font-family:DM Sans,sans-serif}.nusa-page:before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 85% 10%,#ffffff18,transparent 30%),radial-gradient(circle at 10% 90%,#00000030,transparent 35%);pointer-events:none}.np-inner{position:relative;max-width:1100px;margin:auto;padding:30px 5vw 70px}.np-head{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:8px 0 30px}.np-brand{font:500 34px Playfair Display,serif;letter-spacing:.2em}.np-close{width:42px;height:42px;border-radius:50%;background:#ffffff18;color:#fff;border:1px solid #ffffff2c;font-size:21px}.np-title{font:500 clamp(38px,6vw,70px)/1 Playfair Display,serif;margin:15px 0}.np-sub{color:#f2dce2;max-width:650px;font-size:13px}.np-card{background:#fff;color:#24161b;border-radius:16px;padding:22px;margin-top:20px;box-shadow:0 20px 70px #0003}.np-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.np-field{display:grid;gap:6px}.np-field label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#7c6b71;font-weight:800}.np-field input,.np-field textarea,.np-field select{width:100%;padding:12px;border:1px solid #eadcdf;border-radius:8px;outline:0;background:#fff}.np-avatar{width:100px;height:100px;border-radius:50%;object-fit:cover;border:4px solid #f5e1e6}.np-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.np-btn{padding:11px 15px;border-radius:8px;border:0;background:#8f1530;color:#fff;font-weight:800;font-size:11px}.np-btn.light{background:#f8e9ed;color:#8f1530}.np-btn.danger{background:#fff0f2;color:#a21735}.np-item{border-bottom:1px solid #eadcdf;padding:16px 0}.np-item:last-child{border:0}.np-item h3{font:500 25px Playfair Display,serif;margin-bottom:4px}.np-muted{color:#796b71;font-size:12px}.np-stars{color:#f2b900;letter-spacing:2px}.np-tag{display:inline-block;padding:5px 9px;border-radius:99px;background:#f8e9ed;color:#8f1530;font-size:10px;font-weight:800}.np-row{display:flex;justify-content:space-between;gap:15px;align-items:center}.np-switch{display:flex;align-items:center;gap:10px}.np-switch input{accent-color:#8f1530}.np-empty{text-align:center;padding:50px 15px;color:#796b71}.np-share{background:#f7e9ed;color:#8f1530;border:0;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:800}@media(max-width:650px){.np-grid{grid-template-columns:1fr}.np-inner{padding:20px 5vw 50px}.np-title{font-size:45px}}
+ `;
+ const ensure=()=>{if(document.getElementById('nusaPageStyle'))return;const s=document.createElement('style');s.id='nusaPageStyle';s.textContent=pageStyle;document.head.appendChild(s)};
+ const mount=(title,sub,body)=>{ensure();let p=document.getElementById('nusaPage');if(!p){p=document.createElement('div');p.id='nusaPage';p.className='nusa-page';document.body.appendChild(p)}p.innerHTML=`<div class="np-inner"><div class="np-head"><b class="np-brand">NUSA</b><button class="np-close" onclick="window.NUSAClosePage()">×</button></div><div class="np-sub">${esc(sub||'')}</div><h1 class="np-title">${esc(title)}</h1>${body}</div>`;p.scrollTop=0};
+ window.NUSAClosePage=()=>document.getElementById('nusaPage')?.remove();
+ const openProfile=()=>{const s=TravelStore.get(),p=s.profile;mount(t('account'),'Kelola identitas dan keamanan akun Anda.',`<div class="np-card"><div class="np-grid"><div class="np-field"><label>Foto profil</label><img class="np-avatar" id="npAvatar" src="${esc(p.photo||'https://i.pravatar.cc/120?u=nusa')}"/><input type="file" accept="image/*" onchange="window.NUSAProfilePhoto(event)"></div><div class="np-field"><label>Email</label><input value="${esc(p.email)}" disabled><label>Nama</label><input id="npName" value="${esc(p.name)}" placeholder="Nama Anda"></div></div><div class="np-actions"><button class="np-btn" onclick="window.NUSASaveProfile()">${t('save')}</button><button class="np-btn light" onclick="window.NUSAPassword()">Ganti password</button></div></div>`)};
+ window.NUSAProfile=openProfile;
+ window.NUSAProfilePhoto=e=>{const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>{TravelStore.updateProfile({photo:r.result});const a=document.getElementById('npAvatar');if(a)a.src=r.result};r.readAsDataURL(f)};
+ window.NUSASaveProfile=()=>{TravelStore.updateProfile({name:document.getElementById('npName')?.value.trim()||TravelStore.get().profile.name});toastSafe('Profil tersimpan.');openProfile()};
+ window.NUSAPassword=()=>{mount('Ganti password','Demo lokal — password belum dikirim ke server.',`<div class="np-card"><div class="np-field"><label>Password lama</label><input type="password"><label>Password baru</label><input type="password"><label>Konfirmasi password</label><input type="password"></div><div class="np-actions"><button class="np-btn" onclick="toastSafe('Password demo diperbarui.')">${t('save')}</button></div></div>`)};
+ window.NUSAWishlist=()=>{const s=TravelStore.get();let ids=s.wishlist||[];const cards=ids.length?ids.map(id=>`<div class="np-item"><div class="np-row"><div><span class="np-tag">SAVED</span><h3>Trip ${esc(id)}</h3><div class="np-stars">★★★★★</div></div><button class="np-btn danger" onclick="TravelStore.toggleWishlist('${esc(id)}');window.NUSAWishlist()">♥ Remove</button></div></div>`).join(''):`<div class="np-empty">${t('empty')}<br><br>Tambahkan paket favorit dari halaman Explore.</div>`;mount(t('wishlist'),'Semua perjalanan yang Anda simpan.',`<div class="np-card">${cards}</div>`)};
+ const cancelFlow=id=>{const reasons=['Perubahan rencana','Jadwal tidak sesuai','Masalah biaya','Menemukan paket lain','Alasan lainnya'];mount('Batalkan pesanan','Pilih alasan pembatalan. Pada versi server, alasan ini dapat diteruskan ke chat admin/pemilik.',`<div class="np-card"><div class="np-field"><label>Alasan</label><select id="cancelReason">${reasons.map(x=>`<option>${x}</option>`).join('')}</select><textarea id="cancelNote" rows="4" placeholder="Tambahkan keterangan (opsional)"></textarea></div><div class="np-actions"><button class="np-btn danger" onclick="window.NUSAConfirmCancel('${esc(id)}')">${t('cancel')}</button></div></div>`)};
+ window.NUSAConfirmCancel=(id)=>{const reason=document.getElementById('cancelReason')?.value||'Alasan lainnya';TravelStore.cancelBooking(id,reason);toastSafe('Pesanan dibatalkan. Alasan tersimpan untuk demo.');openOrders()};
+ const openOrders=()=>{const s=TravelStore.get(),items=s.bookings||[];const body=items.length?items.map(b=>{const status=b.status==='cancelled'?'Dibatalkan':'Dikonfirmasi';return `<div class="np-item"><div class="np-row"><div><span class="np-tag">${status}</span><h3>${esc(b.packageName||'Travel Package')}</h3><div class="np-muted">${esc(b.date||'Tanggal belum ditentukan')} · ${esc(b.travelers||1)} traveler</div><div class="np-muted">Dipesan ${new Date(b.createdAt).toLocaleDateString('id-ID')}</div>${b.cancellationReason?`<div class="np-muted">Alasan: ${esc(b.cancellationReason)}</div>`:''}</div><div class="np-actions">${b.status!=='cancelled'?`<button class="np-btn danger" onclick="window.NUSACancel('${esc(b.id)}')">${t('cancel')}</button>`:''}<button class="np-btn light" onclick="window.NUSARebook('${esc(b.packageName||'')}')">${t('rebook')}</button></div></div></div>`}).join(''):`<div class="np-empty">${t('empty')}<br><br>Pesanan dan booking Anda akan muncul di sini.</div>`;mount(t('orders'),'Riwayat pesanan, status booking, pembatalan, dan pemesanan ulang.',`<div class="np-card">${body}</div>`)};
+ window.NUSAOrders=openOrders;window.NUSACancel=cancelFlow;window.NUSARebook=name=>{NUSAClosePage();toastSafe('Silakan pilih paket lagi: '+(name||'trip'));document.querySelector('#explore')?.scrollIntoView({behavior:'smooth'})};
+ const openJournal=()=>{const s=TravelStore.get(),j=s.journal||[];const body=`<div class="np-card"><div class="np-actions"><button class="np-btn" onclick="window.NUSANewJournal()">+ Tambah ke jurnal</button></div>${j.length?j.map(x=>`<div class="np-item"><div class="np-row"><div><span class="np-tag">${x.shared?'PUBLIC':'PRIVATE'}</span><h3>${esc(x.title)}</h3><div class="np-muted">${esc(x.text||'')}</div></div><div class="np-actions"><button class="np-share" onclick="window.NUSAEditJournal('${esc(x.id)}')">${t('edit')}</button><button class="np-share" onclick="navigator.clipboard?.writeText(location.href+'#journal-${esc(x.id)}');toastSafe('Link jurnal disalin.')">${t('share')}</button><button class="np-share" onclick="TravelStore.deleteJournal('${esc(x.id)}');window.NUSAJournal()">${t('delete')}</button></div></div></div>`).join(''):`<div class="np-empty">Belum ada jurnal. Setelah perjalanan selesai, Anda bebas memilih mau memasukkannya ke jurnal atau tidak.</div>`}</div>`;mount(t('journal'),'Jurnal perjalanan milik Anda. Anda bebas menulis, mengedit, menghapus, atau membagikannya.',body)};
+ window.NUSAJournal=openJournal;window.NUSANewJournal=()=>{mount('Tulis jurnal','Jurnal sepenuhnya opsional dan berada di bawah kendali Anda.',`<div class="np-card"><div class="np-grid"><div class="np-field"><label>Judul</label><input id="jTitle" placeholder="Bali, hari pertama..."></div><div class="np-field"><label>Bagikan ke publik?</label><select id="jShared"><option value="true">Ya, bisa dibagikan</option><option value="false">Tidak, pribadi</option></select></div></div><div class="np-field" style="margin-top:12px"><label>Cerita perjalanan</label><textarea id="jText" rows="8" placeholder="Ceritakan pengalaman Anda..."></textarea></div><div class="np-actions"><button class="np-btn" onclick="window.NUSASaveJournal()">Simpan jurnal</button></div></div>`) };
+ window.NUSASaveJournal=()=>{TravelStore.addJournal({title:document.getElementById('jTitle')?.value||'Perjalanan baru',text:document.getElementById('jText')?.value||'',shared:document.getElementById('jShared')?.value==='true'});openJournal()};
+ window.NUSAEditJournal=id=>{const x=TravelStore.get().journal.find(j=>j.id===id);if(!x)return;mount('Edit jurnal','Perbarui cerita Anda kapan saja.',`<div class="np-card"><div class="np-field"><label>Judul</label><input id="ejTitle" value="${esc(x.title)}"><label>Isi</label><textarea id="ejText" rows="8">${esc(x.text)}</textarea><label>Visibilitas</label><select id="ejShared"><option value="true" ${x.shared?'selected':''}>Publik</option><option value="false" ${!x.shared?'selected':''}>Pribadi</option></select></div><div class="np-actions"><button class="np-btn" onclick="TravelStore.updateJournal('${esc(id)}',{title:document.getElementById('ejTitle').value,text:document.getElementById('ejText').value,shared:document.getElementById('ejShared').value==='true'});window.NUSAJournal()">${t('save')}</button></div></div>`) };
+ window.NUSANotify=()=>{const s=TravelStore.get();mount(t('notifications'),'Update booking dan aktivitas akun Anda.',`<div class="np-card">${(s.notifications||[]).length?s.notifications.map(x=>`<div class="np-item"><b>${esc(x.title)}</b><div class="np-muted">${esc(x.text)}</div></div>`).join(''):`<div class="np-empty">Belum ada notifikasi baru.</div>`}</div>`)};
+ window.NUSASettings=()=>{const s=TravelStore.get();mount(t('settings'),'Kontrol pengalaman, privasi, dan data demo Anda.',`<div class="np-card"><div class="np-item"><div class="np-row"><div><b>Notifikasi</b><div class="np-muted">Terima update booking dan perjalanan.</div></div><label class="np-switch"><input id="setNotif" type="checkbox" ${s.settings.notifications?'checked':''}></label></div></div><div class="np-item"><div class="np-row"><div><b>Jurnal publik</b><div class="np-muted">Izinkan jurnal yang Anda pilih untuk dibagikan.</div></div><label class="np-switch"><input id="setJournal" type="checkbox" ${s.settings.publicJournal?'checked':''}></label></div></div><div class="np-item"><b>Data demo</b><div class="np-muted">Semua data saat ini tersimpan hanya di browser Anda.</div><div class="np-actions"><button class="np-btn danger" onclick="if(confirm('Hapus seluruh data demo?')){TravelStore.reset();toastSafe('Data demo dihapus.');window.NUSAClosePage()}">Reset LocalStorage</button></div></div><div class="np-actions"><button class="np-btn" onclick="TravelStore.setSettings({notifications:document.getElementById('setNotif').checked,publicJournal:document.getElementById('setJournal').checked});toastSafe('Pengaturan tersimpan.');window.NUSASettings()">${t('save')}</button></div></div>`)};
+ window.NUSAHelp=()=>{mount(t('help'),'Pusat bantuan NUSA.',`<div class="np-card"><div class="np-item"><h3>Booking</h3><div class="np-muted">Pilih paket, isi detail perjalanan, lalu kirim permintaan booking.</div></div><div class="np-item"><h3>Pembatalan</h3><div class="np-muted">Anda dapat memilih alasan pembatalan dari halaman Pesanan & Booking. Saat backend aktif, alasan dapat diteruskan ke admin/pemilik melalui chat.</div></div><div class="np-item"><h3>Jurnal</h3><div class="np-muted">Jurnal sepenuhnya opsional. Anda menentukan apakah jurnal dipublikasikan, diedit, dibagikan, atau dihapus.</div></div></div>`)};
+ const buildMenu=()=>{let d=document.getElementById('premiumDrawer');if(!d){d=document.createElement('div');d.id='premiumDrawer';d.className='premium-drawer';document.body.appendChild(d);d.onclick=e=>{if(e.target===d)window.NUSAMenu(false)}}const s=TravelStore.get(),u=s.user;d.innerHTML=`<aside class="premium-panel"><div class="premium-head"><b>NUSA</b><button class="premium-close" onclick="window.NUSAMenu(false)">×</button></div><div class="premium-user"><img class="premium-avatar" src="${esc(s.profile.photo||'https://i.pravatar.cc/100?u=nusa')}"><div><b>${esc(u?.name||'Guest')}</b><br><small>${esc(u?.email||'')}</small></div></div><div class="premium-list"><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSAProfile()">👤 &nbsp;${t('account')}</button><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSAWishlist()">♥ &nbsp;${t('wishlist')}</button><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSAOrders()">🎫 &nbsp;${t('orders')}</button><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSAJournal()">📖 &nbsp;${t('journal')}</button><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSANotify()">🔔 &nbsp;${t('notifications')}</button><button class="premium-item" onclick="window.NUSAToggleLang()">🌐 &nbsp;${t('language')} <span style="margin-left:auto">⌄</span></button><div id="premiumLanguages" class="premium-language">${languages.map(x=>`<button class="lang-option ${currentLang()===x[0]?'active':''}" onclick="window.NUSALang('${x[0]}')">${x[1]} ${x[2]}</button>`).join('')}</div><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSASettings()">⚙️ &nbsp;${t('settings')}</button><button class="premium-item" onclick="window.NUSAMenu(false);window.NUSAHelp()">❓ &nbsp;${t('help')}</button><div class="premium-divider"></div><button class="premium-item" style="color:#a21735" onclick="window.NUSALogout()">🚪 &nbsp;${t('logout')}</button></div></aside>`};
+ const currentLang=()=>localStorage.getItem(LANG_KEY)||'id';
+ const apply=()=>{document.documentElement.lang=currentLang();const a=document.getElementById('premiumAccount');if(a)a.textContent=TravelStore.get().user?.name||'Guest';buildMenu()};
+ window.NUSAMenu=open=>{const d=document.getElementById('premiumDrawer');if(d)d.classList.toggle('open',open)};
+ window.NUSAToggleLang=()=>document.getElementById('premiumLanguages')?.classList.toggle('open');
+ window.NUSALang=lang=>{localStorage.setItem(LANG_KEY,lang);window.NUSAMenu(false);apply()};
+ window.NUSALogout=()=>{TravelStore.logout();window.NUSAMenu(false);apply();toastSafe('Berhasil keluar.')};
+ const boot=()=>{const style=document.createElement('style');style.textContent=`.premium-drawer{position:fixed;inset:0;z-index:1000;background:#18070ca8;backdrop-filter:blur(8px);display:none;justify-content:flex-end}.premium-drawer.open{display:flex}.premium-panel{width:min(390px,94vw);height:100%;background:#fffafa;padding:22px;overflow:auto;box-shadow:-20px 0 70px #0004}.premium-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid #eadcdf}.premium-head b{font:500 27px Playfair Display,serif;color:#671328}.premium-close{width:38px;height:38px;border-radius:50%;background:#f7e9ed;color:#7b1730;font-size:20px;border:0}.premium-user{display:flex;gap:12px;align-items:center;padding:18px 0}.premium-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#eadcdf}.premium-user small{color:#8a7b81}.premium-list{display:grid;gap:5px}.premium-item{width:100%;display:flex;align-items:center;gap:13px;text-align:left;padding:13px 12px;border-radius:10px;background:transparent;color:#3e2830;font-size:13px;font-weight:700;border:0}.premium-item:hover{background:#f7e9ed;color:#8f1530}.premium-divider{height:1px;background:#eadcdf;margin:12px 0}.premium-language{display:none;padding:5px 0 8px 38px;gap:4px}.premium-language.open{display:grid}.lang-option{border:0;background:transparent;text-align:left;padding:9px;border-radius:8px;font-size:12px}.lang-option.active{background:#f7e9ed;color:#8f1530;font-weight:800}`;document.head.appendChild(style);const nav=document.querySelector('.navright');if(nav){nav.innerHTML='<span class="premium-account" id="premiumAccount">Guest</span><button class="premium-menu-btn" onclick="window.NUSAMenu(true)">☰</button>'}buildMenu()};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
