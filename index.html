@@ -874,4 +874,26 @@ body{position:relative!important}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   window.addEventListener('load',bind,{once:true});
 })();
+</script><style id="nusaMenuLayerFinal">
+/* Keep the global menu behind the sticky header so the hamburger remains reachable after opening. */
+.nav{z-index:2147483646!important}
+.searchDock{z-index:2147483645!important}
+.drawer{z-index:2147483000!important}
+.drawer.open{pointer-events:auto!important}
+.drawer .panel{pointer-events:auto!important}
+.menuBtn{z-index:2147483647!important;pointer-events:auto!important;position:relative!important}
+</style>
+<script id="nusaMenuLayerFinalJS">
+(function(){
+  function repair(){
+    var nav=document.querySelector('.nav');
+    var menu=document.querySelector('.menuBtn');
+    var drawer=document.getElementById('drawer');
+    if(nav)nav.style.zIndex='2147483646';
+    if(menu){menu.style.zIndex='2147483647';menu.style.pointerEvents='auto';}
+    if(drawer)drawer.style.zIndex='2147483000';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
+  window.addEventListener('load',repair,{once:true});
+})();
 </script></body></html>
