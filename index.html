@@ -362,4 +362,47 @@ T={
 
   window.addEventListener('load',function(){setTimeout(renderFallback,100);});
 })();
-</script><script src="auth-fix.js"></script></body></html>
+</script><script src="auth-fix.js"></script><script>
+/* NUSA OWNER V3 — direct trigger, independent of cached auth-fix */
+(function(){
+  var n=0,t=null;
+  function box(){
+    var old=document.getElementById('nusaOwnerV3'); if(old)old.remove();
+    var o=document.createElement('div');o.id='nusaOwnerV3';
+    o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px';
+    o.innerHTML='<div style="background:#fff;width:min(480px,100%);max-height:92vh;overflow:auto;border-radius:18px;padding:24px;box-shadow:0 25px 80px rgba(0,0,0,.3);font-family:Arial,sans-serif;color:#222">'+
+      '<button id="ov3x" style="float:right;border:0;background:none;font-size:28px;cursor:pointer">×</button>'+
+      '<div style="font-size:11px;letter-spacing:.15em;color:#671328;font-weight:bold">NUSA PRIVATE</div>'+
+      '<h2 style="font-family:Georgia,serif;color:#671328;font-size:36px;margin:8px 0">Owner Access</h2>'+
+      '<p style="font-size:13px;color:#777">Kelola akun Owner NUSA.</p>'+
+      '<div style="display:flex;gap:8px;margin:18px 0"><button id="ov3login" style="flex:1;padding:12px;border:1px solid #222;border-radius:9px;background:#222;color:#fff">Login</button><button id="ov3reg" style="flex:1;padding:12px;border:1px solid #ccc;border-radius:9px;background:#fff">Daftar</button></div>'+
+      '<div id="ov3body"></div></div>';
+    document.body.appendChild(o);
+    document.getElementById('ov3x').onclick=function(){o.remove()};
+    document.getElementById('ov3login').onclick=login;
+    document.getElementById('ov3reg').onclick=reg;
+    login();
+  }
+  function inp(id,label,type,ph){return '<label style="display:block;font-size:12px;font-weight:bold;margin:10px 0 5px">'+label+'</label><input id="'+id+'" type="'+type+'" placeholder="'+(ph||'')+'" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #ddd;border-radius:9px">'}
+  function login(){
+    ov3body.innerHTML=inp('v3u','Username','text','username')+inp('v3p','Kata Sandi','password','••••••••')+inp('v3pin','PIN','password','6 digit PIN')+
+      '<button id="v3go" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:9px;background:#222;color:#fff">Masuk sebagai Owner</button>'+
+      '<div style="text-align:center;margin-top:12px;font-size:12px"><button id="v3fp" style="border:0;background:none">Lupa kata sandi?</button> · <button id="v3fi" style="border:0;background:none">Lupa PIN?</button></div>';
+    v3go.onclick=function(){var a=JSON.parse(localStorage.getItem('nusa_owner_v2')||'null');if(!a)return alert('Owner belum terdaftar. Pilih Daftar.');if(a.username!==v3u.value.trim()||a.password!==v3p.value||a.pin!==v3pin.value)return alert('Username, password, atau PIN salah.');localStorage.setItem('nusa_owner_session_v2',JSON.stringify({username:a.username,name:a.name||a.username,email:a.email}));location.href='owner.html'};
+    v3fp.onclick=function(){alert('Gunakan email Owner untuk recovery. Backend email akan diaktifkan saat server tersedia.')};
+    v3fi.onclick=function(){alert('Gunakan email Owner untuk recovery. Backend email akan diaktifkan saat server tersedia.')};
+  }
+  function reg(){
+    ov3body.innerHTML=inp('v3wa','Nomor WhatsApp','tel','+62 8xx xxxx xxxx')+inp('v3ru','Username','text','username')+inp('v3e','Email','email','email@example.com')+inp('v3rp','Kata Sandi','password','minimal 6 karakter')+inp('v3rpin','PIN','password','6 digit PIN')+
+      '<button id="v3create" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:9px;background:#222;color:#fff">Buat Owner Account</button>';
+    v3create.onclick=function(){var wa=v3wa.value.trim(),u=v3ru.value.trim(),e=v3e.value.trim(),p=v3rp.value,pin=v3rpin.value;if(!wa||!u||!e||p.length<6||!/^[0-9]{6}$/.test(pin))return alert('Lengkapi data. Password min 6 karakter, PIN 6 digit.');if(localStorage.getItem('nusa_owner_v2'))return alert('Owner Account sudah terdaftar di perangkat ini.');localStorage.setItem('nusa_owner_v2',JSON.stringify({name:u,wa:wa,username:u,email:e,password:p,pin:pin,verified:false,createdAt:Date.now()}));alert('Owner Account berhasil dibuat. Silakan Login.');login()};
+  }
+  document.addEventListener('click',function(e){
+    var logo=e.target.closest&&e.target.closest('.logo');
+    if(!logo)return;
+    n++;clearTimeout(t);t=setTimeout(function(){n=0},3000);
+    if(n>=7){e.preventDefault();e.stopImmediatePropagation();n=0;box()}
+  },true);
+  window.NUSA_OWNER_V3={open:box};
+})();
+</script></body></html>
