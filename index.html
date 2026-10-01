@@ -820,4 +820,29 @@ window.NUSA_OPEN_PACKAGE=open;
   else ready();
   window.addEventListener('load',ready,{once:true});
 })();
+</script><style id="nusaHardLayoutFix">
+/* FINAL MOBILE LAYOUT + HIT AREA REPAIR */
+html,body{width:100%!important;min-width:0!important;max-width:none!important;overflow-x:hidden!important}
+body{position:relative!important}
+.top,.nav,.searchDock,#homePage,#pages,.footer{width:100%!important;max-width:none!important;min-width:0!important}
+.nav{z-index:2147483000!important;position:sticky!important}
+.searchDock{z-index:2147482000!important;position:sticky!important}
+.nav *,.searchDock *{pointer-events:auto!important}
+.nav:before,.nav:after,.searchDock:before,.searchDock:after,
+.hero:before,.hero:after,.travelCategory:before,.travelCategory:after,
+.cta:before,.cta:after{pointer-events:none!important}
+.nav .menuBtn,.searchDock .filterBtn,.searchDock .btn{z-index:2147483640!important;position:relative!important;pointer-events:auto!important;touch-action:manipulation!important}
+.menuBtn:before,.menuBtn:after{pointer-events:none!important}
+</style>
+<script id="nusaHardLayoutFixJS">
+(function(){
+  function fix(){
+    var ids=['filterBtn','filterPanel','drawer'];
+    ids.forEach(function(id){var e=document.getElementById(id);if(e)e.style.pointerEvents='auto';});
+    var m=document.querySelector('.menuBtn');if(m){m.style.pointerEvents='auto';m.style.zIndex='2147483640';}
+    var f=document.getElementById('filterBtn');if(f){f.style.pointerEvents='auto';f.style.zIndex='2147483640';}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix();
+  window.addEventListener('load',fix,{once:true});
+})();
 </script></body></html>
