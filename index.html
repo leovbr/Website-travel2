@@ -281,7 +281,38 @@ T={
     }
     groups(H,h);groups(T,t);
   }
-  window.addEventListener('DOMContentLoaded',renderFallback);
+  async function wikiImage(title){
+    var clean=String(title).replace(/,?\\s*a\\s+Ritz-Carlton Reserve/i,'').trim();
+    var urls=[
+      'https://id.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(clean),
+      'https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(clean)
+    ];
+    for(var i=0;i<urls.length;i++){
+      try{
+        var res=await fetch(urls[i],{cache:'force-cache'});
+        if(!res.ok)continue;
+        var j=await res.json();
+        if(j.thumbnail&&j.thumbnail.source)return j.thumbnail.source;
+      }catch(e){}
+    }
+    return '';
+  }
+  async function hydrateWikiImages(){
+    var imgs=[].slice.call(document.querySelectorAll('.nusaFallbackCard img'));
+    var cards=[].slice.call(document.querySelectorAll('.nusaFallbackCard'));
+    for(var i=0;i<cards.length;i++){
+      (async function(card,img){
+        var title=card.querySelector('strong');
+        if(!title)return;
+        var u=await wikiImage(title.textContent);
+        if(u)img.src=u;
+      })(cards[i],imgs[i]);
+      if(i%12===11)await new Promise(function(r){setTimeout(r,150);});
+    }
+  }
+  window.addEventListener('DOMContentLoaded',function(){renderFallback();setTimeout(hydrateWikiImages,80);});
+  window.addEventListener('load',function(){setTimeout(hydrateWikiImages,250);});
+
   window.addEventListener('load',function(){setTimeout(renderFallback,100);});
 })();
 </script></body></html>
