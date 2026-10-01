@@ -789,18 +789,4 @@ window.NUSA_OPEN_PACKAGE=open;
 
 
 
-</script><script id="nusaClickFixJS">
-(function(){
- function bind(){
-  var menu=document.querySelector('.menuBtn');
-  var filter=document.getElementById('filterBtn');
-  if(menu){
-   menu.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();window.openMenu(true)},true);
-  }
-  if(filter){
-   filter.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();window.toggleFilters?window.toggleFilters():document.getElementById('filterPanel').classList.toggle('open')},true);
-  }
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-})();
 </script></body></html>
