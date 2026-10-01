@@ -35,4 +35,69 @@
   const oldRenderLang=window.renderLang;
   window.renderLang=function(){if(typeof langs==='undefined')return;langs.innerHTML=LANGS.map(x=>'<button class="lang '+(state.lang===x[0]?'active':'')+'" onclick="state.lang=\''+x[0]+'\';save();renderLang();toast(\'Bahasa: '+x[2]+'\')">'+x[1]+' '+x[2]+'</button>').join('');updateAuthUI()};
   setTimeout(updateAuthUI,0);
+
+  /* NUSA hidden owner mode — demo/CMS layer (localStorage only) */
+  (function(){
+    const OK='nusa_owner_v1', IK='nusa_custom_images_v1', OWNER_PIN='NUSA-OWNER';
+    let taps=0,timer=null;
+    function owner(){return localStorage.getItem(OK)==='1'}
+    function imgs(){try{return JSON.parse(localStorage.getItem(IK)||'{}')}catch(e){return {}}}
+    function saveImgs(x){localStorage.setItem(IK,JSON.stringify(x))}
+    function openOwnerLogin(){
+      if(owner()) return openOwnerPanel();
+      modalContent.innerHTML='<div style="max-width:480px;margin:auto;text-align:center;padding:30px 12px"><div class="kicker">NUSA PRIVATE</div><h2 style="font:500 40px Playfair Display,serif;color:#671328;margin:8px 0">Owner Access</h2><p class="mini">Masukkan access key untuk membuka mode pengelola.</p><div class="formGroup" style="text-align:left"><label>Access key</label><input id="ownerPin" type="password" autocomplete="off" placeholder="••••••••"></div><button class="btn dark" style="width:100%" onclick="NUSA_OWNER.login()">Masuk sebagai Owner</button><p style="font-size:11px;opacity:.55;margin:14px 0 0">Demo mode · data tersimpan di perangkat ini.</p></div>';
+      modal.classList.add('open');
+      setTimeout(function(){var x=document.getElementById('ownerPin');if(x)x.focus()},50);
+    }
+    function openOwnerPanel(){
+      const im=imgs();
+      modalContent.innerHTML='<div style="max-width:720px;margin:auto;padding:22px 8px"><div class="kicker">NUSA OWNER</div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><h2 style="font:500 38px Playfair Display,serif;color:#671328;margin:5px 0">Kelola katalog</h2><p class="mini" style="margin:0">Ganti foto kartu langsung dari website.</p></div><button class="outline" onclick="NUSA_OWNER.logout()">Keluar</button></div><div id="ownerCatalog" style="margin-top:20px"></div></div>';
+      modal.classList.add('open');
+      setTimeout(renderOwnerCatalog,0);
+    }
+    function renderOwnerCatalog(){
+      const box=document.getElementById('ownerCatalog'); if(!box)return;
+      const data=Object.assign({},window.NUSA_CATALOG||{});
+      const im=imgs(), keys=Object.keys(data);
+      if(!keys.length){box.innerHTML='<p class="mini">Katalog belum siap.</p>';return}
+      box.innerHTML=keys.map(function(k){
+        const safe=String(k).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #ddd"><img src="'+(im[k]||data[k]||'')+'" style="width:72px;height:58px;object-fit:cover;border-radius:9px;background:#eee"><div style="flex:1;min-width:0"><b style="font:600 15px DM Sans,sans-serif">'+safe+'</b><div style="font-size:11px;opacity:.55">Foto '+(im[k]?'custom':'default')+'</div></div><label class="outline" style="cursor:pointer;white-space:nowrap">Ganti foto<input type="file" accept="image/*" data-owner-image="'+safe+'" style="display:none"></label></div>';
+      }).join('');
+      box.querySelectorAll('input[data-owner-image]').forEach(function(inp){
+        inp.addEventListener('change',function(){
+          const f=this.files&&this.files[0]; if(!f)return;
+          if(f.size>4*1024*1024)return toast('Foto maksimal 4 MB untuk mode demo.');
+          const reader=new FileReader();
+          reader.onload=function(){
+            const all=imgs(); all[inp.getAttribute('data-owner-image')]=reader.result; saveImgs(all);
+            applyCustomImages(); renderOwnerCatalog(); toast('Foto berhasil diganti.');
+          };
+          reader.readAsDataURL(f);
+        });
+      });
+    }
+    function applyCustomImages(){
+      const im=imgs();
+      document.querySelectorAll('.nusaFallbackCard').forEach(function(card){
+        const t=card.querySelector('strong'); const img=card.querySelector('img');
+        if(t&&img&&im[t.textContent]){img.src=im[t.textContent];img.dataset.nusaCustom='1'}
+      });
+    }
+    window.NUSA_OWNER={login:function(){
+      const pin=(document.getElementById('ownerPin')||{}).value||'';
+      if(pin!==OWNER_PIN)return toast('Access key salah.');
+      localStorage.setItem(OK,'1');closeModal();toast('Owner mode aktif.');setTimeout(openOwnerPanel,120);
+    },open:openOwnerLogin,panel:openOwnerPanel,logout:function(){localStorage.removeItem(OK);closeModal();toast('Owner mode ditutup.')}};
+    window.addEventListener('load',function(){
+      const logo=document.querySelector('.logo'); if(!logo)return;
+      logo.addEventListener('click',function(e){
+        if(owner()){e.preventDefault();openOwnerPanel();return}
+        taps++;clearTimeout(timer);timer=setTimeout(function(){taps=0},1800);
+        if(taps>=7){e.preventDefault();taps=0;openOwnerLogin();}
+      },true);
+      setTimeout(applyCustomImages,400);
+    });
+    window.NUSA_OWNER_APPLY=applyCustomImages;
+  })();
 })();
