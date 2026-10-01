@@ -454,50 +454,68 @@ window.NUSA_OPEN_PACKAGE=open;
   },true);
 })();
 </script><script>
-/* NUSA FINAL CARD CLICK — isolated */
+/* NUSA PACKAGE BOOKING — interactive */
 (function(){
-  function getData(el){
-    var name=el.getAttribute('data-nusa-name');
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  var prices={
+    'Bali':1899000,'Bromo':1499000,'Lombok':2299000,'Labuan Bajo':2799000,'Raja Ampat':3999000,
+    'Yogyakarta':1299000,'Bandung':1099000,'Jakarta':999000,'Malang':1399000,'Komodo':2899000,
+    'Ubud':1799000,'Gili Trawangan':2199000,'Flores':2499000,'Belitung':1999000,'Derawan':3599000,
+    'Toraja':2399000,'Wakatobi':3299000,'Dieng':1199000,'Labuan Bajo Premium':4999000,'Nusa Penida':2099000
+  };
+  function open(el){
+    var name=el.getAttribute('data-nusa-name')||((el.querySelector('h3,strong')||{}).textContent||'Paket').trim();
     var label=el.getAttribute('data-nusa-label')||'Paket';
-    if(!name){var h=el.querySelector('h3,strong');name=h?h.textContent.trim():'';}
-    return {name:name,label:label};
-  }
-  function fallbackOpen(el){
-    var d=getData(el);
-    if(!d.name)return;
-    var img=el.querySelector('img');
-    var src=img?img.currentSrc||img.src:'';
-    var old=document.getElementById('nusaFinalDetail');if(old)old.remove();
-    var o=document.createElement('div');o.id='nusaFinalDetail';
-    o.style.cssText='position:fixed;inset:0;z-index:9999999;background:rgba(20,5,10,.72);display:flex;align-items:center;justify-content:center;padding:18px;font-family:DM Sans,sans-serif';
-    o.innerHTML='<div style="width:min(720px,100%);max-height:92vh;overflow:auto;background:#fffafa;border-radius:16px;box-shadow:0 25px 90px #0007">'+
-      '<div style="position:relative"><img src="'+src.replace(/"/g,'&quot;')+'" style="display:block;width:100%;height:300px;object-fit:cover;border-radius:16px 16px 0 0"><button id="nfdx" style="position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#8f1530;font-size:24px">×</button></div>'+
-      '<div style="padding:24px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+d.label+'</div>'+
-      '<h2 style="font:500 38px Georgia,serif;margin:8px 0;color:#24171b">'+d.name+'</h2><div style="color:#f2b900;font-weight:800">★ 4.8 <span style="color:#7b6c72;font-weight:400">· Rating perjalanan</span></div>'+
-      '<div style="margin-top:20px;padding:16px;background:#f8edf1;border-radius:10px"><b style="display:block;font-size:11px;text-transform:uppercase;color:#7b6c72">Mulai dari</b><strong style="display:block;margin-top:4px;font-size:24px;color:#8f1530">Rp999.000 / orang</strong></div>'+
-      '<p style="color:#5f5055;line-height:1.7">Paket perjalanan NUSA dengan pilihan destinasi, akomodasi, dan transportasi. Detail harga dan itinerary dapat disesuaikan sebelum pemesanan.</p>'+
-      '<button id="nfdb" style="width:100%;padding:14px;border:0;border-radius:9px;background:#8f1530;color:#fff;font-weight:800">Pesan Paket</button></div></div>';
+    var img=el.querySelector('img'),src=img?(img.currentSrc||img.src):'';
+    var base=prices[name]||999000;
+    var old=document.getElementById('nusaBookingModal');if(old)old.remove();
+    var o=document.createElement('div');o.id='nusaBookingModal';
+    o.style.cssText='position:fixed;inset:0;z-index:9999999;background:rgba(20,5,10,.72);display:flex;align-items:center;justify-content:center;padding:14px;font-family:DM Sans,sans-serif';
+    o.innerHTML='<div style="width:min(760px,100%);max-height:94vh;overflow:auto;background:#fffafa;border-radius:16px;box-shadow:0 25px 90px #0007">'+
+      '<div style="position:relative"><img src="'+esc(src)+'" style="display:block;width:100%;height:250px;object-fit:cover;border-radius:16px 16px 0 0"><button id="nbx" style="position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#8f1530;font-size:24px">×</button></div>'+
+      '<div style="padding:22px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+esc(label)+'</div>'+
+      '<h2 style="font:500 34px Georgia,serif;margin:7px 0;color:#24171b">'+esc(name)+'</h2>'+
+      '<div style="color:#f2b900;font-weight:800">★ 4.8 <span style="color:#7b6c72;font-weight:400">· Rating perjalanan</span></div>'+
+      '<p style="color:#66585d;line-height:1.6">Atur detail perjalananmu sebelum melakukan pemesanan.</p>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+      '<label style="font-size:11px;font-weight:800">Tanggal berangkat<input id="nbdate" type="date" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #eadcdf;border-radius:8px;background:#fff"></label>'+
+      '<label style="font-size:11px;font-weight:800">Jumlah orang<select id="nbguest" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #eadcdf;border-radius:8px;background:#fff"><option value="1">1 orang</option><option value="2">2 orang</option><option value="3">3 orang</option><option value="4">4 orang</option><option value="5">5 orang</option><option value="6">6 orang</option><option value="7">7 orang</option><option value="8">8 orang</option><option value="9">9 orang</option><option value="10">10 orang</option></select></label>'+
+      '<label style="font-size:11px;font-weight:800">Durasi<select id="nbduration" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #eadcdf;border-radius:8px;background:#fff"><option value="2">2 hari 1 malam</option><option value="3">3 hari 2 malam</option><option value="4">4 hari 3 malam</option><option value="5">5 hari 4 malam</option><option value="7">7 hari 6 malam</option></select></label>'+
+      '<label style="font-size:11px;font-weight:800">Tipe paket<select id="nbtype" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #eadcdf;border-radius:8px;background:#fff"><option value="Standard">Standard</option><option value="Comfort">Comfort (+Rp300.000/orang)</option><option value="Premium">Premium (+Rp700.000/orang)</option></select></label>'+
+      '<label style="font-size:11px;font-weight:800">Penginapan<select id="nbstay" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #eadcdf;border-radius:8px;background:#fff"><option>Hotel</option><option>Villa</option><option>Resort</option><option>Motel</option></select></label>'+
+      '<label style="font-size:11px;font-weight:800">Transportasi<select id="nbtransport" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #eadcdf;border-radius:8px;background:#fff"><option>Pesawat</option><option>Kereta</option><option>Bus</option><option>Kapal</option></select></label>'+
+      '</div>'+
+      '<label style="display:block;font-size:11px;font-weight:800;margin-top:12px">Catatan perjalanan<textarea id="nbnote" placeholder="Contoh: jemput di hotel, makanan tertentu, dll." style="display:block;width:100%;box-sizing:border-box;margin-top:5px;min-height:80px;padding:11px;border:1px solid #eadcdf;border-radius:8px;resize:vertical"></textarea></label>'+
+      '<div style="margin-top:16px;padding:15px;background:#f8edf1;border-radius:10px"><div style="font-size:10px;color:#7b6c72;text-transform:uppercase;font-weight:800">Estimasi total</div><strong id="nbtotal" style="display:block;font-size:25px;color:#8f1530;margin-top:3px">Rp'+base.toLocaleString('id-ID')+'</strong><small style="color:#7b6c72">Harga dapat berubah sesuai detail paket.</small></div>'+
+      '<button id="nbbook" style="width:100%;margin-top:12px;padding:14px;border:0;border-radius:9px;background:#8f1530;color:#fff;font-weight:800">Pesan Paket</button>'+
+      '<div id="nbstatus" style="text-align:center;color:#7b6c72;font-size:11px;margin-top:9px"></div></div></div>';
     document.body.appendChild(o);
-    document.getElementById('nfdx').onclick=function(){o.remove()};
-    document.getElementById('nfdb').onclick=function(){if(typeof toast==='function')toast('Paket siap dipesan.');else alert('Paket siap dipesan.');};
+    var $=function(id){return document.getElementById(id)};
+    function total(){
+      var g=+$('nbguest').value,d=+$('nbduration').value,t=$('nbtype').value;
+      var extra=t==='Premium'?700000:t==='Comfort'?300000:0;
+      var durationExtra=Math.max(0,d-2)*75000;
+      $('nbtotal').textContent='Rp'+((base+extra+durationExtra)*g).toLocaleString('id-ID');
+    }
+    ['nbguest','nbduration','nbtype'].forEach(function(id){$(id).addEventListener('change',total)});
+    $('nbx').onclick=function(){o.remove()};
     o.addEventListener('click',function(e){if(e.target===o)o.remove()});
+    $('nbbook').onclick=function(){
+      var date=$('nbdate').value;
+      if(!date){$('nbstatus').textContent='Pilih tanggal keberangkatan dulu.';$('nbdate').focus();return}
+      var booking={name:name,label:label,date:date,guests:+$('nbguest').value,duration:+$('nbduration').value,type:$('nbtype').value,stay:$('nbstay').value,transport:$('nbtransport').value,note:$('nbnote').value,total:$('nbtotal').textContent,createdAt:new Date().toISOString()};
+      try{var a=JSON.parse(localStorage.getItem('nusa_package_orders_v1')||'[]');a.unshift(booking);localStorage.setItem('nusa_package_orders_v1',JSON.stringify(a))}catch(e){}
+      $('nbstatus').textContent='Pesanan tersimpan. Detail siap dilanjutkan.';
+      $('nbbook').textContent='Pesanan Tersimpan ✓';
+      $('nbbook').style.background='#27743a';
+    };
+    total();
   }
   document.addEventListener('click',function(e){
     var el=e.target.closest&&e.target.closest('.dest[data-nusa-name],.nusaFallbackCard,.nusaMainCard');
     if(!el)return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    var d=getData(el);
-    if(typeof window.NUSA_OPEN_PACKAGE==='function'){
-      try{window.NUSA_OPEN_PACKAGE(d.name,d.label);return;}catch(err){console.error(err);}
-    }
-    fallbackOpen(el);
+    e.preventDefault();e.stopImmediatePropagation();
+    open(el);
   },true);
-  document.addEventListener('DOMContentLoaded',function(){
-    document.querySelectorAll('.nusaMainCard,.nusaFallbackCard').forEach(function(el){
-      el.style.setProperty('cursor','pointer','important');
-      el.style.setProperty('pointer-events','auto','important');
-    });
-  });
 })();
 </script></body></html>
