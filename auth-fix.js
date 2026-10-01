@@ -159,6 +159,22 @@
     a.password=p;put(USER_KEY,arr);toastMsg('Password berhasil diubah.');userLogin();
   };
 
+  NUSA_OWNER.panel=function(){
+    if(!ownerSession())return ownerAccess();
+    const data=Object.assign({},window.NUSA_CATALOG||{}),im=get(IMG_KEY,{});
+    const html=Object.keys(data).map(function(k){
+      const safe=esc2(k);
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #ddd"><img src="'+esc2(im[k]||data[k]||'')+'" style="width:72px;height:58px;object-fit:cover;border-radius:9px;background:#eee"><div style="flex:1;min-width:0"><b>'+safe+'</b><div style="font-size:11px;opacity:.55">'+(im[k]?'Foto custom':'Foto default')+'</div></div><label class="outline" style="cursor:pointer">Ganti foto<input type="file" accept="image/*" data-owner-image="'+safe+'" style="display:none"></label></div>';
+    }).join('');
+    authCard('Kelola Katalog','Owner · ganti foto katalog langsung dari perangkat.','<div id="ownerCatalogBox" style="text-align:left;max-height:58vh;overflow:auto">'+(html||'<p class="mini">Katalog belum siap.</p>')+'</div><button class="outline" style="width:100%;margin-top:12px" onclick="NUSA_OWNER.logout()">Keluar Owner</button>');
+    document.querySelectorAll('input[data-owner-image]').forEach(function(inp){
+      inp.addEventListener('change',function(){
+        const file=this.files&&this.files[0];if(!file)return;
+        if(file.size>4*1024*1024)return toastMsg('Foto maksimal 4 MB untuk mode demo.');
+        const rd=new FileReader();rd.onload=function(){const all=get(IMG_KEY,{});all[inp.getAttribute('data-owner-image')]=rd.result;put(IMG_KEY,all);NUSA_OWNER.panel();NUSA_OWNER_APPLY();toastMsg('Foto berhasil diganti.')};rd.readAsDataURL(file);
+      });
+    });
+  };
   window.updateAuthUI=function(){
     const a=session(),logged=!!a,acc=document.getElementById('accountName');
     if(acc){acc.textContent=logged?a.name:'Login';acc.onclick=function(){logged?location.href='user.html':NUSA_AUTH.open('login')}}
