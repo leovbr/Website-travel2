@@ -93,9 +93,10 @@
       const logo=document.querySelector('.logo'); if(!logo)return;
       logo.addEventListener('click',function(e){
         if(owner()){e.preventDefault();openOwnerPanel();return}
-        taps++;clearTimeout(timer);timer=setTimeout(function(){taps=0},1800);
+        taps++;clearTimeout(timer);timer=setTimeout(function(){taps=0},2500);
         if(taps>=7){e.preventDefault();taps=0;openOwnerLogin();}
       },true);
+      window.NUSA_OWNER.open=window.NUSA_OWNER.open||openOwnerLogin;
       setTimeout(applyCustomImages,400);
     });
     window.NUSA_OWNER_APPLY=applyCustomImages;
