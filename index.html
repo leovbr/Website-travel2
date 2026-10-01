@@ -762,19 +762,20 @@ window.NUSA_OPEN_PACKAGE=open;
 
 
 <style id="nusaCleanInteraction">
-/* Single, clean drawer layer: drawer above search, menu button remains usable. */
+/* Final drawer layer: no competing stacking context. */
 .nav{
   position:sticky!important;
   top:0!important;
-  z-index:11000!important;
+  z-index:10!important;
+  isolation:auto!important;
 }
 .searchDock{
   position:sticky!important;
-  z-index:4000!important;
+  z-index:9!important;
 }
 .menuBtn{
   position:relative!important;
-  z-index:11001!important;
+  z-index:11!important;
   pointer-events:auto!important;
   touch-action:manipulation!important;
 }
@@ -782,24 +783,23 @@ window.NUSA_OPEN_PACKAGE=open;
 .drawer{
   position:fixed!important;
   inset:0!important;
-  z-index:10000!important;
+  z-index:2147483647!important;
+  display:none!important;
+  justify-content:flex-end!important;
   pointer-events:none!important;
 }
 .drawer.open{
   display:flex!important;
   pointer-events:auto!important;
 }
-.drawer .panel,.drawer .panel *{pointer-events:auto!important}
-/* When open, only the hamburger remains above the drawer; the navbar itself becomes transparent. */
-body.nusaDrawerOpen .nav{
-  background:transparent!important;
-  box-shadow:none!important;
-  border-bottom-color:transparent!important;
-  pointer-events:none!important;
-}
-body.nusaDrawerOpen .nav .menuBtn{
+.drawer .panel{
+  width:min(390px,94vw)!important;
+  max-width:390px!important;
+  min-width:0!important;
+  height:100%!important;
   pointer-events:auto!important;
 }
+.drawer .panel,.drawer .panel *{pointer-events:auto!important}
 </style>
 <script id="nusaCleanInteractionJS">
 (function(){
@@ -813,25 +813,20 @@ body.nusaDrawerOpen .nav .menuBtn{
     btn=document.querySelector('.menuBtn');
     drawer=document.getElementById('drawer');
     if(!btn||!drawer)return;
-
     btn.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
       sync(!drawer.classList.contains('open'));
     };
-
     var close=drawer.querySelector('.x');
     if(close)close.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
       sync(false);
     };
-
     drawer.onclick=function(e){
       if(e.target===drawer)sync(false);
     };
-
-    /* Keep legacy openMenu() calls compatible with the new single state. */
     window.openMenu=function(v){
       sync(v===undefined ? !drawer.classList.contains('open') : v);
     };
