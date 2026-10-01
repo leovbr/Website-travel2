@@ -762,30 +762,50 @@ window.NUSA_OPEN_PACKAGE=open;
 
 
 <style id="nusaCleanInteraction">
-/* Final drawer layer: no competing stacking context. */
+/* NUSA drawer: simple absolute overlay, intentionally no sticky/fixed stacking fight. */
+html,body{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow-x:hidden!important;
+}
+.top,.nav,.searchDock,#homePage,#pages,.footer{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
 .nav{
   position:sticky!important;
   top:0!important;
-  z-index:10!important;
-  isolation:auto!important;
+  z-index:20!important;
 }
 .searchDock{
   position:sticky!important;
-  z-index:9!important;
+  z-index:19!important;
 }
 .menuBtn{
   position:relative!important;
-  z-index:11!important;
+  z-index:21!important;
   pointer-events:auto!important;
   touch-action:manipulation!important;
 }
 .menuBtn:before,.menuBtn:after{pointer-events:none!important}
+
 .drawer{
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483647!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:100%!important;
+  min-width:100%!important;
+  height:100%!important;
+  min-height:100vh!important;
+  z-index:999999!important;
   display:none!important;
   justify-content:flex-end!important;
+  background:rgba(24,7,12,.68)!important;
+  backdrop-filter:blur(8px)!important;
   pointer-events:none!important;
 }
 .drawer.open{
@@ -793,42 +813,50 @@ window.NUSA_OPEN_PACKAGE=open;
   pointer-events:auto!important;
 }
 .drawer .panel{
-  width:min(390px,94vw)!important;
-  max-width:390px!important;
+  width:390px!important;
+  max-width:88vw!important;
   min-width:0!important;
-  height:100%!important;
+  height:100vh!important;
+  box-sizing:border-box!important;
+  background:#f8f5ee!important;
+  overflow:auto!important;
   pointer-events:auto!important;
+  box-shadow:-20px 0 70px rgba(0,0,0,.25)!important;
 }
-.drawer .panel,.drawer .panel *{pointer-events:auto!important}
+.drawer .panel *{pointer-events:auto!important}
 </style>
 <script id="nusaCleanInteractionJS">
 (function(){
   var btn,drawer;
-  function sync(open){
-    if(!drawer)return;
-    drawer.classList.toggle('open',!!open);
-    document.body.classList.toggle('nusaDrawerOpen',!!open);
-  }
   function bind(){
     btn=document.querySelector('.menuBtn');
     drawer=document.getElementById('drawer');
     if(!btn||!drawer)return;
+
+    function setOpen(v){
+      drawer.classList.toggle('open',v);
+      document.body.style.overflow=v?'hidden':'';
+    }
+
     btn.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
-      sync(!drawer.classList.contains('open'));
+      setOpen(!drawer.classList.contains('open'));
     };
+
     var close=drawer.querySelector('.x');
     if(close)close.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
-      sync(false);
+      setOpen(false);
     };
+
     drawer.onclick=function(e){
-      if(e.target===drawer)sync(false);
+      if(e.target===drawer)setOpen(false);
     };
+
     window.openMenu=function(v){
-      sync(v===undefined ? !drawer.classList.contains('open') : v);
+      setOpen(v===undefined?!drawer.classList.contains('open'):!!v);
     };
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
