@@ -1,104 +1,183 @@
-/* NUSA auth UI fix — loaded by index.html when included. */
+/* NUSA AUTH v2 — user + private owner authentication (demo/localStorage) */
 (function(){
-  const K='nusa_auth_v1';
-  const LANG={id:{login:'Masuk',register:'Daftar',has:'Sudah punya akun?',no:'Belum punya akun?',logout:'Keluar',notin:'Belum masuk',guest:'Tamu',welcome:'Selamat datang kembali',newAccount:'Buat akun baru'},en:{login:'Sign in',register:'Sign up',has:'Already have an account?',no:'Don\'t have an account?',logout:'Log out',notin:'Not signed in',guest:'Guest',welcome:'Welcome back',newAccount:'Create an account'},ja:{login:'ログイン',register:'登録',has:'アカウントをお持ちですか？',no:'アカウントをお持ちでないですか？',logout:'ログアウト',notin:'未ログイン',guest:'ゲスト',welcome:'おかえりなさい',newAccount:'アカウントを作成'},zh:{login:'登录',register:'注册',has:'已有账号？',no:'还没有账号？',logout:'退出',notin:'尚未登录',guest:'访客',welcome:'欢迎回来',newAccount:'创建账号'},ko:{login:'로그인',register:'가입',has:'이미 계정이 있나요?',no:'계정이 없나요?',logout:'로그아웃',notin:'로그인하지 않음',guest:'게스트',welcome:'다시 오신 것을 환영합니다',newAccount:'계정 만들기'},de:{login:'Anmelden',register:'Registrieren',has:'Bereits ein Konto?',no:'Noch kein Konto?',logout:'Abmelden',notin:'Nicht angemeldet',guest:'Gast',welcome:'Willkommen zurück',newAccount:'Konto erstellen'},fr:{login:'Se connecter',register:"S’inscrire",has:'Vous avez déjà un compte ?',no:"Vous n’avez pas encore de compte ?",logout:'Se déconnecter',notin:'Non connecté',guest:'Invité',welcome:'Bon retour',newAccount:'Créer un compte'}};
-  function auth(){try{return JSON.parse(localStorage.getItem(K)||'null')}catch(e){return null}}
-  function save(a){localStorage.setItem(K,JSON.stringify(a))}
-  function lang(){return (window.state&&state.lang)||'id'}
-  function L(k){return (LANG[lang()]||LANG.id)[k]}
-  function setProfile(a){if(!window.state)return;state.profile=Object.assign({name:'',email:'',photo:'',password:''},state.profile||{},a);saveState();if(typeof updateUser==='function')updateUser()}
-  function saveState(){if(typeof save==='function')save()}
-  function isIn(){return !!auth()}
-  window.NUSA_AUTH={
-    loggedIn:isIn,
-    logout:function(){localStorage.removeItem(K);setProfile({name:'',email:'',photo:'',password:''});if(typeof openMenu==='function')openMenu(false);if(typeof updateAuthUI==='function')updateAuthUI();toast(L('logout'));},
-    open:function(mode){
-      const a=auth();
-      modalContent.innerHTML='<div style="max-width:520px;margin:auto;text-align:center;padding:25px 10px"><div class="kicker">NUSA ACCOUNT</div><h2 style="font:500 42px Playfair Display,serif;color:#671328;margin:8px 0 10px">'+(mode==='register'?L('newAccount'):L('welcome'))+'</h2><p class="mini">'+(mode==='register'?L('no'):L('has'))+'</p>'+
-      (mode==='register'?'<div class="formGroup" style="text-align:left"><label>Username</label><input id="authName" autocomplete="username" placeholder="leovebriansyh"></div><div class="formGroup" style="text-align:left"><label>Email</label><input id="authEmail" type="email" autocomplete="email"></div><div class="formGroup" style="text-align:left"><label>Password</label><input id="authPass" type="password" autocomplete="new-password"></div><button class="btn dark" style="width:100%" onclick="NUSA_AUTH.register()">'+L('register')+'</button><button class="outline" style="width:100%;margin-top:8px" onclick="NUSA_AUTH.open(\'login\')">'+L('login')+'</button>':'<div class="formGroup" style="text-align:left"><label>Username / Email</label><input id="authName" autocomplete="username" value="'+(a&&a.name?esc(a.name):'')+'"></div><div class="formGroup" style="text-align:left"><label>Password</label><input id="authPass" type="password" autocomplete="current-password"></div><button class="btn dark" style="width:100%" onclick="NUSA_AUTH.login()">'+L('login')+'</button><button class="outline" style="width:100%;margin-top:8px" onclick="NUSA_AUTH.open(\'register\')">'+L('register')+'</button>')+'</div>';
-      modal.classList.add('open')
+  const USER_KEY='nusa_users_v2', SESSION_KEY='nusa_session_v2', OWNER_KEY='nusa_owner_v2', OWNER_SESSION='nusa_owner_session_v2', IMG_KEY='nusa_custom_images_v1';
+  const OWNER_ACCESS='NUSA-OWNER';
+  const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}};
+  const put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+  const users=()=>get(USER_KEY,[]);
+  const owner=()=>get(OWNER_KEY,null);
+  const session=()=>get(SESSION_KEY,null);
+  const ownerSession=()=>get(OWNER_SESSION,null);
+  const close=()=>{if(typeof closeModal==='function')closeModal()};
+  const toastMsg=m=>{if(typeof toast==='function')toast(m);else alert(m)};
+  const esc2=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function setUserState(a){
+    if(!window.state)return;
+    state.profile=Object.assign({},state.profile||{},a||{});
+    if(typeof save==='function')save();
+    if(typeof updateUser==='function')updateUser();
+  }
+  function saveSession(a){put(SESSION_KEY,a)}
+  function normalLoginPage(){location.href='user.html'}
+  function ownerLoginPage(){location.href='owner.html'}
+  function authCard(title,sub,body){
+    modalContent.innerHTML='<div style="max-width:500px;margin:auto;text-align:center;padding:24px 10px"><div class="kicker">NUSA PRIVATE</div><h2 style="font:500 40px Playfair Display,serif;color:#671328;margin:7px 0 10px">'+title+'</h2><p class="mini">'+sub+'</p>'+body+'</div>';
+    modal.classList.add('open');
+  }
+  function ownerAccess(){
+    authCard('Owner Access','Akses pengelola NUSA. Belum memiliki akun Owner? Daftar terlebih dahulu.',
+      '<div style="display:flex;gap:8px;margin:18px 0 12px"><button id="ownerLoginTab" class="btn dark" style="flex:1">Login</button><button id="ownerRegTab" class="outline" style="flex:1">Daftar</button></div><div id="ownerAuthBox"></div>');
+    renderOwnerLogin();
+    ownerAuthTabs();
+  }
+  function ownerAuthTabs(){
+    const a=document.getElementById('ownerLoginTab'),b=document.getElementById('ownerRegTab');
+    if(a)a.onclick=()=>{renderOwnerLogin();ownerAuthTabs()};
+    if(b)b.onclick=()=>{renderOwnerRegister();ownerAuthTabs()};
+  }
+  function field(id,label,type,extra=''){return '<div class="formGroup" style="text-align:left"><label>'+label+'</label><input id="'+id+'" type="'+type+'" '+extra+'></div>'}
+  function renderOwnerLogin(){
+    const box=document.getElementById('ownerAuthBox');if(!box)return;
+    box.innerHTML=field('oUser','Username','text','autocomplete="username" placeholder="username"')+
+      field('oPass','Kata Sandi','password','autocomplete="current-password" placeholder="••••••••"')+
+      field('oPin','PIN','password','inputmode="numeric" maxlength="6" placeholder="6 digit PIN"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_OWNER.login()">Masuk sebagai Owner</button>'+
+      '<div style="display:flex;justify-content:center;gap:16px;margin-top:14px;font-size:12px"><button class="linkBtn" onclick="NUSA_OWNER.recover(\'password\')">Lupa kata sandi?</button><button class="linkBtn" onclick="NUSA_OWNER.recover(\'pin\')">Lupa PIN?</button></div>';
+  }
+  function renderOwnerRegister(){
+    const box=document.getElementById('ownerAuthBox');if(!box)return;
+    box.innerHTML=field('oWa','Nomor WhatsApp','tel','placeholder="+62 8xx xxxx xxxx"')+
+      field('oUser','Username','text','autocomplete="username" placeholder="username"')+
+      field('oEmail','Email','email','autocomplete="email" placeholder="email@example.com"')+
+      field('oPass','Kata Sandi','password','autocomplete="new-password" placeholder="minimal 6 karakter"')+
+      field('oPin','PIN','password','inputmode="numeric" maxlength="6" placeholder="6 digit PIN"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_OWNER.register()">Buat Owner Account</button>'+
+      '<p class="mini" style="margin-top:12px">Verifikasi email akan terhubung saat backend aktif.</p>';
+  }
+  function renderRecovery(kind){
+    authCard(kind==='pin'?'Lupa PIN':'Lupa Kata Sandi','Verifikasi menggunakan email Owner.',
+      field('recEmail','Email','email','autocomplete="email" placeholder="email@example.com"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_OWNER.sendRecovery(\''+kind+'\')">Kirim Verifikasi</button>'+
+      '<button class="outline" style="width:100%;margin-top:8px" onclick="NUSA_OWNER.open()">Kembali ke Login</button>');
+  }
+  window.NUSA_OWNER={
+    open:ownerAccess,
+    login:function(){
+      const a=owner(),u=(document.getElementById('oUser')||{}).value?.trim(),p=(document.getElementById('oPass')||{}).value||'',pin=(document.getElementById('oPin')||{}).value||'';
+      if(!a)return toastMsg('Owner belum terdaftar. Pilih Daftar terlebih dahulu.');
+      if(a.username!==u||a.password!==p||a.pin!==pin)return toastMsg('Username, kata sandi, atau PIN Owner salah.');
+      put(OWNER_SESSION,{username:a.username,name:a.name||a.username,email:a.email});
+      close();toastMsg('Owner berhasil masuk.');setTimeout(ownerLoginPage,120);
     },
-    register:function(){const n=authName.value.trim(),e=authEmail.value.trim(),p=authPass.value;if(!n||!e||p.length<6)return toast('Isi username, email dan password minimal 6 karakter.');save({name:n,email:e,password:p});setProfile({name:n,email:e,password:p});closeModal();if(typeof updateAuthUI==='function')updateAuthUI();toast(L('login')+' berhasil.');},
-    login:function(){const n=authName.value.trim(),p=authPass.value,a=auth();if(!a||((n!==a.name&&n!==a.email)||p!==a.password))return toast('Username/email atau password salah.');setProfile({name:a.name,email:a.email,password:a.password});closeModal();if(typeof updateAuthUI==='function')updateAuthUI();toast(L('login')+' berhasil.')}
+    register:function(){
+      const wa=(document.getElementById('oWa')||{}).value?.trim(),u=(document.getElementById('oUser')||{}).value?.trim(),e=(document.getElementById('oEmail')||{}).value?.trim(),p=(document.getElementById('oPass')||{}).value||'',pin=(document.getElementById('oPin')||{}).value||'';
+      if(!wa||!u||!e||p.length<6||!/^[0-9]{6}$/.test(pin))return toastMsg('Lengkapi semua data. Password minimal 6 karakter dan PIN harus 6 digit.');
+      if(owner())return toastMsg('Owner Account sudah terdaftar di perangkat ini.');
+      put(OWNER_KEY,{name:u,wa,username:u,email:e,password:p,pin,verified:false,createdAt:Date.now()});
+      toastMsg('Owner Account berhasil dibuat. Silakan login.');
+      renderOwnerLogin();ownerAuthTabs();
+    },
+    recover:function(kind){renderRecovery(kind)},
+    sendRecovery:function(kind){
+      const e=(document.getElementById('recEmail')||{}).value?.trim(),a=owner();
+      if(!a||!e||e!==a.email)return toastMsg('Email Owner tidak ditemukan.');
+      authCard('Verifikasi Email','Demo mode: email verification disimulasikan di perangkat ini.',
+        '<p class="mini">Verifikasi untuk '+esc2(e)+' berhasil.</p><button class="btn dark" style="width:100%" onclick="NUSA_OWNER.reset(\''+kind+'\')">Lanjutkan</button>');
+    },
+    reset:function(kind){
+      const a=owner(); if(!a)return;
+      const label=kind==='pin'?'PIN baru (6 digit)':'Kata sandi baru';
+      authCard(kind==='pin'?'Atur Ulang PIN':'Atur Ulang Kata Sandi','Buat kredensial baru untuk Owner.',
+        field('resetVal',label,kind==='pin'?'password':'password',kind==='pin'?'inputmode="numeric" maxlength="6" placeholder="6 digit PIN"':'autocomplete="new-password" placeholder="minimal 6 karakter"')+
+        '<button class="btn dark" style="width:100%" onclick="NUSA_OWNER.saveReset(\''+kind+'\')">Simpan</button>');
+    },
+    saveReset:function(kind){
+      const v=(document.getElementById('resetVal')||{}).value||'',a=owner();
+      if(kind==='pin'&&!/^[0-9]{6}$/.test(v))return toastMsg('PIN harus 6 digit.');
+      if(kind==='password'&&v.length<6)return toastMsg('Password minimal 6 karakter.');
+      a[kind==='pin'?'pin':'password']=v;put(OWNER_KEY,a);toastMsg('Berhasil diperbarui.');renderOwnerLogin();ownerAuthTabs();
+    },
+    logout:function(){localStorage.removeItem(OWNER_SESSION);location.href='index.html'}
   };
-  window.updateAuthUI=function(){
-    const a=auth(), logged=!!a;
-    const acc=document.getElementById('accountName');if(acc){acc.textContent=logged?a.name:L('login');acc.style.cursor='pointer';acc.onclick=function(){logged?openMenu(true):NUSA_AUTH.open('login')}}
-    const mn=document.getElementById('menuName'),me=document.getElementById('menuEmail'),mp=document.getElementById('menuPhoto');
-    if(mn)mn.textContent=logged?a.name:L('guest');
-    if(me)me.textContent=logged?(a.email||''):L('notin');
-    if(mp)mp.src=logged&&a.photo?a.photo:'https://i.pravatar.cc/100?u=nusa';
-    const authBtn=document.getElementById('authMenuBtn');if(authBtn){authBtn.innerHTML='<span class="ico">'+(logged?'🚪':'🔑')+'</span>'+(logged?L('logout'):L('login'));authBtn.onclick=logged?NUSA_AUTH.logout:function(){openMenu(false);NUSA_AUTH.open('login')}}
-  };
-  window.renderAuthLang=function(){if(typeof renderLang==='function')renderLang();updateAuthUI()}
-  const oldLogout=window.logout;window.logout=NUSA_AUTH.logout;
-  const oldRenderLang=window.renderLang;
-  window.renderLang=function(){if(typeof langs==='undefined')return;langs.innerHTML=LANGS.map(x=>'<button class="lang '+(state.lang===x[0]?'active':'')+'" onclick="state.lang=\''+x[0]+'\';save();renderLang();toast(\'Bahasa: '+x[2]+'\')">'+x[1]+' '+x[2]+'</button>').join('');updateAuthUI()};
-  setTimeout(updateAuthUI,0);
 
-  /* NUSA hidden owner mode — demo/CMS layer (localStorage only) */
-  (function(){
-    const OK='nusa_owner_v1', IK='nusa_custom_images_v1', OWNER_PIN='NUSA-OWNER';
+  window.NUSA_AUTH={
+    open:function(mode){
+      if(mode==='register')return userRegister();
+      return userLogin();
+    },
+    login:function(){
+      const u=(document.getElementById('authUser')||{}).value?.trim(),p=(document.getElementById('authPass')||{}).value||'',arr=users(),a=arr.find(x=>(x.username===u||x.email===u)&&x.password===p);
+      if(!a)return toastMsg('Username/email atau password salah.');
+      saveSession({username:a.username,name:a.name,email:a.email,photo:a.photo||''});setUserState(a);close();toastMsg('Login berhasil.');setTimeout(normalLoginPage,120);
+    },
+    register:function(){
+      const n=(document.getElementById('authName')||{}).value?.trim(),u=(document.getElementById('authUser')||{}).value?.trim(),wa=(document.getElementById('authWa')||{}).value?.trim(),e=(document.getElementById('authEmail')||{}).value?.trim(),p=(document.getElementById('authPass')||{}).value||'',arr=users();
+      if(!n||!u||!wa||!e||p.length<6)return toastMsg('Lengkapi semua data. Password minimal 6 karakter.');
+      if(arr.some(x=>x.username===u||x.email===e))return toastMsg('Username atau email sudah digunakan.');
+      const a={name:n,username:u,wa,email:e,password:p,photo:'',createdAt:Date.now()};arr.push(a);put(USER_KEY,arr);saveSession({username:u,name:n,email:e,photo:''});setUserState(a);close();toastMsg('Akun berhasil dibuat.');setTimeout(normalLoginPage,120);
+    },
+    logout:function(){localStorage.removeItem(SESSION_KEY);setUserState({name:'',email:'',photo:'',password:''});if(typeof openMenu==='function')openMenu(false);updateAuthUI();toastMsg('Keluar berhasil.')},
+    loggedIn:()=>!!session()
+  };
+  function userLogin(){
+    authCard('Login','Masuk sebagai pengguna NUSA.',
+      field('authUser','Username / Email','text','autocomplete="username" placeholder="username atau email"')+
+      field('authPass','Kata Sandi','password','autocomplete="current-password" placeholder="••••••••"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_AUTH.login()">Masuk</button>'+
+      '<div style="margin-top:12px"><button class="linkBtn" onclick="NUSA_AUTH.forgot()">Lupa kata sandi?</button></div>'+
+      '<p class="mini" style="margin-top:15px">Belum memiliki akun? <button class="linkBtn" onclick="NUSA_AUTH.open(\'register\')">Daftar</button></p>');
+  }
+  function userRegister(){
+    authCard('Buat Akun','Daftar sebagai pengguna NUSA.',
+      field('authName','Nama','text','autocomplete="name" placeholder="Nama kamu"')+
+      field('authUser','Username','text','autocomplete="username" placeholder="username"')+
+      field('authWa','Nomor WhatsApp','tel','placeholder="+62 8xx xxxx xxxx"')+
+      field('authEmail','Email','email','autocomplete="email" placeholder="email@example.com"')+
+      field('authPass','Kata Sandi','password','autocomplete="new-password" placeholder="minimal 6 karakter"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_AUTH.register()">Daftar</button>'+
+      '<p class="mini" style="margin-top:15px">Sudah memiliki akun? <button class="linkBtn" onclick="NUSA_AUTH.open(\'login\')">Login</button></p>');
+  }
+  NUSA_AUTH.forgot=function(){
+    authCard('Lupa Kata Sandi','Masukkan email akun untuk verifikasi.',
+      field('forgotEmail','Email','email','placeholder="email@example.com"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_AUTH.recover()">Kirim Verifikasi</button>');
+  };
+  NUSA_AUTH.recover=function(){
+    const e=(document.getElementById('forgotEmail')||{}).value?.trim(),arr=users(),a=arr.find(x=>x.email===e);
+    if(!a)return toastMsg('Email tidak ditemukan.');
+    authCard('Verifikasi Email','Demo mode: verifikasi email disimulasikan di perangkat ini.',
+      '<p class="mini">Verifikasi untuk '+esc2(e)+' berhasil.</p><button class="btn dark" style="width:100%" onclick="NUSA_AUTH.reset(\''+esc2(e)+'\')">Atur Ulang Password</button>');
+  };
+  NUSA_AUTH.reset=function(e){
+    authCard('Password Baru','Buat password baru.',
+      field('newPass','Password Baru','password','autocomplete="new-password" placeholder="minimal 6 karakter"')+
+      '<button class="btn dark" style="width:100%" onclick="NUSA_AUTH.saveReset(\''+esc2(e)+'\')">Simpan</button>');
+  };
+  NUSA_AUTH.saveReset=function(e){
+    const p=(document.getElementById('newPass')||{}).value||'',arr=users(),a=arr.find(x=>x.email===e);
+    if(p.length<6)return toastMsg('Password minimal 6 karakter.');
+    a.password=p;put(USER_KEY,arr);toastMsg('Password berhasil diubah.');userLogin();
+  };
+
+  window.updateAuthUI=function(){
+    const a=session(),logged=!!a,acc=document.getElementById('accountName');
+    if(acc){acc.textContent=logged?a.name:'Login';acc.onclick=function(){logged?location.href='user.html':NUSA_AUTH.open('login')}}
+    const mn=document.getElementById('menuName'),me=document.getElementById('menuEmail'),mp=document.getElementById('menuPhoto');
+    if(mn)mn.textContent=logged?a.name:'Tamu';
+    if(me)me.textContent=logged?(a.email||''):'Belum masuk';
+    if(mp)mp.src=logged&&a.photo?a.photo:'https://i.pravatar.cc/100?u=nusa';
+    const btn=document.getElementById('authMenuBtn');if(btn){btn.innerHTML='<span class="ico">'+(logged?'🚪':'🔑')+'</span>'+(logged?'Keluar':'Login');btn.onclick=logged?NUSA_AUTH.logout:function(){if(typeof openMenu==='function')openMenu(false);NUSA_AUTH.open('login')}}
+  };
+  window.NUSA_OWNER_APPLY=function(){
+    const im=get(IMG_KEY,{});document.querySelectorAll('.nusaFallbackCard').forEach(c=>{const t=c.querySelector('strong'),i=c.querySelector('img');if(t&&i&&im[t.textContent])i.src=im[t.textContent]});
+  };
+  function wireOwner(){
+    const logo=document.querySelector('.logo');if(!logo)return;
     let taps=0,timer=null;
-    function owner(){return localStorage.getItem(OK)==='1'}
-    function imgs(){try{return JSON.parse(localStorage.getItem(IK)||'{}')}catch(e){return {}}}
-    function saveImgs(x){localStorage.setItem(IK,JSON.stringify(x))}
-    function openOwnerLogin(){
-      if(owner()) return openOwnerPanel();
-      modalContent.innerHTML='<div style="max-width:480px;margin:auto;text-align:center;padding:30px 12px"><div class="kicker">NUSA PRIVATE</div><h2 style="font:500 40px Playfair Display,serif;color:#671328;margin:8px 0">Owner Access</h2><p class="mini">Masukkan access key untuk membuka mode pengelola.</p><div class="formGroup" style="text-align:left"><label>Access key</label><input id="ownerPin" type="password" autocomplete="off" placeholder="••••••••"></div><button class="btn dark" style="width:100%" onclick="NUSA_OWNER.login()">Masuk sebagai Owner</button><p style="font-size:11px;opacity:.55;margin:14px 0 0">Demo mode · data tersimpan di perangkat ini.</p></div>';
-      modal.classList.add('open');
-      setTimeout(function(){var x=document.getElementById('ownerPin');if(x)x.focus()},50);
-    }
-    function openOwnerPanel(){
-      const im=imgs();
-      modalContent.innerHTML='<div style="max-width:720px;margin:auto;padding:22px 8px"><div class="kicker">NUSA OWNER</div><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><h2 style="font:500 38px Playfair Display,serif;color:#671328;margin:5px 0">Kelola katalog</h2><p class="mini" style="margin:0">Ganti foto kartu langsung dari website.</p></div><button class="outline" onclick="NUSA_OWNER.logout()">Keluar</button></div><div id="ownerCatalog" style="margin-top:20px"></div></div>';
-      modal.classList.add('open');
-      setTimeout(renderOwnerCatalog,0);
-    }
-    function renderOwnerCatalog(){
-      const box=document.getElementById('ownerCatalog'); if(!box)return;
-      const data=Object.assign({},window.NUSA_CATALOG||{});
-      const im=imgs(), keys=Object.keys(data);
-      if(!keys.length){box.innerHTML='<p class="mini">Katalog belum siap.</p>';return}
-      box.innerHTML=keys.map(function(k){
-        const safe=String(k).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-        return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #ddd"><img src="'+(im[k]||data[k]||'')+'" style="width:72px;height:58px;object-fit:cover;border-radius:9px;background:#eee"><div style="flex:1;min-width:0"><b style="font:600 15px DM Sans,sans-serif">'+safe+'</b><div style="font-size:11px;opacity:.55">Foto '+(im[k]?'custom':'default')+'</div></div><label class="outline" style="cursor:pointer;white-space:nowrap">Ganti foto<input type="file" accept="image/*" data-owner-image="'+safe+'" style="display:none"></label></div>';
-      }).join('');
-      box.querySelectorAll('input[data-owner-image]').forEach(function(inp){
-        inp.addEventListener('change',function(){
-          const f=this.files&&this.files[0]; if(!f)return;
-          if(f.size>4*1024*1024)return toast('Foto maksimal 4 MB untuk mode demo.');
-          const reader=new FileReader();
-          reader.onload=function(){
-            const all=imgs(); all[inp.getAttribute('data-owner-image')]=reader.result; saveImgs(all);
-            applyCustomImages(); renderOwnerCatalog(); toast('Foto berhasil diganti.');
-          };
-          reader.readAsDataURL(f);
-        });
-      });
-    }
-    function applyCustomImages(){
-      const im=imgs();
-      document.querySelectorAll('.nusaFallbackCard').forEach(function(card){
-        const t=card.querySelector('strong'); const img=card.querySelector('img');
-        if(t&&img&&im[t.textContent]){img.src=im[t.textContent];img.dataset.nusaCustom='1'}
-      });
-    }
-    window.NUSA_OWNER={login:function(){
-      const pin=(document.getElementById('ownerPin')||{}).value||'';
-      if(pin!==OWNER_PIN)return toast('Access key salah.');
-      localStorage.setItem(OK,'1');closeModal();toast('Owner mode aktif.');setTimeout(openOwnerPanel,120);
-    },open:openOwnerLogin,panel:openOwnerPanel,logout:function(){localStorage.removeItem(OK);closeModal();toast('Owner mode ditutup.')}};
-    window.addEventListener('load',function(){
-      const logo=document.querySelector('.logo'); if(!logo)return;
-      logo.addEventListener('click',function(e){
-        if(owner()){e.preventDefault();openOwnerPanel();return}
-        taps++;clearTimeout(timer);timer=setTimeout(function(){taps=0},2500);
-        if(taps>=7){e.preventDefault();taps=0;openOwnerLogin();}
-      },true);
-      window.NUSA_OWNER.open=window.NUSA_OWNER.open||openOwnerLogin;
-      setTimeout(applyCustomImages,400);
-    });
-    window.NUSA_OWNER_APPLY=applyCustomImages;
-  })();
+    logo.addEventListener('click',function(e){
+      taps++;clearTimeout(timer);timer=setTimeout(()=>taps=0,2500);
+      if(taps>=7){e.preventDefault();e.stopPropagation();taps=0;ownerAccess()}
+    },true);
+  }
+  window.addEventListener('load',function(){updateAuthUI();wireOwner();setTimeout(NUSA_OWNER_APPLY,400)});
 })();
