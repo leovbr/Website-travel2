@@ -432,4 +432,25 @@ window.NUSA_OPEN_PACKAGE=open;
   },true);
   window.NUSA_OWNER_V3={open:box};
 })();
+</script><script>
+<!-- NUSA CLICK FIX -->
+(function(){
+  function openCard(a){
+    if(!a)return;
+    var n=a.getAttribute('data-nusa-name'),l=a.getAttribute('data-nusa-label')||'Paket';
+    if(!n)return;
+    if(typeof window.NUSA_OPEN_PACKAGE==='function'){
+      window.NUSA_OPEN_PACKAGE(n,l);
+      return;
+    }
+    setTimeout(function(){if(typeof window.NUSA_OPEN_PACKAGE==='function')window.NUSA_OPEN_PACKAGE(n,l)},50);
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('.nusaFallbackCard,[data-nusa-name]');
+    if(!a)return;
+    e.preventDefault();
+    e.stopPropagation();
+    openCard(a);
+  },true);
+})();
 </script></body></html>
