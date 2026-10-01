@@ -762,144 +762,132 @@ window.NUSA_OPEN_PACKAGE=open;
 
 
 <style id="nusaCleanInteraction">
-/* NUSA CLEAN INTERACTION v2 — portal menu + full-width mobile */
 html,body{
-  width:100vw!important;
-  min-width:100vw!important;
-  max-width:100vw!important;
-  margin:0!important;
-  padding:0!important;
-  overflow-x:hidden!important;
+  width:100vw!important;min-width:100vw!important;max-width:100vw!important;
+  margin:0!important;padding:0!important;overflow-x:hidden!important;
 }
-body{position:relative!important}
 .top,.nav,.searchDock,#homePage,#pages,.footer,.hero{
-  width:100%!important;
-  max-width:none!important;
-  min-width:0!important;
-  box-sizing:border-box!important;
+  width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;
 }
 .nav{position:sticky!important;top:0!important;z-index:100!important}
 .searchDock{position:sticky!important;top:72px!important;z-index:90!important}
-.menuBtn{
-  position:relative!important;
-  z-index:101!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
+.menuBtn{position:relative!important;z-index:101!important;pointer-events:auto!important;touch-action:manipulation!important}
 .menuBtn:before,.menuBtn:after{pointer-events:none!important}
-
-/* Old drawer is only a source for its menu content. */
 #drawer{display:none!important}
 
-/* New menu portal lives directly under body, outside every stacking context. */
 #nusaMenuPortal{
   position:fixed!important;
   inset:0!important;
   width:100vw!important;
-  height:100vh!important;
+  height:100dvh!important;
+  min-height:100vh!important;
   z-index:2147483000!important;
   display:none!important;
   justify-content:flex-end!important;
+  align-items:stretch!important;
   background:rgba(18,7,11,.62)!important;
   backdrop-filter:blur(8px)!important;
   -webkit-backdrop-filter:blur(8px)!important;
   pointer-events:none!important;
 }
-#nusaMenuPortal.open{
-  display:flex!important;
-  pointer-events:auto!important;
-}
+#nusaMenuPortal.open{display:flex!important;pointer-events:auto!important}
 #nusaMenuPortal .nusaMenuPanel{
   width:min(390px,88vw)!important;
   max-width:390px!important;
   min-width:0!important;
-  height:100vh!important;
-  max-height:100vh!important;
+  height:100%!important;
+  max-height:100%!important;
   box-sizing:border-box!important;
   overflow-y:auto!important;
   overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
   background:#f8f5ee!important;
   box-shadow:-20px 0 70px rgba(0,0,0,.28)!important;
   padding:22px!important;
   pointer-events:auto!important;
 }
 #nusaMenuPortal .nusaMenuPanel *{pointer-events:auto!important}
-body.nusaMenuOpen{overflow:hidden!important}
+body.nusaMenuOpen{overflow:hidden!important;position:fixed!important;width:100%!important}
 @media(max-width:560px){
   .nav{height:66px!important;padding:0 5vw!important}
   .searchDock{top:66px!important;padding-left:5vw!important;padding-right:5vw!important}
-  .searchMain{width:100%!important;min-width:0!important}
-  .searchBox{min-width:0!important}
-  #nusaMenuPortal .nusaMenuPanel{
-    width:min(360px,88vw)!important;
-    max-width:88vw!important;
-  }
+  #nusaMenuPortal .nusaMenuPanel{width:88vw!important;max-width:360px!important}
 }
 </style>
 <script id="nusaCleanInteractionJS">
 (function(){
   'use strict';
+  var scrollY=0;
 
-  function makeMenuPortal(){
+  function makePortal(){
     var old=document.getElementById('drawer');
     if(!old)return null;
-
     var existing=document.getElementById('nusaMenuPortal');
     if(existing)return existing;
 
-    var panel=old.querySelector('.panel');
-    if(!panel)return null;
+    var originalPanel=old.querySelector('.panel');
+    if(!originalPanel)return null;
 
     var portal=document.createElement('div');
     portal.id='nusaMenuPortal';
     portal.setAttribute('aria-hidden','true');
 
-    var newPanel=document.createElement('aside');
-    newPanel.className='nusaMenuPanel';
-    newPanel.innerHTML=panel.innerHTML;
-    portal.appendChild(newPanel);
+    /* cloneNode(true) keeps the actual DOM structure and all form/link elements.
+       We then restore the original inline onclick behavior directly on the clone. */
+    var panel=originalPanel.cloneNode(true);
+    panel.className='nusaMenuPanel';
+    portal.appendChild(panel);
     document.body.appendChild(portal);
 
-    /* Re-wire the close button because the original onclick targets openMenu. */
-    var close=newPanel.querySelector('.x');
-    if(close){
-      close.onclick=function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        closeMenu();
+    /* Execute inline handlers in the page's real global scope. */
+    panel.querySelectorAll('[onclick]').forEach(function(el){
+      var code=el.getAttribute('onclick');
+      if(!code)return;
+      el.onclick=function(event){
+        try{
+          var fn=new Function(code);
+          return fn.call(el);
+        }catch(err){
+          console.error('NUSA menu action failed:',err);
+        }
       };
-    }
+    });
+
+    var close=panel.querySelector('.x');
+    if(close)close.onclick=function(e){e.preventDefault();e.stopPropagation();closeMenu()};
+
+    /* Language buttons are generated dynamically into #langs. */
+    panel.querySelectorAll('[data-menu-action]').forEach(function(el){
+      el.addEventListener('click',function(){setTimeout(closeMenu,80)});
+    });
 
     portal.addEventListener('click',function(e){
       if(e.target===portal)closeMenu();
-    });
-
-    /* Preserve every existing menu item's onclick, including page(), auth, language, etc. */
-    newPanel.querySelectorAll('[onclick]').forEach(function(el){
-      var code=el.getAttribute('onclick');
-      if(code)el.onclick=function(e){
-        try{Function('event',code).call(el,e)}catch(err){console.error(err)}
-      };
     });
 
     return portal;
   }
 
   function openMenu(){
-    var portal=makeMenuPortal();
-    if(!portal)return;
-    portal.classList.add('open');
-    portal.setAttribute('aria-hidden','false');
+    var p=makePortal();
+    if(!p)return;
+    scrollY=window.scrollY||document.documentElement.scrollTop||0;
     document.body.classList.add('nusaMenuOpen');
+    document.body.style.top=(-scrollY)+'px';
+    p.classList.add('open');
+    p.setAttribute('aria-hidden','false');
   }
 
   function closeMenu(){
-    var portal=document.getElementById('nusaMenuPortal');
-    if(portal){
-      portal.classList.remove('open');
-      portal.setAttribute('aria-hidden','true');
+    var p=document.getElementById('nusaMenuPortal');
+    if(p){
+      p.classList.remove('open');
+      p.setAttribute('aria-hidden','true');
     }
     document.body.classList.remove('nusaMenuOpen');
+    document.body.style.top='';
+    window.scrollTo(0,scrollY);
   }
 
   function bind(){
@@ -909,12 +897,11 @@ body.nusaMenuOpen{overflow:hidden!important}
     btn.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
-      var portal=document.getElementById('nusaMenuPortal');
-      if(portal && portal.classList.contains('open')) closeMenu();
+      var p=document.getElementById('nusaMenuPortal');
+      if(p&&p.classList.contains('open'))closeMenu();
       else openMenu();
     };
 
-    /* Expose the same API used elsewhere in the site. */
     window.openMenu=function(v){
       if(v===false)closeMenu();
       else if(v===true)openMenu();
@@ -924,27 +911,23 @@ body.nusaMenuOpen{overflow:hidden!important}
       }
     };
 
-    /* Filter gets its own direct handler, independent of inline stacking. */
     var fb=document.getElementById('filterBtn');
     var fp=document.getElementById('filterPanel');
     if(fb&&fp){
       fb.onclick=function(e){
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault();e.stopPropagation();
         fp.classList.toggle('open');
         fb.classList.toggle('active');
       };
     }
 
-    /* Close menu when a menu action navigates to another page section. */
     document.addEventListener('keydown',function(e){
       if(e.key==='Escape')closeMenu();
-    },{passive:true});
+    });
   }
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',bind,{once:true});
-  }else bind();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
   window.addEventListener('load',bind,{once:true});
 })();
-</script></script></body></html>
+</script></body></html>
