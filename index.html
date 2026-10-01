@@ -876,4 +876,93 @@ function bind(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 window.addEventListener('load',bind,{once:true});
 })();
+</script>
+<!-- NUSA FINAL MENU REPAIR -->
+<style id="nusaFinalMenuRepair">
+#drawer.nusaFinalDrawer{
+ position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+ z-index:2147483647!important;background:rgba(18,7,11,.62)!important;
+ display:none!important;justify-content:flex-end!important;align-items:stretch!important;
+ pointer-events:none!important;
+}
+#drawer.nusaFinalDrawer.open{display:flex!important;pointer-events:auto!important}
+#drawer.nusaFinalDrawer>.panel{
+ display:block!important;position:relative!important;width:min(390px,88vw)!important;max-width:390px!important;
+ height:100dvh!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important;
+ box-sizing:border-box!important;padding:22px 22px calc(28px + env(safe-area-inset-bottom))!important;
+ background:#f8f5ee!important;pointer-events:auto!important;
+}
+#drawer.nusaFinalDrawer .menuItem,#drawer.nusaFinalDrawer .menuItem *,
+#drawer.nusaFinalDrawer .x,#drawer.nusaFinalDrawer .lang,#drawer.nusaFinalDrawer .lang *{
+ pointer-events:auto!important;position:relative!important;
+}
+#nusaMenuPortal{display:none!important;pointer-events:none!important}
+body.nusaFinalMenuLock{overflow:hidden!important}
+</style>
+<script id="nusaFinalMenuRepairJS">
+(function(){
+'use strict';
+function drawer(){return document.getElementById('drawer')}
+function panel(){var d=drawer();return d&&d.querySelector('.panel')}
+function closeNative(){
+ var d=drawer();if(!d)return;
+ d.classList.remove('open','nusaFinalDrawer');
+ d.style.display='none';
+ document.body.classList.remove('nusaFinalMenuLock','nusaMenuOpen');
+ document.body.style.top='';
+}
+function openNative(){
+ var d=drawer(),p=panel();if(!d||!p)return;
+ var portal=document.getElementById('nusaMenuPortal');
+ if(portal)portal.remove();
+ if(p.parentNode!==d)d.appendChild(p);
+ d.classList.add('nusaFinalDrawer','open');
+ d.style.display='flex';
+ document.body.classList.add('nusaFinalMenuLock');
+}
+function wire(){
+ var d=drawer(),p=panel(),btn=document.querySelector('.menuBtn');
+ if(!d||!p||!btn)return;
+
+ window.openMenu=function(v){if(v===false)closeNative();else openNative()};
+
+ btn.onclick=function(e){
+   e.preventDefault();e.stopPropagation();
+   if(d.classList.contains('open'))closeNative();else openNative();
+ };
+
+ var items=p.querySelectorAll('.menuList>.menuItem');
+ var actions=[
+   function(){page('account')},
+   function(){page('wishlist')},
+   function(){page('orders')},
+   function(){page('journal')},
+   function(){page('notifications')},
+   function(){toggleLang()},
+   function(){page('settings')},
+   function(){page('help')}
+ ];
+ items.forEach(function(el,i){
+   if(i>=actions.length)return;
+   el.onclick=function(e){
+     e.preventDefault();e.stopPropagation();
+     try{actions[i]()}catch(err){console.error('NUSA menu:',err)}
+   };
+ });
+ var auth=document.getElementById('authMenuBtn');
+ if(auth){
+   var old=auth.onclick;
+   auth.onclick=function(e){
+     e.preventDefault();e.stopPropagation();
+     if(typeof old==='function')old.call(auth,e);
+     else if(window.NUSA_AUTH)window.NUSA_AUTH.open('login');
+   };
+ }
+ var x=p.querySelector('.x');
+ if(x)x.onclick=function(e){e.preventDefault();e.stopPropagation();closeNative()};
+ d.onclick=function(e){if(e.target===d)closeNative()};
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
+window.addEventListener('load',wire,{once:true});
+})();
 </script></body></html>
