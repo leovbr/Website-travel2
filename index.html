@@ -230,7 +230,7 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opac
 #nbbook{background:#17463d!important}.nbPriceMode{background:#e4e8e2!important}.nbMode.active{color:#17463d!important}
 .nbOwnerModeRow{display:flex;background:#e4e8e2;border-radius:9px;padding:3px;gap:2px;margin-bottom:8px}.nbOwnerModeRow .nbMode{border:0;background:transparent;color:#65716d;border-radius:7px;padding:7px 9px;font:800 10px "DM Sans",sans-serif;cursor:pointer}.nbOwnerModeRow .nbMode.active{background:#fff;color:#17463d;box-shadow:0 2px 7px #0001}
 @media(max-width:560px){body{background-attachment:scroll!important}.travelCategory{padding:25px 15px!important;border-radius:22px!important}}
-</style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" onclick="openMenu(true)">☰</button></div></nav><main id="homePage">
+</style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" type="button">☰</button></div></nav><main id="homePage">
 
 <section class="searchDock"><div class="searchDockIn"><div class="searchMain"><div class="searchBox"><span class="searchIcon">⌕</span><input id="q" placeholder="Cari destinasi atau paket..." autocomplete="off"></div><button class="btn dark" onclick="renderPackages();document.getElementById('explore').scrollIntoView()">Cari</button><button class="filterBtn" id="filterBtn" onclick="toggleFilters()" aria-label="Filter">⚙</button></div><div class="filterPanel" id="filterPanel"><div class="filterPanelHead"><b>Filter perjalanan</b><button class="filterClose" onclick="toggleFilters()">×</button></div><div class="filterGrid"><div class="filterField"><label>Harga maksimum</label><input class="range" id="price" type="range" min="500000" max="10000000" step="250000" value="10000000"><span class="mini" id="pv">Rp10.000.000</span></div><div class="filterField"><label>Durasi</label><div class="filterChecks"><label class="check"><input type="checkbox" class="dur" value="2"> 1–2 hari</label><label class="check"><input type="checkbox" class="dur" value="4"> 3–4 hari</label><label class="check"><input type="checkbox" class="dur" value="7"> 5–7 hari</label></div></div><div class="filterField"><label>Style</label><div class="filterChecks"><label class="check"><input type="checkbox" class="sty" value="Adventure"> Adventure</label><label class="check"><input type="checkbox" class="sty" value="Family"> Family</label><label class="check"><input type="checkbox" class="sty" value="Luxury"> Luxury</label><label class="check"><input type="checkbox" class="sty" value="Relaxation"> Relaxation</label></div></div><div class="filterField ratingFilter"><label>Rating minimum</label><select id="minRating" class="sort"><option value="0">Semua</option><option value="4">4.0+</option><option value="4.5">4.5+</option></select></div></div></div></div></section>
 
@@ -757,143 +757,43 @@ window.NUSA_OPEN_PACKAGE=open;
     open(el);
   },true);
 })();
-</script><style id="nusaInteractionRepair">
-/* NUSA INTERACTION REPAIR */
-.nav,.searchDock{isolation:isolate}
-.nav > *, .searchDock *{pointer-events:auto!important}
-.menuBtn,.filterBtn,.filterClose{position:relative!important;z-index:9999!important;pointer-events:auto!important}
-.nav:before,.nav:after,.searchDock:before,.searchDock:after,
-.hero:before,.hero:after,.travelCategory:before,.cta:after{pointer-events:none!important}
-.drawer{z-index:999990!important}
-</style>
-<script id="nusaInteractionRepairJS">
-(function(){
-  function ready(){
-    /* Remove stale transparent package overlays left by older versions. */
-    ['nusaPackageModal','nusaBookingModal'].forEach(function(id){
-      var x=document.getElementById(id);
-      if(x && !x.querySelector('#nbbook')) x.remove();
-    });
-    var fb=document.getElementById('filterBtn');
-    var fp=document.getElementById('filterPanel');
-    var mb=document.querySelector('.menuBtn');
-    var dr=document.getElementById('drawer');
+</script>
 
-    /* Direct capture handlers make the two top controls independent of older scripts. */
-    if(fb && !fb.dataset.nusaRepair){
-      fb.dataset.nusaRepair='1';
-      fb.addEventListener('click',function(e){
-        e.preventDefault();e.stopImmediatePropagation();
-        if(typeof window.toggleFilters==='function') window.toggleFilters();
-        else if(fp){
-          fp.classList.toggle('open');
-          fb.classList.toggle('active');
-        }
-      },true);
-    }
-    if(mb && !mb.dataset.nusaRepair){
-      mb.dataset.nusaRepair='1';
-      mb.addEventListener('click',function(e){
-        e.preventDefault();e.stopImmediatePropagation();
-        if(typeof window.openMenu==='function') window.openMenu(!dr || !dr.classList.contains('open'));
-        else if(dr) dr.classList.add('open');
-      },true);
-    }
-    document.querySelectorAll('.filterClose').forEach(function(x){
-      if(x.dataset.nusaRepair)return;
-      x.dataset.nusaRepair='1';
-      x.addEventListener('click',function(e){
-        e.preventDefault();e.stopImmediatePropagation();
-        if(typeof window.toggleFilters==='function') window.toggleFilters();
-        else if(fp){fp.classList.remove('open');fb&&fb.classList.remove('active')}
-      },true);
-    });
-    document.addEventListener('keydown',function(e){
-      if(e.key==='Escape'){
-        if(fp){fp.classList.remove('open');fb&&fb.classList.remove('active')}
-        if(dr)dr.classList.remove('open');
-        var bm=document.getElementById('nusaBookingModal');if(bm)bm.remove();
-      }
-    });
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});
-  else ready();
-  window.addEventListener('load',ready,{once:true});
-})();
-</script><style id="nusaHardLayoutFix">
-/* FINAL MOBILE LAYOUT + HIT AREA REPAIR */
-html,body{width:100%!important;min-width:0!important;max-width:none!important;overflow-x:hidden!important}
-body{position:relative!important}
-.top,.nav,.searchDock,#homePage,#pages,.footer{width:100%!important;max-width:none!important;min-width:0!important}
-.nav{z-index:2147483000!important;position:sticky!important}
-.searchDock{z-index:2147482000!important;position:sticky!important}
-.nav *,.searchDock *{pointer-events:auto!important}
-.nav:before,.nav:after,.searchDock:before,.searchDock:after,
-.hero:before,.hero:after,.travelCategory:before,.travelCategory:after,
-.cta:before,.cta:after{pointer-events:none!important}
-.nav .menuBtn,.searchDock .filterBtn,.searchDock .btn{z-index:2147483640!important;position:relative!important;pointer-events:auto!important;touch-action:manipulation!important}
+
+
+<style id="nusaCleanInteraction">
+.nav{position:sticky!important;top:0!important;z-index:5000!important;isolation:auto!important}
+.searchDock{position:sticky!important;z-index:4000!important}
+.menuBtn{position:relative!important;z-index:6000!important;pointer-events:auto!important;touch-action:manipulation!important}
 .menuBtn:before,.menuBtn:after{pointer-events:none!important}
+.drawer{position:fixed!important;inset:0!important;z-index:3000!important;pointer-events:none!important}
+.drawer.open{display:flex!important;pointer-events:auto!important}
+.drawer .panel,.drawer .panel *{pointer-events:auto!important}
 </style>
-<script id="nusaHardLayoutFixJS">
+<script id="nusaCleanInteractionJS">
 (function(){
-  function fix(){
-    var ids=['filterBtn','filterPanel','drawer'];
-    ids.forEach(function(id){var e=document.getElementById(id);if(e)e.style.pointerEvents='auto';});
-    var m=document.querySelector('.menuBtn');if(m){m.style.pointerEvents='auto';m.style.zIndex='2147483640';}
-    var f=document.getElementById('filterBtn');if(f){f.style.pointerEvents='auto';f.style.zIndex='2147483640';}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix();
-  window.addEventListener('load',fix,{once:true});
-})();
-</script><style id="nusaMenuFinalFix">
-#drawer{z-index:2147482001!important}
-#drawer.open{pointer-events:auto!important}
-#drawer .panel{pointer-events:auto!important}
-#drawer .x,#drawer .menuItem{pointer-events:auto!important;touch-action:manipulation!important}
-.menuBtn{pointer-events:auto!important;touch-action:manipulation!important}
-</style>
-<script id="nusaMenuFinalFixJS">
-(function(){
+  var btn,drawer;
   function bind(){
-    var btn=document.querySelector('.menuBtn'), dr=document.getElementById('drawer');
-    if(!btn||!dr||btn.dataset.nusaFinal)return;
-    btn.dataset.nusaFinal='1';
-    btn.addEventListener('click',function(e){
-      e.preventDefault();e.stopImmediatePropagation();
-      if(typeof window.openMenu==='function') window.openMenu(!dr.classList.contains('open'));
-      else dr.classList.toggle('open');
-    },true);
-    dr.addEventListener('click',function(e){
-      if(e.target===dr){
-        e.preventDefault();e.stopImmediatePropagation();
-        if(typeof window.openMenu==='function') window.openMenu(false);
-        else dr.classList.remove('open');
-      }
-    },true);
+    btn=document.querySelector('.menuBtn');
+    drawer=document.getElementById('drawer');
+    if(!btn||!drawer)return;
+    btn.onclick=function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      drawer.classList.toggle('open');
+    };
+    var close=drawer.querySelector('.x');
+    if(close)close.onclick=function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      drawer.classList.remove('open');
+    };
+    drawer.onclick=function(e){
+      if(e.target===drawer)drawer.classList.remove('open');
+    };
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
   window.addEventListener('load',bind,{once:true});
-})();
-</script><style id="nusaMenuLayerFinal">
-/* Keep the global menu behind the sticky header so the hamburger remains reachable after opening. */
-.nav{z-index:2147483646!important}
-.searchDock{z-index:2147483645!important}
-.drawer{z-index:2147483000!important}
-.drawer.open{pointer-events:auto!important}
-.drawer .panel{pointer-events:auto!important}
-.menuBtn{z-index:2147483647!important;pointer-events:auto!important;position:relative!important}
-</style>
-<script id="nusaMenuLayerFinalJS">
-(function(){
-  function repair(){
-    var nav=document.querySelector('.nav');
-    var menu=document.querySelector('.menuBtn');
-    var drawer=document.getElementById('drawer');
-    if(nav)nav.style.zIndex='2147483646';
-    if(menu){menu.style.zIndex='2147483647';menu.style.pointerEvents='auto';}
-    if(drawer)drawer.style.zIndex='2147483000';
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
-  window.addEventListener('load',repair,{once:true});
 })();
 </script></body></html>
