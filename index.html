@@ -481,7 +481,7 @@ function open(name,label){
 }
 window.NUSA_OPEN_PACKAGE=open;
 })();
-</script></script><script src="auth-fix.js?v=2"></script><script>
+</script><script src="auth-fix.js?v=2"></script><script>
 (function(){
   function photo(q,n){
     var s=String(q).toLowerCase();
@@ -864,43 +864,81 @@ window.NUSA_OPEN_PACKAGE=open;
     open(el);
   },true);
 })();
-</script>
-
-
-
 </script><script id="nusaCoordinateTapFix">
 (function(){
- function bind(){
-  var menu=document.querySelector('.menuBtn');
-  var filter=document.getElementById('filterBtn');
-  if(!menu&&!filter)return;
-  document.addEventListener('pointerup',function(e){
-    var x=e.clientX,y=e.clientY;
-    function inside(el){
-      if(!el)return false;
-      var r=el.getBoundingClientRect();
-      return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
-    }
-    if(inside(menu)){
-      e.stopImmediatePropagation();
-      var d=document.getElementById('drawer');
-      if(d){
-        d.classList.add('open');
-        d.setAttribute('aria-hidden','false');
-        document.body.classList.add('nusaMenuLocked');
+  function bind(){
+    var menu=document.querySelector('.menuBtn');
+    var filter=document.getElementById('filterBtn');
+    var drawer=document.getElementById('drawer');
+    if(!menu)return;
+
+    var downX=0,downY=0,downTarget=null;
+
+    document.addEventListener('pointerdown',function(e){
+      downX=e.clientX; downY=e.clientY; downTarget=e.target;
+    },true);
+
+    document.addEventListener('pointerup',function(e){
+      var dx=Math.abs(e.clientX-downX),dy=Math.abs(e.clientY-downY);
+      if(dx>10||dy>10)return;
+
+      var t=e.target;
+      if(t&&t.closest){
+        var close=t.closest('#drawer .x');
+        var item=t.closest('#drawer .menuItem');
+        var backdrop=t===drawer;
+
+        if(close){
+          e.preventDefault(); e.stopImmediatePropagation();
+          openMenu(false);
+          return;
+        }
+
+        if(item){
+          e.preventDefault(); e.stopImmediatePropagation();
+          if(item.id==='authMenuBtn'){
+            if(window.NUSA_OWNER_V3&&typeof window.NUSA_OWNER_V3.open==='function') window.NUSA_OWNER_V3.open();
+            else if(typeof window.openAuth==='function') window.openAuth();
+            return;
+          }
+          var action=item.getAttribute('onclick')||'';
+          if(action.indexOf("page('account')")>=0) page('account');
+          else if(action.indexOf("page('wishlist')")>=0) page('wishlist');
+          else if(action.indexOf("page('orders')")>=0) page('orders');
+          else if(action.indexOf("page('journal')")>=0) page('journal');
+          else if(action.indexOf("page('notifications')")>=0) page('notifications');
+          else if(action.indexOf('toggleLang()')>=0) toggleLang();
+          else if(action.indexOf("page('settings')")>=0) page('settings');
+          else if(action.indexOf("page('help')")>=0) page('help');
+          return;
+        }
+
+        if(backdrop){
+          e.preventDefault(); e.stopImmediatePropagation();
+          openMenu(false);
+          return;
+        }
       }
-      return;
-    }
-    if(inside(filter)){
-      e.stopImmediatePropagation();
-      var p=document.getElementById('filterPanel');
-      if(p){
-        var isOpen=p.classList.toggle('open');
-        filter.classList.toggle('active',isOpen);
+
+      if(menu){
+        var r=menu.getBoundingClientRect();
+        if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
+          e.preventDefault(); e.stopImmediatePropagation();
+          openMenu(true);
+          return;
+        }
       }
-    }
-  },true);
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+
+      if(filter){
+        var fr=filter.getBoundingClientRect();
+        if(e.clientX>=fr.left&&e.clientX<=fr.right&&e.clientY>=fr.top&&e.clientY<=fr.bottom){
+          e.preventDefault(); e.stopImmediatePropagation();
+          toggleFilters();
+        }
+      }
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
 })();
 </script></body></html>
