@@ -1,1 +1,160 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NUSA — Kelola Katalog</title><style>*{box-sizing:border-box}body{margin:0;background:#f7f3ef;color:#241c1d;font-family:Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:22px 18px 50px}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5ddd7;padding-bottom:18px}.brand{font:600 30px Georgia;color:#671328}.badge{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.58}.back,.btn,.tab{border-radius:999px;padding:10px 15px;cursor:pointer}.back,.tab{border:1px solid #d5cbc5;background:#fff}.btn{border:0;background:#671328;color:#fff}.tab.active{background:#241c1d;color:#fff}.hero{padding:38px 0 25px}.hero h1{font:500 55px Georgia;margin:7px 0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 28px}.section{margin:30px 0 42px}.section h2{font:500 31px Georgia;margin:0 0 14px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:14px}.item{background:#fff;border:1px solid #e4dcd6;border-radius:16px;overflow:hidden}.pic{height:145px;background:#eee;position:relative}.pic img{width:100%;height:100%;object-fit:cover;display:block}.pic input{display:none}.change{position:absolute;right:10px;bottom:10px;background:#fff;border:0;border-radius:999px;padding:9px 12px;box-shadow:0 4px 16px #0002;cursor:pointer}.body{padding:15px}.name{font:500 21px Georgia;margin:0 0 5px}.meta{font-size:12px;opacity:.58}.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.fields label{font-size:10px;opacity:.58}.fields input,.fields textarea{width:100%;border:1px solid #ddd2cc;border-radius:9px;padding:9px;background:#fff;font:inherit}.fields textarea{grid-column:1/-1;resize:vertical;min-height:55px}.actions{display:flex;justify-content:flex-end;gap:7px;margin-top:11px}.danger{border:1px solid #d9bfc4;background:#fff;color:#8a1935;border-radius:999px;padding:8px 12px;cursor:pointer}@media(max-width:560px){.grid{grid-template-columns:1fr}.pic{height:170px}}</style></head><body><main class="wrap"><div class="top"><div><div class="brand">NUSA</div><div class="badge">Catalog Management</div></div><button class="back" onclick="location.href='owner.html'">← Dashboard</button></div><section class="hero"><div class="badge">Private management</div><h1>Kelola Katalog</h1><p style="opacity:.6">Ganti foto dan data katalog tanpa menyentuh kode website.</p></section><div class="toolbar"><button class="tab active" data-cat="all">Semua</button><button class="tab" data-cat="dest">Destinasi</button><button class="tab" data-cat="hotel">Penginapan</button><button class="tab" data-cat="transport">Transportasi</button></div><div id="app"></div></main><script>const D=["Bali","Bromo","Lombok","Labuan Bajo","Raja Ampat","Yogyakarta","Bandung","Jakarta","Malang","Komodo","Ubud","Gili Trawangan","Flores","Belitung","Derawan","Toraja","Wakatobi","Dieng","Labuan Bajo Premium","Nusa Penida"];const H={Hotel:["Alila Seminyak","The St. Regis Bali Resort","AYANA Komodo Waecicu Beach","Mandarin Oriental Jakarta","The Apurva Kempinski Bali","Hotel Tentrem Yogyakarta","Bisma Eight Ubud","The Legian Seminyak","The Mulia Bali","Hotel Indonesia Kempinski Jakarta","The Phoenix Hotel Yogyakarta","Capella Ubud"],Villa:["Aman Villas at Nusa Dua","Bvlgari Resort Bali","Mandapa, a Ritz-Carlton Reserve","Raffles Bali","Four Seasons Resort Bali at Sayan","AYANA Villas Bali","Umana Bali","Four Seasons Resort Bali at Jimbaran Bay","The Kayon Resort","The Ungasan Clifftop Resort","Hoshinoya Bali","Anantara Ubud Bali Resort"],Motel:["Motel Mexicola","The Bene Hotel","Grandmas Plus Hotel Seminyak","Favehotel Kuta Kartika Plaza","Amnaya Resort Kuta","Amnaya Resort Nusa Dua","ZIN Resort & Villas","The Island Hotel Bali","The Akmani Legian","Horison Ultima Seminyak","Bali Chaya Hotel","Grand Ixora Kuta Resort"],Resort:["The Westin Resort Nusa Dua","Grand Hyatt Bali","Maya Sanur Resort & Spa","Nusa Dua Beach Hotel & Spa","Padma Resort Legian","Hard Rock Hotel Bali","Anantara Uluwatu Bali Resort","Plataran Komodo Resort & Spa","Sudamala Resort Seraya","Taaktana, a Luxury Collection Resort","The Ritz-Carlton Bali","The Laguna, a Luxury Collection Resort"]};const T={Pesawat:["Garuda Indonesia","Citilink","Lion Air","AirAsia","Batik Air","Super Air Jet","Pelita Air","Wings Air","TransNusa","Indonesia AirAsia","NAM Air","Sriwijaya Air"],Kapal:["PELNI","ASDP Indonesia Ferry","Eka Jaya Fast Ferry","Gili Getaway","BlueWater Express","Marlin Fast Boat","Golden Queen Fast Boat","Sindo Ferry","Dolphin Fast Ferry","Semaya One Fast Cruise","Ostina Fast Boat","Eka Jaya"],Kereta:["Argo Bromo Anggrek","Argo Parahyangan","Mutiara Selatan","Taksaka","Lodaya","Jayabaya","Bima","Pangrango","Serayu","Kahuripan","Malabar","Gajayana"],Bus:["DAMRI","Rosalia Indah","Sinar Jaya","PO Haryanto","Harapan Jaya","Sugeng Rahayu","Handoyo","Gunung Harta","Sumber Alam","Pahala Kencana","Nusantara","Eka"]};const customKey="nusa_custom_images_v1",dataKey="nusa_catalog_data_v1";function get(k,d){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}let images=get(customKey,{}),data=get(dataKey,{});function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c])})}function allItems(){let a=[];D.forEach(x=>a.push({name:x,cat:"dest",group:"Destinasi"}));Object.keys(H).forEach(function(g){H[g].forEach(function(x){a.push({name:x,cat:"hotel",group:g})})});Object.keys(T).forEach(function(g){T[g].forEach(function(x){a.push({name:x,cat:"transport",group:g})})});return a}function fallback(){return "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80"}function card(it){const v=data[it.name]||{},src=images[it.name]||v.image||fallback();return '<article class="item"><div class="pic"><img src="'+esc(src)+'" onerror="this.src=\''+fallback()+\'\'"><label class="change">📷 Ganti<input type="file" accept="image/*" data-img="'+esc(it.name)+'"></label></div><div class="body"><div class="name">'+esc(it.name)+'</div><div class="meta">'+esc(it.group)+' · '+esc(it.cat)+'</div><div class="fields"><div><label>HARGA</label><input data-field="price" data-name="'+esc(it.name)+'" value="'+esc(v.price||"")+'" placeholder="Rp ..."></div><div><label>RATING</label><input data-field="rating" data-name="'+esc(it.name)+'" value="'+esc(v.rating||"")+'" placeholder="4.8"></div><textarea data-field="desc" data-name="'+esc(it.name)+'" placeholder="Deskripsi singkat">'+esc(v.desc||"")+'</textarea></div><div class="actions"><button class="danger" data-reset="'+esc(it.name)+'">Reset</button><button class="btn" data-save="'+esc(it.name)+'">Simpan</button></div></div></article>'}function render(filter){filter=filter||"all";let html="";const cats=filter==="all"?["dest","hotel","transport"]:[filter];cats.forEach(function(cat){html+='<section class="section"><h2>'+(cat==="dest"?"Destinasi":cat==="hotel"?"Penginapan":"Transportasi")+'</h2><div class="grid">'+allItems().filter(function(x){return x.cat===cat}).map(card).join("")+"</div></section>"});document.getElementById("app").innerHTML=html}function save(){localStorage.setItem(customKey,JSON.stringify(images));localStorage.setItem(dataKey,JSON.stringify(data))}document.addEventListener("click",function(e){const s=e.target.closest("[data-save]"),r=e.target.closest("[data-reset]");if(s){const n=s.dataset.save;data[n]={price:document.querySelector('[data-field="price"][data-name="'+CSS.escape(n)+'"]').value,rating:document.querySelector('[data-field="rating"][data-name="'+CSS.escape(n)+'"]').value,desc:document.querySelector('[data-field="desc"][data-name="'+CSS.escape(n)+'"]').value};save();s.textContent="✓ Tersimpan";setTimeout(function(){s.textContent="Simpan"},1000)}if(r){const n=r.dataset.reset;delete images[n];delete data[n];save();render(document.querySelector(".tab.active").dataset.cat)}});document.addEventListener("change",function(e){const i=e.target.closest("input[type=file][data-img]");if(!i||!i.files[0])return;const f=i.files[0];if(f.size>5*1024*1024){alert("Maksimal 5 MB.");i.value="";return}const rd=new FileReader();rd.onload=function(){images[i.dataset.img]=rd.result;save();render(document.querySelector(".tab.active").dataset.cat)};rd.readAsDataURL(f)});document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active")});b.classList.add("active");render(b.dataset.cat)}});render();</script></body></html>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NUSA — Kelola Katalog</title><style>*{box-sizing:border-box}body{margin:0;background:#f7f3ef;color:#241c1d;font-family:Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:22px 18px 50px}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5ddd7;padding-bottom:18px}.brand{font:600 30px Georgia;color:#671328}.badge{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.58}.back,.btn,.tab{border-radius:999px;padding:10px 15px;cursor:pointer}.back,.tab{border:1px solid #d5cbc5;background:#fff}.btn{border:0;background:#671328;color:#fff}.tab.active{background:#241c1d;color:#fff}.hero{padding:38px 0 25px}.hero h1{font:500 55px Georgia;margin:7px 0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 28px}.section{margin:30px 0 42px}.section h2{font:500 31px Georgia;margin:0 0 14px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:14px}.item{background:#fff;border:1px solid #e4dcd6;border-radius:16px;overflow:hidden}.pic{height:145px;background:#eee;position:relative}.pic img{width:100%;height:100%;object-fit:cover;display:block}.pic input{display:none}.change{position:absolute;right:10px;bottom:10px;background:#fff;border:0;border-radius:999px;padding:9px 12px;box-shadow:0 4px 16px #0002;cursor:pointer}.body{padding:15px}.name{font:500 21px Georgia;margin:0 0 5px}.meta{font-size:12px;opacity:.58}.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.fields label{font-size:10px;opacity:.58}.fields input,.fields textarea{width:100%;border:1px solid #ddd2cc;border-radius:9px;padding:9px;background:#fff;font:inherit}.fields textarea{grid-column:1/-1;resize:vertical;min-height:55px}.actions{display:flex;justify-content:flex-end;gap:7px;margin-top:11px}.danger{border:1px solid #d9bfc4;background:#fff;color:#8a1935;border-radius:999px;padding:8px 12px;cursor:pointer}@media(max-width:560px){.grid{grid-template-columns:1fr}.pic{height:170px}}</style></head><body><main class="wrap"><div class="top"><div><div class="brand">NUSA</div><div class="badge">Catalog Management</div></div><button class="back" onclick="location.href='owner.html'">← Dashboard</button></div><section class="hero"><div class="badge">Private management</div><h1>Kelola Katalog</h1><p style="opacity:.6">Ganti foto dan data katalog tanpa menyentuh kode website.</p></section><div class="toolbar"><button class="tab active" data-cat="all">Semua</button><button class="tab" data-cat="dest">Destinasi</button><button class="tab" data-cat="hotel">Penginapan</button><button class="tab" data-cat="transport">Transportasi</button></div><div id="app"></div></main><script>
+(function(){
+"use strict";
+
+var D=["Bali","Bromo","Lombok","Labuan Bajo","Raja Ampat","Yogyakarta","Bandung","Jakarta","Malang","Komodo","Ubud","Gili Trawangan","Flores","Belitung","Derawan","Toraja","Wakatobi","Dieng","Labuan Bajo Premium","Nusa Penida"];
+
+var H={
+Hotel:["Alila Seminyak","The St. Regis Bali Resort","AYANA Komodo Waecicu Beach","Mandarin Oriental Jakarta","The Apurva Kempinski Bali","Hotel Tentrem Yogyakarta","Bisma Eight Ubud","The Legian Seminyak","The Mulia Bali","Hotel Indonesia Kempinski Jakarta","The Phoenix Hotel Yogyakarta","Capella Ubud"],
+Villa:["Aman Villas at Nusa Dua","Bvlgari Resort Bali","Mandapa, a Ritz-Carlton Reserve","Raffles Bali","Four Seasons Resort Bali at Sayan","AYANA Villas Bali","Umana Bali","Four Seasons Resort Bali at Jimbaran Bay","The Kayon Resort","The Ungasan Clifftop Resort","Hoshinoya Bali","Anantara Ubud Bali Resort"],
+Motel:["Motel Mexicola","The Bene Hotel","Grandmas Plus Hotel Seminyak","Favehotel Kuta Kartika Plaza","Amnaya Resort Kuta","Amnaya Resort Nusa Dua","ZIN Resort & Villas","The Island Hotel Bali","The Akmani Legian","Horison Ultima Seminyak","Bali Chaya Hotel","Grand Ixora Kuta Resort"],
+Resort:["The Westin Resort Nusa Dua","Grand Hyatt Bali","Maya Sanur Resort & Spa","Nusa Dua Beach Hotel & Spa","Padma Resort Legian","Hard Rock Hotel Bali","Anantara Uluwatu Bali Resort","Plataran Komodo Resort & Spa","Sudamala Resort Seraya","Taaktana, a Luxury Collection Resort","The Ritz-Carlton Bali","The Laguna, a Luxury Collection Resort"]
+};
+
+var T={
+Pesawat:["Garuda Indonesia","Citilink","Lion Air","AirAsia","Batik Air","Super Air Jet","Pelita Air","Wings Air","TransNusa","Indonesia AirAsia","NAM Air","Sriwijaya Air"],
+Kapal:["PELNI","ASDP Indonesia Ferry","Eka Jaya Fast Ferry","Gili Getaway","BlueWater Express","Marlin Fast Boat","Golden Queen Fast Boat","Sindo Ferry","Dolphin Fast Ferry","Semaya One Fast Cruise","Ostina Fast Boat","Eka Jaya"],
+Kereta:["Argo Bromo Anggrek","Argo Parahyangan","Mutiara Selatan","Taksaka","Lodaya","Jayabaya","Bima","Pangrango","Serayu","Kahuripan","Malabar","Gajayana"],
+Bus:["DAMRI","Rosalia Indah","Sinar Jaya","PO Haryanto","Harapan Jaya","Sugeng Rahayu","Handoyo","Gunung Harta","Sumber Alam","Pahala Kencana","Nusantara","Eka"]
+};
+
+var IMAGE_KEY="nusa_custom_images_v1";
+var DATA_KEY="nusa_catalog_data_v1";
+var FALLBACK="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80";
+
+function read(key){
+  try{
+    var raw=localStorage.getItem(key);
+    return raw?JSON.parse(raw):{};
+  }catch(e){return {};}
+}
+function write(){
+  try{
+    localStorage.setItem(IMAGE_KEY,JSON.stringify(images));
+    localStorage.setItem(DATA_KEY,JSON.stringify(data));
+  }catch(e){alert("Penyimpanan browser gagal. Coba hapus data situs atau gunakan gambar lebih kecil.");}
+}
+function esc(v){
+  return String(v==null?"":v).replace(/[&<>"']/g,function(ch){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+  });
+}
+var images=read(IMAGE_KEY);
+var data=read(DATA_KEY);
+
+function items(){
+  var out=[];
+  D.forEach(function(name){out.push({name:name,cat:"dest",group:"Destinasi"});});
+  Object.keys(H).forEach(function(group){
+    H[group].forEach(function(name){out.push({name:name,cat:"hotel",group:group});});
+  });
+  Object.keys(T).forEach(function(group){
+    T[group].forEach(function(name){out.push({name:name,cat:"transport",group:group});});
+  });
+  return out;
+}
+
+function card(it){
+  var v=data[it.name]||{};
+  var src=images[it.name]||v.image||FALLBACK;
+  return '<article class="item">'+
+    '<div class="pic">'+
+      '<img src="'+esc(src)+'" alt="'+esc(it.name)+'">'+
+      '<label class="change">📷 Ganti<input type="file" accept="image/*" data-img="'+esc(it.name)+'"></label>'+
+    '</div>'+
+    '<div class="body">'+
+      '<div class="name">'+esc(it.name)+'</div>'+
+      '<div class="meta">'+esc(it.group)+' · '+esc(it.cat)+'</div>'+
+      '<div class="fields">'+
+        '<div><label>HARGA</label><input data-field="price" data-name="'+esc(it.name)+'" value="'+esc(v.price||"")+'" placeholder="Rp ..."></div>'+
+        '<div><label>RATING</label><input data-field="rating" data-name="'+esc(it.name)+'" value="'+esc(v.rating||"")+'" placeholder="4.8"></div>'+
+        '<textarea data-field="desc" data-name="'+esc(it.name)+'" placeholder="Deskripsi singkat">'+esc(v.desc||"")+'</textarea>'+
+      '</div>'+
+      '<div class="actions"><button class="danger" type="button" data-reset="'+esc(it.name)+'">Reset</button><button class="btn" type="button" data-save="'+esc(it.name)+'">Simpan</button></div>'+
+    '</div>'+
+  '</article>';
+}
+
+function render(filter){
+  var app=document.getElementById("app");
+  if(!app)return;
+  var cats=filter==="all"?["dest","hotel","transport"]:[filter];
+  var list=items();
+  var html="";
+  cats.forEach(function(cat){
+    var title=cat==="dest"?"Destinasi":cat==="hotel"?"Penginapan":"Transportasi";
+    html+='<section class="section"><h2>'+title+'</h2><div class="grid">';
+    list.forEach(function(it){if(it.cat===cat)html+=card(it);});
+    html+='</div></section>';
+  });
+  app.innerHTML=html;
+}
+
+function getInput(field,name){
+  var nodes=document.querySelectorAll('[data-field="'+field+'"]');
+  for(var i=0;i<nodes.length;i++){
+    if(nodes[i].getAttribute("data-name")===name)return nodes[i];
+  }
+  return null;
+}
+
+function activeFilter(){
+  var active=document.querySelector(".tab.active");
+  return active?active.getAttribute("data-cat"):"all";
+}
+
+document.addEventListener("click",function(e){
+  var tab=e.target.closest(".tab");
+  if(tab){
+    document.querySelectorAll(".tab").forEach(function(b){b.classList.remove("active");});
+    tab.classList.add("active");
+    render(tab.getAttribute("data-cat"));
+    window.scrollTo({top:0,behavior:"smooth"});
+    return;
+  }
+
+  var save=e.target.closest("[data-save]");
+  if(save){
+    var name=save.getAttribute("data-save");
+    var p=getInput("price",name);
+    var r=getInput("rating",name);
+    var d=getInput("desc",name);
+    data[name]={price:p?p.value:"",rating:r?r.value:"",desc:d?d.value:""};
+    write();
+    save.textContent="✓ Tersimpan";
+    setTimeout(function(){save.textContent="Simpan";},1000);
+    return;
+  }
+
+  var reset=e.target.closest("[data-reset]");
+  if(reset){
+    var n=reset.getAttribute("data-reset");
+    delete images[n];
+    delete data[n];
+    write();
+    render(activeFilter());
+    return;
+  }
+});
+
+document.addEventListener("change",function(e){
+  var input=e.target.closest('input[type="file"][data-img]');
+  if(!input||!input.files||!input.files[0])return;
+  var file=input.files[0];
+  if(file.size>5*1024*1024){
+    alert("Maksimal 5 MB.");
+    input.value="";
+    return;
+  }
+  var reader=new FileReader();
+  reader.onload=function(){
+    images[input.getAttribute("data-img")]=reader.result;
+    write();
+    render(activeFilter());
+  };
+  reader.readAsDataURL(file);
+});
+
+render("all");
+})();
+</script></body></html>
