@@ -92,6 +92,40 @@
 </style><style id="nusaPricePickupStyle">
 .nbPriceMode{display:flex;background:#eadce1;border-radius:9px;padding:3px;gap:2px}.nbMode{border:0;background:transparent;color:#7b6c72;border-radius:7px;padding:7px 9px;font:800 10px "DM Sans",sans-serif;cursor:pointer}.nbMode.active{background:#fff;color:#8f1530;box-shadow:0 2px 7px #0001}
 #nbpickup,#nbmanual{font:600 13px "DM Sans",sans-serif}
+</style><style id="nusaPremiumTheme">
+html{background:#f5eef1}
+body{background:
+radial-gradient(circle at 8% 12%,rgba(181,31,59,.075),transparent 28%),
+radial-gradient(circle at 92% 32%,rgba(242,185,0,.055),transparent 24%),
+radial-gradient(circle at 45% 88%,rgba(143,21,48,.06),transparent 30%),
+linear-gradient(135deg,#fcfafb 0%,#f8f0f3 48%,#fffaf9 100%);
+background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.34;background-image:radial-gradient(rgba(70,20,35,.13) .55px,transparent .55px);background-size:9px 9px}
+.wrap{position:relative}
+.travelCategory,.catalog,.reviews{position:relative}
+.travelCategory:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-80px;top:10px;background:radial-gradient(circle,rgba(143,21,48,.09),transparent 68%);pointer-events:none;filter:blur(4px)}
+.nav{background:rgba(255,250,251,.78);box-shadow:0 10px 35px rgba(53,12,25,.07);overflow:hidden}
+.nav:after{content:"";position:absolute;left:-20%;bottom:-1px;width:38%;height:2px;background:linear-gradient(90deg,transparent,#f2b900,#b51f3b,transparent);animation:nusaNavSweep 5s ease-in-out infinite}
+.logo{position:relative;display:inline-flex;align-items:center;gap:7px;text-shadow:0 0 18px rgba(143,21,48,.12);transition:transform .35s ease,letter-spacing .35s ease}
+.logo:before{content:"";width:6px;height:6px;border-radius:50%;background:#f2b900;box-shadow:0 0 0 0 rgba(242,185,0,.45);animation:nusaLogoPulse 2.2s infinite}
+.logo:hover{transform:translateY(-1px);letter-spacing:.32em}
+.links a{position:relative;color:#5c4b50;text-decoration:none;transition:color .25s ease}
+.links a:after{content:"";position:absolute;left:0;right:100%;bottom:-7px;height:1px;background:linear-gradient(90deg,#8f1530,#f2b900);transition:right .3s ease}
+.links a:hover{color:#8f1530}.links a:hover:after{right:0}
+.menuBtn{position:relative;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease}
+.menuBtn:before{content:"";position:absolute;inset:-45%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.42) 48%,transparent 60%);transform:translateX(-75%) rotate(12deg);animation:nusaButtonShine 4s ease-in-out infinite}
+.menuBtn:hover{transform:translateY(-2px) rotate(2deg);box-shadow:0 12px 32px rgba(143,21,48,.3)}
+.hero{position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;width:420px;height:420px;right:-140px;top:-160px;border-radius:50%;border:1px solid rgba(255,216,224,.15);box-shadow:0 0 0 35px rgba(255,216,224,.025),0 0 0 70px rgba(255,216,224,.018);animation:nusaOrb 12s ease-in-out infinite}
+.heroIn{position:relative;z-index:2}
+.cta{position:relative;overflow:hidden;box-shadow:0 24px 70px rgba(55,10,24,.16)}
+.cta:after{content:"";position:absolute;width:260px;height:260px;right:-80px;bottom:-150px;border-radius:50%;border:1px solid rgba(255,255,255,.16);box-shadow:0 0 0 35px rgba(255,255,255,.025),0 0 0 70px rgba(255,255,255,.018);animation:nusaOrb 10s ease-in-out infinite reverse}
+@keyframes nusaNavSweep{0%,100%{left:-25%;opacity:.2}50%{left:88%;opacity:1}}
+@keyframes nusaLogoPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,185,0,.35)}50%{box-shadow:0 0 0 7px rgba(242,185,0,0)}}
+@keyframes nusaButtonShine{0%,58%{transform:translateX(-85%) rotate(12deg)}75%,100%{transform:translateX(190%) rotate(12deg)}}
+@keyframes nusaOrb{0%,100%{transform:translate(0,0) scale(1);opacity:.65}50%{transform:translate(-18px,18px) scale(1.05);opacity:1}}
+@media(max-width:560px){.nav{height:66px;padding:0 5vw}.links{display:none}.nav:after{width:55%;animation-duration:4s}.logo:hover{letter-spacing:.25em}.hero:before{width:280px;height:280px;right:-130px;top:-80px}.travelCategory:before{right:-120px}}
+@media(prefers-reduced-motion:reduce){.nav:after,.logo:before,.menuBtn:before,.hero:before,.cta:after{animation:none}}
 </style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" onclick="openMenu(true)">☰</button></div></nav><main id="homePage">
 
 <section class="searchDock"><div class="searchDockIn"><div class="searchMain"><div class="searchBox"><span class="searchIcon">⌕</span><input id="q" placeholder="Cari destinasi atau paket..." autocomplete="off"></div><button class="btn dark" onclick="renderPackages();document.getElementById('explore').scrollIntoView()">Cari</button><button class="filterBtn" id="filterBtn" onclick="toggleFilters()" aria-label="Filter">⚙</button></div><div class="filterPanel" id="filterPanel"><div class="filterPanelHead"><b>Filter perjalanan</b><button class="filterClose" onclick="toggleFilters()">×</button></div><div class="filterGrid"><div class="filterField"><label>Harga maksimum</label><input class="range" id="price" type="range" min="500000" max="10000000" step="250000" value="10000000"><span class="mini" id="pv">Rp10.000.000</span></div><div class="filterField"><label>Durasi</label><div class="filterChecks"><label class="check"><input type="checkbox" class="dur" value="2"> 1–2 hari</label><label class="check"><input type="checkbox" class="dur" value="4"> 3–4 hari</label><label class="check"><input type="checkbox" class="dur" value="7"> 5–7 hari</label></div></div><div class="filterField"><label>Style</label><div class="filterChecks"><label class="check"><input type="checkbox" class="sty" value="Adventure"> Adventure</label><label class="check"><input type="checkbox" class="sty" value="Family"> Family</label><label class="check"><input type="checkbox" class="sty" value="Luxury"> Luxury</label><label class="check"><input type="checkbox" class="sty" value="Relaxation"> Relaxation</label></div></div><div class="filterField ratingFilter"><label>Rating minimum</label><select id="minRating" class="sort"><option value="0">Semua</option><option value="4">4.0+</option><option value="4.5">4.5+</option></select></div></div></div></div></section>
