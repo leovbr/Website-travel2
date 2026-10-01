@@ -816,20 +816,11 @@ html,body{max-width:100%;overflow-x:hidden}
       drawer.onclick=function(e){
         if(e.target===drawer){openMenu(false);return;}
         var x=e.target.closest&&e.target.closest('.x');
-        if(x){e.preventDefault();openMenu(false);return;}
+        if(x){openMenu(false);return;}
         var item=e.target.closest&&e.target.closest('.menuItem');
-        if(item){
-          e.preventDefault();
-          var a=item.getAttribute('onclick')||'';
-          if(a.indexOf("page('account')")>=0) page('account');
-          else if(a.indexOf("page('wishlist')")>=0) page('wishlist');
-          else if(a.indexOf("page('orders')")>=0) page('orders');
-          else if(a.indexOf("page('journal')")>=0) page('journal');
-          else if(a.indexOf("page('notifications')")>=0) page('notifications');
-          else if(a.indexOf("toggleLang()")>=0) toggleLang();
-          else if(a.indexOf("page('settings')")>=0) page('settings');
-          else if(a.indexOf("page('help')")>=0) page('help');
-          else if(item.id==='authMenuBtn' && window.NUSA_OWNER_V3) window.NUSA_OWNER_V3.open();
+        if(item && item.id==='authMenuBtn'){
+          if(typeof window.openAuth==='function') window.openAuth();
+          else if(window.NUSA_OWNER_V3) window.NUSA_OWNER_V3.open();
         }
       };
     }
