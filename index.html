@@ -728,14 +728,15 @@ window.NUSA_OPEN_PACKAGE=open;
         document.querySelectorAll('.nbMode').forEach(function(x){x.classList.remove('active')});
         btn.classList.add('active');
         var manual=btn.getAttribute('data-mode')==='manual';
-        $('nbManualBox').style.display=manual?'block':'none';
+        if($('nbManualBox')) $('nbManualBox').style.display='block';
+        if($('nbmanual')) $('nbmanual').parentElement.style.display=manual?'block':'none';
         $('nbPriceHint').textContent=manual?'Harga ditentukan manual oleh admin/owner.':'Dihitung otomatis dari pilihanmu.';
         total();
         if(manual)$('nbmanual').focus();
       };
     });
-    $('nbmanual').addEventListener('input',total);
-    ['nbguest','nbduration','nbtype'].forEach(function(id){$(id).addEventListener('change',total)});
+    if($('nbmanual')) $('nbmanual').addEventListener('input',total);
+    ['nbguest','nbduration','nbtype'].forEach(function(id){if($(id))$(id).addEventListener('change',total)});
     $('nbx').onclick=function(){o.remove()};
     o.addEventListener('click',function(e){if(e.target===o)o.remove()});
     $('nbbook').onclick=function(){
@@ -755,5 +756,68 @@ window.NUSA_OPEN_PACKAGE=open;
     e.preventDefault();e.stopImmediatePropagation();
     open(el);
   },true);
+})();
+</script><style id="nusaInteractionRepair">
+/* NUSA INTERACTION REPAIR */
+.nav,.searchDock{isolation:isolate}
+.nav > *, .searchDock *{pointer-events:auto!important}
+.menuBtn,.filterBtn,.filterClose{position:relative!important;z-index:9999!important;pointer-events:auto!important}
+.nav:before,.nav:after,.searchDock:before,.searchDock:after,
+.hero:before,.hero:after,.travelCategory:before,.cta:after{pointer-events:none!important}
+.drawer{z-index:999990!important}
+</style>
+<script id="nusaInteractionRepairJS">
+(function(){
+  function ready(){
+    /* Remove stale transparent package overlays left by older versions. */
+    ['nusaPackageModal','nusaBookingModal'].forEach(function(id){
+      var x=document.getElementById(id);
+      if(x && !x.querySelector('#nbbook')) x.remove();
+    });
+    var fb=document.getElementById('filterBtn');
+    var fp=document.getElementById('filterPanel');
+    var mb=document.querySelector('.menuBtn');
+    var dr=document.getElementById('drawer');
+
+    /* Direct capture handlers make the two top controls independent of older scripts. */
+    if(fb && !fb.dataset.nusaRepair){
+      fb.dataset.nusaRepair='1';
+      fb.addEventListener('click',function(e){
+        e.preventDefault();e.stopImmediatePropagation();
+        if(typeof window.toggleFilters==='function') window.toggleFilters();
+        else if(fp){
+          fp.classList.toggle('open');
+          fb.classList.toggle('active');
+        }
+      },true);
+    }
+    if(mb && !mb.dataset.nusaRepair){
+      mb.dataset.nusaRepair='1';
+      mb.addEventListener('click',function(e){
+        e.preventDefault();e.stopImmediatePropagation();
+        if(typeof window.openMenu==='function') window.openMenu(true);
+        else if(dr) dr.classList.add('open');
+      },true);
+    }
+    document.querySelectorAll('.filterClose').forEach(function(x){
+      if(x.dataset.nusaRepair)return;
+      x.dataset.nusaRepair='1';
+      x.addEventListener('click',function(e){
+        e.preventDefault();e.stopImmediatePropagation();
+        if(typeof window.toggleFilters==='function') window.toggleFilters();
+        else if(fp){fp.classList.remove('open');fb&&fb.classList.remove('active')}
+      },true);
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){
+        if(fp){fp.classList.remove('open');fb&&fb.classList.remove('active')}
+        if(dr)dr.classList.remove('open');
+        var bm=document.getElementById('nusaBookingModal');if(bm)bm.remove();
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});
+  else ready();
+  window.addEventListener('load',ready,{once:true});
 })();
 </script></body></html>
