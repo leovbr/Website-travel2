@@ -281,7 +281,45 @@ T={
     }
     groups(H,h);groups(T,t);
   }
+  function imageHint(title){
+    var s=String(title).toLowerCase();
+    if(/garuda|citilink|lion air|airasia|batik air|super air jet|pelita air|wings air|transnusa|pesawat/.test(s))return 'aircraft airplane';
+    if(/pelni|asdp|ferry|fast ferry|fast boat|gili getaway|bluewater|marlin|sindo|dolphin|semaya|ostina|kapal/.test(s))return 'ship ferry boat';
+    if(/argo|parahyangan|taksaka|lodaya|jayabaya|bima|pangrango|serayu|kahuripan|malabar|gajayana|kereta/.test(s))return 'train railway';
+    if(/damri|rosalia|sinar jaya|haryanto|harapan jaya|sugeng|handoyo|gunung harta|sumber alam|pahala|nusantara|eka|bus/.test(s))return 'bus coach';
+    if(/hotel|villa|resort|motel|ayana|alila|st\. regis|kempinski|mandapa|raffles|four seasons|capella|legian|mulia|tentrem|bisma|kayon|ungasan|hoshinoya|anantara|sira|taaktana|plataran|sudamala|amnaya/.test(s))return 'hotel resort building';
+    return 'landscape travel';
+  }
+  function badImageName(s){
+    return /logo|icon|symbol|flag|map|diagram|chart|coat.of.arms|seal|emblem|wordmark|favicon|screenshot|poster|banner|signage|route map|location map/i.test(String(s));
+  }
+  async function commonsImage(title){
+    var q='"'+String(title).replace(/,?\\s*a\\s+Ritz-Carlton Reserve/i,'').trim()+'" '+imageHint(title);
+    var api='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(q)+'&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=1000&format=json&origin=*';
+    try{
+      var res=await fetch(api,{cache:'no-store'});
+      if(!res.ok)return '';
+      var j=await res.json();
+      var pages=j.query&&j.query.pages?Object.values(j.query.pages):[];
+      var scored=pages.map(function(p){
+        var n=String(p.title||'');
+        var ii=p.imageinfo&&p.imageinfo[0];
+        if(!ii||!ii.thumburl||badImageName(n))return null;
+        var low=n.toLowerCase(),score=0;
+        if(low.indexOf(String(title).toLowerCase())>=0)score+=8;
+        var h=imageHint(title).split(' ');
+        h.forEach(function(x){if(low.indexOf(x)>=0)score+=2;});
+        if(ii.width>=900)score+=2;
+        if(ii.height>=500)score+=2;
+        if(ii.width<500||ii.height<300)score-=5;
+        return {u:ii.thumburl,score:score};
+      }).filter(Boolean).sort(function(a,b){return b.score-a.score;});
+      return scored.length?scored[0].u:'';
+    }catch(e){return '';}
+  }
   async function wikiImage(title){
+    var u=await commonsImage(title);
+    if(u)return u;
     var clean=String(title).replace(/,?\\s*a\\s+Ritz-Carlton Reserve/i,'').trim();
     var urls=[
       'https://id.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(clean),
@@ -289,10 +327,11 @@ T={
     ];
     for(var i=0;i<urls.length;i++){
       try{
-        var res=await fetch(urls[i],{cache:'force-cache'});
+        var res=await fetch(urls[i],{cache:'no-store'});
         if(!res.ok)continue;
         var j=await res.json();
-        if(j.thumbnail&&j.thumbnail.source)return j.thumbnail.source;
+        var src=j.originalimage&&j.originalimage.source||j.thumbnail&&j.thumbnail.source||'';
+        if(src&&!badImageName(src))return src;
       }catch(e){}
     }
     return '';
@@ -303,11 +342,12 @@ T={
     for(var i=0;i<cards.length;i++){
       (async function(card,img){
         var title=card.querySelector('strong');
+        var label=card.querySelector('small');
         if(!title)return;
         var u=await wikiImage(title.textContent);
-        if(u)img.src=u;
+        if(u){img.src=u;img.dataset.nusaReal='1';}
       })(cards[i],imgs[i]);
-      if(i%12===11)await new Promise(function(r){setTimeout(r,150);});
+      if(i%8===7)await new Promise(function(r){setTimeout(r,180);});
     }
   }
   window.addEventListener('DOMContentLoaded',function(){renderFallback();setTimeout(hydrateWikiImages,80);});
