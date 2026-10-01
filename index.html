@@ -263,10 +263,20 @@ T={
   };
   function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
   function card(x,label){
+    var meta={};
+    try{meta=JSON.parse(localStorage.getItem('nusa_catalog_data_v1')||'{}')[x[0]]||{};}catch(e){}
+    var src=x[1];
+    try{var imgs=JSON.parse(localStorage.getItem('nusa_custom_images_v1')||'{}');if(imgs[x[0]])src=imgs[x[0]];}catch(e){}
+    var rating=meta.rating||'';
+    if(!rating&&typeof P!=='undefined'&&Array.isArray(P)){
+      var matches=P.filter(function(p){return p.dest&&String(p.dest).toLowerCase()===String(x[0]).toLowerCase();});
+      if(matches.length)rating=matches[0].rating||'';
+    }
+    var ratingHtml=rating?'<em style="display:block!important;font:600 11px/1.2 sans-serif!important;margin-top:6px!important;color:#fff!important;font-style:normal!important;">★ '+esc(rating)+'</em>':'';
     return '<a href="#" data-nusa-name="'+esc(x[0])+'" class="dest nusaFallbackCard" style="display:flex!important;flex:0 0 180px!important;width:180px!important;min-width:180px!important;height:235px!important;position:relative!important;overflow:hidden!important;visibility:visible!important;opacity:1!important;border-radius:12px!important;background:#222!important;color:#fff!important;text-decoration:none!important;">'+
-      '<img loading="lazy" src="'+x[1]+'" style="display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;position:absolute!important;inset:0!important;">'+
+      '<img loading="lazy" src="'+esc(src)+'" data-nusa-custom="'+(src!==x[1]?'1':'0')+'" style="display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;position:absolute!important;inset:0!important;">'+
       '<span style="position:absolute!important;inset:0!important;padding:15px!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;background:linear-gradient(transparent 35%,rgba(0,0,0,.82))!important;color:#fff!important;z-index:2!important;">'+
-      '<small style="font:600 10px/1.2 sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;">'+esc(label)+'</small><strong style="font:500 20px/1.08 Georgia,serif!important;margin-top:5px!important;">'+esc(x[0])+'</strong></span></a>';
+      '<small style="font:600 10px/1.2 sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;">'+esc(label)+'</small><strong style="font:500 20px/1.08 Georgia,serif!important;margin-top:5px!important;">'+esc(x[0])+'</strong>'+ratingHtml+'</span></a>';
   }
   function row(arr,label){return '<div class="nusaFallbackRow" style="display:flex!important;flex-flow:row nowrap!important;gap:14px!important;width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;padding:2px 2px 12px!important;box-sizing:border-box!important;scrollbar-width:none!important;">'+arr.map(function(x){return card(x,label)}).join('')+'</div>'}
   window.NUSA_CATALOG={};
@@ -357,6 +367,15 @@ T={
       if(i%8===7)await new Promise(function(r){setTimeout(r,180);});
     }
   }
+  document.addEventListener('click',function(e){
+    var link=e.target.closest&&e.target.closest('.nusaFallbackCard');
+    if(!link)return;
+    e.preventDefault();
+    e.stopPropagation();
+    var name=link.getAttribute('data-nusa-name')||'';
+    if(typeof page==='function')page('packages');
+    if(typeof filterDest==='function'){filterDest(name);if(typeof renderPackages==='function')renderPackages();}
+  },true);
   window.addEventListener('DOMContentLoaded',function(){renderFallback();setTimeout(hydrateWikiImages,80);});
   window.addEventListener('load',function(){setTimeout(hydrateWikiImages,250);});
 
