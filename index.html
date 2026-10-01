@@ -230,7 +230,7 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opac
 #nbbook{background:#17463d!important}.nbPriceMode{background:#e4e8e2!important}.nbMode.active{color:#17463d!important}
 .nbOwnerModeRow{display:flex;background:#e4e8e2;border-radius:9px;padding:3px;gap:2px;margin-bottom:8px}.nbOwnerModeRow .nbMode{border:0;background:transparent;color:#65716d;border-radius:7px;padding:7px 9px;font:800 10px "DM Sans",sans-serif;cursor:pointer}.nbOwnerModeRow .nbMode.active{background:#fff;color:#17463d;box-shadow:0 2px 7px #0001}
 @media(max-width:560px){body{background-attachment:scroll!important}.travelCategory{padding:25px 15px!important;border-radius:22px!important}}
-</style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" type="button" id="nusaMenuBtn" aria-label="Menu">☰</button></div></nav><main id="homePage">
+</style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" type="button" onclick="openMenu(true)" aria-label="Menu">☰</button></div></nav><main id="homePage">
 
 <section class="searchDock"><div class="searchDockIn"><div class="searchMain"><div class="searchBox"><span class="searchIcon">⌕</span><input id="q" placeholder="Cari destinasi atau paket..." autocomplete="off"></div><button class="btn dark" onclick="renderPackages();document.getElementById('explore').scrollIntoView()">Cari</button><button class="filterBtn" id="filterBtn" aria-label="Filter">⚙</button></div><div class="filterPanel" id="filterPanel"><div class="filterPanelHead"><b>Filter perjalanan</b><button class="filterClose" onclick="toggleFilters()">×</button></div><div class="filterGrid"><div class="filterField"><label>Harga maksimum</label><input class="range" id="price" type="range" min="500000" max="10000000" step="250000" value="10000000"><span class="mini" id="pv">Rp10.000.000</span></div><div class="filterField"><label>Durasi</label><div class="filterChecks"><label class="check"><input type="checkbox" class="dur" value="2"> 1–2 hari</label><label class="check"><input type="checkbox" class="dur" value="4"> 3–4 hari</label><label class="check"><input type="checkbox" class="dur" value="7"> 5–7 hari</label></div></div><div class="filterField"><label>Style</label><div class="filterChecks"><label class="check"><input type="checkbox" class="sty" value="Adventure"> Adventure</label><label class="check"><input type="checkbox" class="sty" value="Family"> Family</label><label class="check"><input type="checkbox" class="sty" value="Luxury"> Luxury</label><label class="check"><input type="checkbox" class="sty" value="Relaxation"> Relaxation</label></div></div><div class="filterField ratingFilter"><label>Rating minimum</label><select id="minRating" class="sort"><option value="0">Semua</option><option value="4">4.0+</option><option value="4.5">4.5+</option></select></div></div></div></div></section>
 
@@ -763,69 +763,5 @@ window.NUSA_OPEN_PACKAGE=open;
     open(el);
   },true);
 })();
-</script><script id="nusaStableInteraction">
-(function(){
-  function init(){
-    var menu=document.querySelector('.menuBtn');
-    var filter=document.getElementById('filterBtn');
-    var drawer=document.getElementById('drawer');
-    if(menu) menu.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();openMenu(true);},false);
-    if(filter) filter.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();toggleFilters();},false);
-    if(drawer){
-      drawer.addEventListener('click',function(e){
-        var item=e.target.closest('.menuItem');
-        if(item){
-          e.preventDefault();e.stopPropagation();
-          var a=item.getAttribute('onclick')||'';
-          if(a.indexOf("page('account')")>=0) return page('account');
-          if(a.indexOf("page('wishlist')")>=0) return page('wishlist');
-          if(a.indexOf("page('orders')")>=0) return page('orders');
-          if(a.indexOf("page('journal')")>=0) return page('journal');
-          if(a.indexOf("page('notifications')")>=0) return page('notifications');
-          if(a.indexOf("toggleLang()")>=0) return toggleLang();
-          if(a.indexOf("page('settings')")>=0) return page('settings');
-          if(a.indexOf("page('help')")>=0) return page('help');
-        }
-      },false);
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script><style id="nusaMenuFinal">
-html,body{max-width:100%;overflow-x:hidden}
-.nav{z-index:50}
-.searchDock{z-index:40}
-.menuBtn,#filterBtn{position:relative;z-index:60;pointer-events:auto;touch-action:manipulation}
-.drawer#drawer{position:fixed;inset:0;z-index:99999;display:none;pointer-events:auto}
-.drawer#drawer.open{display:flex}
-.drawer#drawer .panel{pointer-events:auto}
-</style>
-<script id="nusaMenuFinalJS">
-(function(){
-  function bind(){
-    var menu=document.getElementById('nusaMenuBtn');
-    var filter=document.getElementById('filterBtn');
-    var drawer=document.getElementById('drawer');
-    if(menu){
-      menu.onclick=function(e){e.preventDefault();e.stopPropagation();openMenu(true);};
-    }
-    if(filter){
-      filter.onclick=function(e){e.preventDefault();e.stopPropagation();toggleFilters();};
-    }
-    if(drawer){
-      drawer.onclick=function(e){
-        if(e.target===drawer){openMenu(false);return;}
-        var x=e.target.closest&&e.target.closest('.x');
-        if(x){openMenu(false);return;}
-        var item=e.target.closest&&e.target.closest('.menuItem');
-        if(item && item.id==='authMenuBtn'){
-          if(typeof window.openAuth==='function') window.openAuth();
-          else if(window.NUSA_OWNER_V3) window.NUSA_OWNER_V3.open();
-        }
-      };
-    }
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-})();
-</script></body></html>
+</script>
+</body></html>
