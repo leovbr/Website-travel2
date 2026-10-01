@@ -126,6 +126,73 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opa
 @keyframes nusaOrb{0%,100%{transform:translate(0,0) scale(1);opacity:.65}50%{transform:translate(-18px,18px) scale(1.05);opacity:1}}
 @media(max-width:560px){.nav{height:66px;padding:0 5vw}.links{display:none}.nav:after{width:55%;animation-duration:4s}.logo:hover{letter-spacing:.25em}.hero:before{width:280px;height:280px;right:-130px;top:-80px}.travelCategory:before{right:-120px}}
 @media(prefers-reduced-motion:reduce){.nav:after,.logo:before,.menuBtn:before,.hero:before,.cta:after{animation:none}}
+</style><style id="nusaPremiumForce">
+/* NUSA PREMIUM FORCE — intentionally strong so the effect is visible on mobile */
+html,body{background:#f4ecef!important}
+body{
+  background:
+    radial-gradient(900px 500px at -10% 8%,rgba(143,21,48,.13),transparent 60%),
+    radial-gradient(700px 500px at 110% 30%,rgba(242,185,0,.09),transparent 58%),
+    radial-gradient(800px 500px at 50% 100%,rgba(92,22,43,.10),transparent 62%),
+    linear-gradient(135deg,#fffdfd 0%,#f8eff2 45%,#fdf7f5 100%)!important;
+  background-attachment:fixed!important;
+}
+body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.18;background-image:linear-gradient(115deg,transparent 0 45%,rgba(143,21,48,.08) 50%,transparent 55%);background-size:420px 420px;animation:nusaLuxuryBg 18s linear infinite}
+.wrap{background:transparent!important}
+.travelCategory{background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,249,250,.42))!important;border:1px solid rgba(143,21,48,.07)!important;border-radius:28px!important;padding:34px 28px!important;box-shadow:0 22px 70px rgba(62,14,30,.06)!important;backdrop-filter:blur(7px)!important}
+.nav{
+  position:sticky!important;
+  isolation:isolate!important;
+  background:rgba(255,250,252,.88)!important;
+  box-shadow:0 12px 40px rgba(54,12,27,.12)!important;
+  border-bottom:1px solid rgba(143,21,48,.12)!important;
+}
+.nav:before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(143,21,48,.06),rgba(242,185,0,.08),transparent);
+  background-size:220% 100%;animation:nusaNavGlow 5s ease-in-out infinite;
+}
+.nav:after{
+  content:""!important;position:absolute!important;z-index:3!important;left:-35%!important;right:auto!important;bottom:0!important;width:35%!important;height:3px!important;
+  background:linear-gradient(90deg,transparent,#f2b900 35%,#b51f3b 65%,transparent)!important;
+  box-shadow:0 0 14px rgba(181,31,59,.45)!important;
+  animation:nusaNavLine 3.2s ease-in-out infinite!important;
+}
+.logo{
+  position:relative!important;
+  z-index:4!important;
+  color:#8f1530!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  letter-spacing:.28em!important;
+  text-shadow:0 2px 18px rgba(143,21,48,.15)!important;
+}
+.logo:before{
+  content:""!important;width:7px!important;height:7px!important;flex:0 0 7px!important;border-radius:50%!important;
+  background:#f2b900!important;box-shadow:0 0 0 0 rgba(242,185,0,.55),0 0 14px rgba(242,185,0,.5)!important;
+  animation:nusaGoldPulse 1.8s ease-in-out infinite!important;
+}
+.logo:after{
+  content:"";position:absolute;left:-14px;right:-8px;top:50%;height:1px;z-index:-1;
+  background:linear-gradient(90deg,transparent,rgba(242,185,0,.4),transparent);
+  transform:scaleX(.2);transform-origin:center;animation:nusaLogoAura 2.8s ease-in-out infinite;
+}
+.links a:after{height:2px!important;bottom:-9px!important;background:linear-gradient(90deg,#8f1530,#f2b900,#8f1530)!important}
+.menuBtn{overflow:hidden!important;position:relative!important}
+.menuBtn:before{z-index:0!important}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 78% 35%,rgba(242,185,0,.12),transparent 22%),linear-gradient(120deg,transparent 30%,rgba(255,255,255,.06),transparent 70%);background-size:auto,220% 100%;animation:nusaHeroSheen 9s ease-in-out infinite}
+@keyframes nusaLuxuryBg{0%{transform:translate3d(-2%,0,0)}50%{transform:translate3d(2%,1%,0)}100%{transform:translate3d(-2%,0,0)}}
+@keyframes nusaNavGlow{0%,100%{background-position:0% 50%;opacity:.65}50%{background-position:100% 50%;opacity:1}}
+@keyframes nusaNavLine{0%{left:-35%;opacity:0}15%{opacity:1}55%{left:100%;opacity:1}70%,100%{left:100%;opacity:0}}
+@keyframes nusaGoldPulse{0%,100%{transform:scale(.75);box-shadow:0 0 0 0 rgba(242,185,0,.5),0 0 10px rgba(242,185,0,.35)}50%{transform:scale(1.25);box-shadow:0 0 0 7px rgba(242,185,0,0),0 0 20px rgba(242,185,0,.65)}}
+@keyframes nusaLogoAura{0%,100%{transform:scaleX(.15);opacity:0}50%{transform:scaleX(1);opacity:1}}
+@keyframes nusaHeroSheen{0%,100%{background-position:center,0% 50%}50%{background-position:center,100% 50%}}
+@media(max-width:560px){
+  .travelCategory{padding:25px 15px!important;border-radius:22px!important}
+  .nav{height:66px!important}
+  .logo{letter-spacing:.24em!important}
+}
 </style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" onclick="openMenu(true)">☰</button></div></nav><main id="homePage">
 
 <section class="searchDock"><div class="searchDockIn"><div class="searchMain"><div class="searchBox"><span class="searchIcon">⌕</span><input id="q" placeholder="Cari destinasi atau paket..." autocomplete="off"></div><button class="btn dark" onclick="renderPackages();document.getElementById('explore').scrollIntoView()">Cari</button><button class="filterBtn" id="filterBtn" onclick="toggleFilters()" aria-label="Filter">⚙</button></div><div class="filterPanel" id="filterPanel"><div class="filterPanelHead"><b>Filter perjalanan</b><button class="filterClose" onclick="toggleFilters()">×</button></div><div class="filterGrid"><div class="filterField"><label>Harga maksimum</label><input class="range" id="price" type="range" min="500000" max="10000000" step="250000" value="10000000"><span class="mini" id="pv">Rp10.000.000</span></div><div class="filterField"><label>Durasi</label><div class="filterChecks"><label class="check"><input type="checkbox" class="dur" value="2"> 1–2 hari</label><label class="check"><input type="checkbox" class="dur" value="4"> 3–4 hari</label><label class="check"><input type="checkbox" class="dur" value="7"> 5–7 hari</label></div></div><div class="filterField"><label>Style</label><div class="filterChecks"><label class="check"><input type="checkbox" class="sty" value="Adventure"> Adventure</label><label class="check"><input type="checkbox" class="sty" value="Family"> Family</label><label class="check"><input type="checkbox" class="sty" value="Luxury"> Luxury</label><label class="check"><input type="checkbox" class="sty" value="Relaxation"> Relaxation</label></div></div><div class="filterField ratingFilter"><label>Rating minimum</label><select id="minRating" class="sort"><option value="0">Semua</option><option value="4">4.0+</option><option value="4.5">4.5+</option></select></div></div></div></div></section>
