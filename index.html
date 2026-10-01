@@ -762,105 +762,189 @@ window.NUSA_OPEN_PACKAGE=open;
 
 
 <style id="nusaCleanInteraction">
-/* NUSA drawer: simple absolute overlay, intentionally no sticky/fixed stacking fight. */
+/* NUSA CLEAN INTERACTION v2 — portal menu + full-width mobile */
 html,body{
-  width:100%!important;
-  min-width:0!important;
-  max-width:none!important;
+  width:100vw!important;
+  min-width:100vw!important;
+  max-width:100vw!important;
   margin:0!important;
   padding:0!important;
   overflow-x:hidden!important;
 }
-.top,.nav,.searchDock,#homePage,#pages,.footer{
+body{position:relative!important}
+.top,.nav,.searchDock,#homePage,#pages,.footer,.hero{
   width:100%!important;
   max-width:none!important;
   min-width:0!important;
+  box-sizing:border-box!important;
 }
-.nav{
-  position:sticky!important;
-  top:0!important;
-  z-index:20!important;
-}
-.searchDock{
-  position:sticky!important;
-  z-index:19!important;
-}
+.nav{position:sticky!important;top:0!important;z-index:100!important}
+.searchDock{position:sticky!important;top:72px!important;z-index:90!important}
 .menuBtn{
   position:relative!important;
-  z-index:21!important;
+  z-index:101!important;
   pointer-events:auto!important;
   touch-action:manipulation!important;
 }
 .menuBtn:before,.menuBtn:after{pointer-events:none!important}
 
-.drawer{
-  position:absolute!important;
-  left:0!important;
-  top:0!important;
-  width:100%!important;
-  min-width:100%!important;
-  height:100%!important;
-  min-height:100vh!important;
-  z-index:999999!important;
+/* Old drawer is only a source for its menu content. */
+#drawer{display:none!important}
+
+/* New menu portal lives directly under body, outside every stacking context. */
+#nusaMenuPortal{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  z-index:2147483000!important;
   display:none!important;
   justify-content:flex-end!important;
-  background:rgba(24,7,12,.68)!important;
+  background:rgba(18,7,11,.62)!important;
   backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
   pointer-events:none!important;
 }
-.drawer.open{
+#nusaMenuPortal.open{
   display:flex!important;
   pointer-events:auto!important;
 }
-.drawer .panel{
-  width:390px!important;
-  max-width:88vw!important;
+#nusaMenuPortal .nusaMenuPanel{
+  width:min(390px,88vw)!important;
+  max-width:390px!important;
   min-width:0!important;
   height:100vh!important;
+  max-height:100vh!important;
   box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
   background:#f8f5ee!important;
-  overflow:auto!important;
+  box-shadow:-20px 0 70px rgba(0,0,0,.28)!important;
+  padding:22px!important;
   pointer-events:auto!important;
-  box-shadow:-20px 0 70px rgba(0,0,0,.25)!important;
 }
-.drawer .panel *{pointer-events:auto!important}
+#nusaMenuPortal .nusaMenuPanel *{pointer-events:auto!important}
+body.nusaMenuOpen{overflow:hidden!important}
+@media(max-width:560px){
+  .nav{height:66px!important;padding:0 5vw!important}
+  .searchDock{top:66px!important;padding-left:5vw!important;padding-right:5vw!important}
+  .searchMain{width:100%!important;min-width:0!important}
+  .searchBox{min-width:0!important}
+  #nusaMenuPortal .nusaMenuPanel{
+    width:min(360px,88vw)!important;
+    max-width:88vw!important;
+  }
+}
 </style>
 <script id="nusaCleanInteractionJS">
 (function(){
-  var btn,drawer;
-  function bind(){
-    btn=document.querySelector('.menuBtn');
-    drawer=document.getElementById('drawer');
-    if(!btn||!drawer)return;
+  'use strict';
 
-    function setOpen(v){
-      drawer.classList.toggle('open',v);
-      document.body.style.overflow=v?'hidden':'';
+  function makeMenuPortal(){
+    var old=document.getElementById('drawer');
+    if(!old)return null;
+
+    var existing=document.getElementById('nusaMenuPortal');
+    if(existing)return existing;
+
+    var panel=old.querySelector('.panel');
+    if(!panel)return null;
+
+    var portal=document.createElement('div');
+    portal.id='nusaMenuPortal';
+    portal.setAttribute('aria-hidden','true');
+
+    var newPanel=document.createElement('aside');
+    newPanel.className='nusaMenuPanel';
+    newPanel.innerHTML=panel.innerHTML;
+    portal.appendChild(newPanel);
+    document.body.appendChild(portal);
+
+    /* Re-wire the close button because the original onclick targets openMenu. */
+    var close=newPanel.querySelector('.x');
+    if(close){
+      close.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        closeMenu();
+      };
     }
+
+    portal.addEventListener('click',function(e){
+      if(e.target===portal)closeMenu();
+    });
+
+    /* Preserve every existing menu item's onclick, including page(), auth, language, etc. */
+    newPanel.querySelectorAll('[onclick]').forEach(function(el){
+      var code=el.getAttribute('onclick');
+      if(code)el.onclick=function(e){
+        try{Function('event',code).call(el,e)}catch(err){console.error(err)}
+      };
+    });
+
+    return portal;
+  }
+
+  function openMenu(){
+    var portal=makeMenuPortal();
+    if(!portal)return;
+    portal.classList.add('open');
+    portal.setAttribute('aria-hidden','false');
+    document.body.classList.add('nusaMenuOpen');
+  }
+
+  function closeMenu(){
+    var portal=document.getElementById('nusaMenuPortal');
+    if(portal){
+      portal.classList.remove('open');
+      portal.setAttribute('aria-hidden','true');
+    }
+    document.body.classList.remove('nusaMenuOpen');
+  }
+
+  function bind(){
+    var btn=document.querySelector('.menuBtn');
+    if(!btn)return;
 
     btn.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
-      setOpen(!drawer.classList.contains('open'));
+      var portal=document.getElementById('nusaMenuPortal');
+      if(portal && portal.classList.contains('open')) closeMenu();
+      else openMenu();
     };
 
-    var close=drawer.querySelector('.x');
-    if(close)close.onclick=function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      setOpen(false);
-    };
-
-    drawer.onclick=function(e){
-      if(e.target===drawer)setOpen(false);
-    };
-
+    /* Expose the same API used elsewhere in the site. */
     window.openMenu=function(v){
-      setOpen(v===undefined?!drawer.classList.contains('open'):!!v);
+      if(v===false)closeMenu();
+      else if(v===true)openMenu();
+      else{
+        var p=document.getElementById('nusaMenuPortal');
+        p&&p.classList.contains('open')?closeMenu():openMenu();
+      }
     };
+
+    /* Filter gets its own direct handler, independent of inline stacking. */
+    var fb=document.getElementById('filterBtn');
+    var fp=document.getElementById('filterPanel');
+    if(fb&&fp){
+      fb.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        fp.classList.toggle('open');
+        fb.classList.toggle('active');
+      };
+    }
+
+    /* Close menu when a menu action navigates to another page section. */
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape')closeMenu();
+    },{passive:true});
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',bind,{once:true});
+  }else bind();
   window.addEventListener('load',bind,{once:true});
 })();
 </script></script></body></html>
