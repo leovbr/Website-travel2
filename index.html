@@ -296,24 +296,34 @@ body.nusaMenuLocked .footer{
 }
 </style><style id="nusaDrawerHardInteraction">
 /* Hard isolate the open drawer from every other hit layer */
-body.nusaMenuLocked *{pointer-events:none!important}
-body.nusaMenuLocked .drawer#drawer,
-body.nusaMenuLocked .drawer#drawer *,
-body.nusaMenuLocked .drawer#drawer .panel,
-body.nusaMenuLocked .drawer#drawer .panel *{
-  pointer-events:auto!important;
+/* NUSA mobile interaction: jangan kunci gesture native browser */
+body.nusaMenuLocked{
+  overflow:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior-y:auto!important;
+}
+body.nusaMenuLocked .nav,
+body.nusaMenuLocked .searchDock,
+body.nusaMenuLocked .hero,
+body.nusaMenuLocked main,
+body.nusaMenuLocked .footer{
+  pointer-events:none!important;
 }
 body.nusaMenuLocked .drawer#drawer{
   position:fixed!important;
   inset:0!important;
   display:flex!important;
   z-index:2147483647!important;
-  touch-action:auto!important;
+  pointer-events:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior-y:auto!important;
 }
 body.nusaMenuLocked .drawer#drawer .panel{
   position:relative!important;
   z-index:2147483647!important;
-  touch-action:auto!important;
+  pointer-events:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior-y:auto!important;
 }
 body.nusaMenuLocked .drawer#drawer button,
 body.nusaMenuLocked .drawer#drawer a{
@@ -872,7 +882,7 @@ window.NUSA_OPEN_PACKAGE=open;
       return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
     }
     if(inside(menu)){
-      e.preventDefault();e.stopImmediatePropagation();
+      e.stopImmediatePropagation();
       var d=document.getElementById('drawer');
       if(d){
         d.classList.add('open');
@@ -882,7 +892,7 @@ window.NUSA_OPEN_PACKAGE=open;
       return;
     }
     if(inside(filter)){
-      e.preventDefault();e.stopImmediatePropagation();
+      e.stopImmediatePropagation();
       var p=document.getElementById('filterPanel');
       if(p){
         var isOpen=p.classList.toggle('open');
