@@ -230,92 +230,551 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opac
 #nbbook{background:#17463d!important}.nbPriceMode{background:#e4e8e2!important}.nbMode.active{color:#17463d!important}
 .nbOwnerModeRow{display:flex;background:#e4e8e2;border-radius:9px;padding:3px;gap:2px;margin-bottom:8px}.nbOwnerModeRow .nbMode{border:0;background:transparent;color:#65716d;border-radius:7px;padding:7px 9px;font:800 10px "DM Sans",sans-serif;cursor:pointer}.nbOwnerModeRow .nbMode.active{background:#fff;color:#17463d;box-shadow:0 2px 7px #0001}
 @media(max-width:560px){body{background-attachment:scroll!important}.travelCategory{padding:25px 15px!important;border-radius:22px!important}}
-</style><style id="nusaMenuCoreCSS">
-/* NUSA MENU — single source of truth */
+</style><style id="nusaMenuFinalCSS">
 html,body{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
-.drawer#drawer{
-  position:fixed!important;
-  inset:0!important;
-  width:100vw!important;
-  height:100dvh!important;
-  min-height:100vh!important;
-  z-index:99999!important;
-  display:none!important;
-  align-items:stretch!important;
-  justify-content:flex-end!important;
-  background:rgba(18,7,11,.62)!important;
-  backdrop-filter:blur(8px)!important;
-  -webkit-backdrop-filter:blur(8px)!important;
-  overflow:hidden!important;
-}
+.drawer#drawer{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;min-height:100vh!important;z-index:99999!important;display:none!important;align-items:stretch!important;justify-content:flex-end!important;overflow:hidden!important;background:rgba(18,7,11,.62)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
 .drawer#drawer.open{display:flex!important}
-.drawer#drawer .panel{
-  position:relative!important;
-  width:min(390px,88vw)!important;
-  max-width:390px!important;
-  min-width:0!important;
-  height:100dvh!important;
-  max-height:none!important;
-  box-sizing:border-box!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  overscroll-behavior:contain!important;
-  -webkit-overflow-scrolling:touch!important;
-  padding:22px 22px calc(28px + env(safe-area-inset-bottom))!important;
-  background:#f8f5ee!important;
-  pointer-events:auto!important;
-}
+.drawer#drawer .panel{width:min(390px,88vw)!important;max-width:390px!important;min-width:0!important;height:100dvh!important;max-height:none!important;box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;padding:22px 22px calc(28px + env(safe-area-inset-bottom))!important;pointer-events:auto!important}
 .drawer#drawer .panel *{pointer-events:auto!important}
-.drawer#drawer .menuList{display:block!important;width:100%!important}
-.drawer#drawer .menuItem{
-  display:flex!important;
-  align-items:center!important;
-  width:100%!important;
-  min-height:48px!important;
-  box-sizing:border-box!important;
-  position:relative!important;
-  z-index:2!important;
-  cursor:pointer!important;
-  touch-action:manipulation!important;
-}
-.drawer#drawer .x{
-  position:relative!important;
-  z-index:3!important;
-  cursor:pointer!important;
-  touch-action:manipulation!important;
-}
-.menuBtn{
-  position:relative!important;
-  z-index:100000!important;
-  cursor:pointer!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
+.menuBtn{position:relative!important;z-index:100000!important;pointer-events:auto!important;touch-action:manipulation!important}
 body.nusaMenuLocked{overflow:hidden!important}
-@media(max-width:560px){
-  .drawer#drawer .panel{width:88vw!important;max-width:360px!important}
-}
+@media(max-width:560px){.drawer#drawer .panel{width:88vw!important;max-width:360px!important}}
 </style></head><body><div class="top">✨ Curated journeys · Easy booking · Local experiences</div><nav class="nav"><a class="logo" href="#" onclick="home();return false">NUSA</a><div class="links"><a href="#explore">Jelajahi</a><a href="#destinations">Destinasi</a><a href="#reviews">Ulasan</a><a href="#how">Cara kerja</a></div><div class="navright"><span class="account" id="accountName">Guest</span><button class="menuBtn" type="button">☰</button></div></nav><main id="homePage">
 
 <section class="searchDock"><div class="searchDockIn"><div class="searchMain"><div class="searchBox"><span class="searchIcon">⌕</span><input id="q" placeholder="Cari destinasi atau paket..." autocomplete="off"></div><button class="btn dark" onclick="renderPackages();document.getElementById('explore').scrollIntoView()">Cari</button><button class="filterBtn" id="filterBtn" onclick="toggleFilters()" aria-label="Filter">⚙</button></div><div class="filterPanel" id="filterPanel"><div class="filterPanelHead"><b>Filter perjalanan</b><button class="filterClose" onclick="toggleFilters()">×</button></div><div class="filterGrid"><div class="filterField"><label>Harga maksimum</label><input class="range" id="price" type="range" min="500000" max="10000000" step="250000" value="10000000"><span class="mini" id="pv">Rp10.000.000</span></div><div class="filterField"><label>Durasi</label><div class="filterChecks"><label class="check"><input type="checkbox" class="dur" value="2"> 1–2 hari</label><label class="check"><input type="checkbox" class="dur" value="4"> 3–4 hari</label><label class="check"><input type="checkbox" class="dur" value="7"> 5–7 hari</label></div></div><div class="filterField"><label>Style</label><div class="filterChecks"><label class="check"><input type="checkbox" class="sty" value="Adventure"> Adventure</label><label class="check"><input type="checkbox" class="sty" value="Family"> Family</label><label class="check"><input type="checkbox" class="sty" value="Luxury"> Luxury</label><label class="check"><input type="checkbox" class="sty" value="Relaxation"> Relaxation</label></div></div><div class="filterField ratingFilter"><label>Rating minimum</label><select id="minRating" class="sort"><option value="0">Semua</option><option value="4">4.0+</option><option value="4.5">4.5+</option></select></div></div></div></div></section>
 
 <header class="hero" style="display:flex!important;min-height:600px!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:1!important;"><div class="heroIn"><div class="eyebrow">Travel beyond destination</div><h1>Find a journey worth remembering.</h1><p>Temukan perjalanan pilihan, bandingkan pengalaman, lalu booking perjalanan berikutnya dengan mudah.</p></div></header>
 
-<section class="wrap" id="destinations"><div class="head"><div><div class="kicker">01 — Explore</div><h2>Ke mana kita pergi?</h2></div><p>Jelajahi destinasi, tempat menginap, dan pilihan transportasi untuk perjalananmu.</p></div><div class="travelCategory"><div class="categoryHead"><b>Destinasi</b><span>Geser →</span></div><div class="destgrid" id="destGrid"></div></div><div class="travelCategory"><div class="categoryHead"><b>Penginapan</b><span>Tempat menginap</span></div><div class="destgrid" id="hotelGrid"></div></div><div class="travelCategory"><div class="categoryHead"><b>Transportasi</b><span>Perjalanan antar kota & pulau</span></div><div class="destgrid" id="transportGrid"></div></div></section><section class="wrap" id="explore"><div class="head"><div><div class="kicker">02 — Explore trips</div><h2>Pilih pengalamanmu.</h2></div><p>Semua pencarian dan filter ada di bawah navbar.</p></div><div class="catalog"><div><div class="cataloghead"><span class="mini" id="count"></span><select id="sort" class="sort"><option value="rec">Recommended</option><option value="low">Harga terendah</option><option value="high">Harga tertinggi</option><option value="rating">Rating tertinggi</option></select></div><div class="grid" id="packageGrid"></div></div></div></section><section class="steps" id="how"><div class="wrap"><div class="stepgrid"><div class="step"><b>01</b><h3>Explore</h3><p>Temukan destinasi.</p></div><div class="step"><b>02</b><h3>Compare</h3><p>Bandingkan paket.</p></div><div class="step"><b>03</b><h3>Book</h3><p>Kirim booking.</p></div><div class="step"><b>04</b><h3>Travel</h3><p>Nikmati perjalanan.</p></div></div></div></section><section class="wrap" id="reviews"><div class="head"><div><div class="kicker">03 — Traveler stories</div><h2>Pengalaman nyata.</h2></div></div><div class="reviews"><div class="review"><div class="reviewtop"><img class="avatar" src="https://i.pravatar.cc/100?img=12"><div><b>Raka</b><div class="rating">★★★★★</div></div></div><p>Trip rapi, guide ramah, itinerary nyaman.</p></div><div class="review"><div class="reviewtop"><img class="avatar" src="https://i.pravatar.cc/100?img=32"><div><b>Nadia</b><div class="rating">★★★★★</div></div></div><p>Booking gampang dan informasi jelas.</p></div></div></section><div class="cta"><div class="kicker" style="color:#ffd8e0">Your next chapter</div><h2>Ready for a journey worth remembering?</h2><button class="btn" onclick="customTrip()">Request Custom Trip</button></div></main><div id="pages"></div><footer class="footer"><div>NUSA — Premium Travel Experience</div><div>© 2026 NUSA</div></footer><div class="drawer" id="drawer" aria-hidden="true" onclick="if(event.target===this)openMenu(false)"><aside class="panel"><div class="panelHead"><b>NUSA</b><button class="x" onclick="openMenu(false)">×</button></div><div class="user"><img id="menuPhoto" src="https://i.pravatar.cc/100?u=nusa"><div><b id="menuName">Guest</b><br><small id="menuEmail">Belum masuk</small></div></div><div class="menuList"><button class="menuItem" onclick="page('account')"><span class="ico">👤</span>Pengaturan akun</button><button class="menuItem" onclick="page('wishlist')"><span class="ico">♥</span>Wishlist</button><button class="menuItem" onclick="page('orders')"><span class="ico">🎫</span>Pesanan & Booking</button><button class="menuItem" onclick="page('journal')"><span class="ico">📖</span>Jurnal Anda</button><button class="menuItem" onclick="page('notifications')"><span class="ico">🔔</span>Notifikasi</button><button class="menuItem" onclick="toggleLang()"><span class="ico">🌐</span>Bahasa <span style="margin-left:auto">⌄</span></button><div class="langs" id="langs"></div><button class="menuItem" onclick="page('settings')"><span class="ico">⚙️</span>Pengaturan</button><button class="menuItem" onclick="page('help')"><span class="ico">❓</span>Bantuan</button><div class="divider"></div><button id="authMenuBtn" class="menuItem" style="color:#a21735"><span class="ico">🔑</span>Masuk</button></div></aside></div><div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modalBox"><button class="close" onclick="closeModal()">×</button><div id="modalContent"></div></div></div><div class="toast" id="toast"></div>
+<section class="wrap" id="destinations"><div class="head"><div><div class="kicker">01 — Explore</div><h2>Ke mana kita pergi?</h2></div><p>Jelajahi destinasi, tempat menginap, dan pilihan transportasi untuk perjalananmu.</p></div><div class="travelCategory"><div class="categoryHead"><b>Destinasi</b><span>Geser →</span></div><div class="destgrid" id="destGrid"></div></div><div class="travelCategory"><div class="categoryHead"><b>Penginapan</b><span>Tempat menginap</span></div><div class="destgrid" id="hotelGrid"></div></div><div class="travelCategory"><div class="categoryHead"><b>Transportasi</b><span>Perjalanan antar kota & pulau</span></div><div class="destgrid" id="transportGrid"></div></div></section><section class="wrap" id="explore"><div class="head"><div><div class="kicker">02 — Explore trips</div><h2>Pilih pengalamanmu.</h2></div><p>Semua pencarian dan filter ada di bawah navbar.</p></div><div class="catalog"><div><div class="cataloghead"><span class="mini" id="count"></span><select id="sort" class="sort"><option value="rec">Recommended</option><option value="low">Harga terendah</option><option value="high">Harga tertinggi</option><option value="rating">Rating tertinggi</option></select></div><div class="grid" id="packageGrid"></div></div></div></section><section class="steps" id="how"><div class="wrap"><div class="stepgrid"><div class="step"><b>01</b><h3>Explore</h3><p>Temukan destinasi.</p></div><div class="step"><b>02</b><h3>Compare</h3><p>Bandingkan paket.</p></div><div class="step"><b>03</b><h3>Book</h3><p>Kirim booking.</p></div><div class="step"><b>04</b><h3>Travel</h3><p>Nikmati perjalanan.</p></div></div></div></section><section class="wrap" id="reviews"><div class="head"><div><div class="kicker">03 — Traveler stories</div><h2>Pengalaman nyata.</h2></div></div><div class="reviews"><div class="review"><div class="reviewtop"><img class="avatar" src="https://i.pravatar.cc/100?img=12"><div><b>Raka</b><div class="rating">★★★★★</div></div></div><p>Trip rapi, guide ramah, itinerary nyaman.</p></div><div class="review"><div class="reviewtop"><img class="avatar" src="https://i.pravatar.cc/100?img=32"><div><b>Nadia</b><div class="rating">★★★★★</div></div></div><p>Booking gampang dan informasi jelas.</p></div></div></section><div class="cta"><div class="kicker" style="color:#ffd8e0">Your next chapter</div><h2>Ready for a journey worth remembering?</h2><button class="btn" onclick="customTrip()">Request Custom Trip</button></div></main><div id="pages"></div><footer class="footer"><div>NUSA — Premium Travel Experience</div><div>© 2026 NUSA</div></footer><div class="drawer" id="drawer" onclick="if(event.target===this)openMenu(false)"><aside class="panel"><div class="panelHead"><b>NUSA</b><button class="x" onclick="openMenu(false)">×</button></div><div class="user"><img id="menuPhoto" src="https://i.pravatar.cc/100?u=nusa"><div><b id="menuName">Guest</b><br><small id="menuEmail">Belum masuk</small></div></div><div class="menuList"><button class="menuItem" onclick="page('account')"><span class="ico">👤</span>Pengaturan akun</button><button class="menuItem" onclick="page('wishlist')"><span class="ico">♥</span>Wishlist</button><button class="menuItem" onclick="page('orders')"><span class="ico">🎫</span>Pesanan & Booking</button><button class="menuItem" onclick="page('journal')"><span class="ico">📖</span>Jurnal Anda</button><button class="menuItem" onclick="page('notifications')"><span class="ico">🔔</span>Notifikasi</button><button class="menuItem" onclick="toggleLang()"><span class="ico">🌐</span>Bahasa <span style="margin-left:auto">⌄</span></button><div class="langs" id="langs"></div><button class="menuItem" onclick="page('settings')"><span class="ico">⚙️</span>Pengaturan</button><button class="menuItem" onclick="page('help')"><span class="ico">❓</span>Bantuan</button><div class="divider"></div><button id="authMenuBtn" class="menuItem" style="color:#a21735"><span class="ico">🔑</span>Masuk</button></div></aside></div><div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modalBox"><button class="close" onclick="closeModal()">×</button><div id="modalContent"></div></div></div><div class="toast" id="toast"></div>
 
-<script src="auth-fix.js"></script></body></html><script id="nusaMenuBinder">
+<script>H={
+'Hotel':[
+['Alila Seminyak','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['The St. Regis Bali Resort','https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=700&q=80'],
+['AYANA Komodo Waecicu Beach','https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=700&q=80'],
+['Mandarin Oriental Jakarta','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=700&q=80'],
+['The Apurva Kempinski Bali','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80'],
+['Hotel Tentrem Yogyakarta','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['Bisma Eight Ubud','https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=700&q=80'],
+['The Legian Seminyak','https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=700&q=80'],
+['The Datai Langkawi','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['The Mulia Bali','https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=700&q=80'],
+['Hotel Indonesia Kempinski Jakarta','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=700&q=80'],
+['The Phoenix Hotel Yogyakarta','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80']
+],
+'Villa':[
+['Aman Villas at Nusa Dua','https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=700&q=80'],
+['Bvlgari Resort Bali','https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=700&q=80'],
+['Mandapa, a Ritz-Carlton Reserve','https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=700&q=80'],
+['Raffles Bali','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80'],
+['Four Seasons Resort Bali at Sayan','https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=700&q=80'],
+['AYANA Villas Bali','https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=700&q=80'],
+['Umana Bali','https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=700&q=80'],
+['Four Seasons Resort Bali at Jimbaran Bay','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80'],
+['The Kayon Jungle Resort','https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=700&q=80'],
+['The Ungasan Clifftop Resort','https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80'],
+['Hoshinoya Bali','https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=700&q=80'],
+['Anantara Uluwatu Bali Resort','https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=700&q=80']
+],
+'Motel':[
+['Surf Motel Bali','https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=700&q=80'],
+['Cailendra Yogyakarta','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['Penginapan Jangkar Luwuk','https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=700&q=80'],
+['Hotel Sarijadi Pangururan','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=700&q=80'],
+['Motel Mexicola Bali','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80'],
+['The Farm Hostel Canggu','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['The Hideout Bali','https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=700&q=80'],
+['Bali Bobo','https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=700&q=80'],
+['The Bene Hotel Kuta','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['M Boutique Hostel Seminyak','https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=700&q=80'],
+['Puri Rama Hostel Kuta','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=700&q=80'],
+['M Box Hostel Yogyakarta','https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=700&q=80']
+],
+'Resort':[
+['Capella Ubud','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80'],
+['The Sira, a Luxury Collection Resort & Spa, Lombok','https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=700&q=80'],
+['Ta’aktana, a Luxury Collection Resort & Spa','https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=700&q=80'],
+['Plataran Komodo Resort & Spa','https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=700&q=80'],
+['The Legian Seminyak','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'],
+['The Ungasan Clifftop Resort','https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=700&q=80'],
+['Sudamala Resort, Komodo','https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=700&q=80'],
+['Amnaya Resort Kuta','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80'],
+['AYANA Resort Bali','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80'],
+['Raffles Bali','https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=700&q=80'],
+['Four Seasons Resort Bali at Sayan','https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=700&q=80'],
+['Alila Ubud','https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=700&q=80']
+]
+},
+T={
+'Pesawat':[
+['Garuda Indonesia','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Citilink','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Lion Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['AirAsia','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Batik Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Super Air Jet','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Pelita Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Wings Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['TransNusa','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Batik Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Pelita Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80'],
+['Wings Air','https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=700&q=80']
+],
+'Kapal':[
+['PELNI','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['ASDP Indonesia Ferry','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Eka Jaya Fast Ferry','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Gili Getaway','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['BlueWater Express','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Marlin Fast Boat','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Golden Queen Fast Boat','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Sindo Ferry','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Dolphin Fast Ferry','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Semaya One','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Gili Fast Boat','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80'],
+['Ostina Fast Boat','https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=700&q=80']
+],
+'Kereta':[
+['Argo Bromo Anggrek','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Argo Parahyangan','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Mutiara Selatan','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Taksaka','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Lodaya','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Jayabaya','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Bima','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Jayabaya','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Pangrango','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Serayu','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Kahuripan','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80'],
+['Malabar','https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=700&q=80']
+],
+'Bus':[
+['DAMRI','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Rosalia Indah','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Sinar Jaya','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['PO Haryanto','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Harapan Jaya','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Sugeng Rahayu','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Handoyo','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Gunung Harta','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Sumber Alam','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Pahala Kencana','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Nusantara','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80'],
+['Eka','https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=700&q=80']
+]
+};function openMenu(v){
+  var d=document.getElementById('drawer');
+  if(!d)return;
+  var show=!!v;
+  d.classList.toggle('open',show);
+  document.body.classList.toggle('nusaMenuLocked',show);
+  d.setAttribute('aria-hidden',show?'false':'true');
+}function closeModal(){document.getElementById('modal').classList.remove('open')}function updateUser(){let n=state.profile.name||'Guest';accountName.textContent=n;menuName.textContent=n;menuEmail.textContent=state.profile.email||'Belum masuk';menuPhoto.src=state.profile.photo||'https://i.pravatar.cc/100?u=nusa'}function renderDest(){function cards(arr,label){return arr.map(function(d){return '<a class="dest nusaMainCard" href="javascript:void(0)" data-nusa-name="'+String(d[0]).replace(/"/g,'&quot;')+'" data-nusa-label="'+String(label).replace(/"/g,'&quot;')+'" onclick="if(window.NUSA_OPEN_PACKAGE){window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel)};return false;"><img loading="lazy" decoding="async" src="'+d[1]+'" onerror="this.onerror=null;this.src=\'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=700&q=80\';"><span><small>'+label+'</small><h3>'+d[0]+'</h3></span></a>'}).join('')}function rows(obj,target){var el=document.getElementById(target),html='';Object.keys(obj).forEach(function(k){var a=Array.isArray(obj[k])?obj[k]:[];html+='<div class="subCategory"><h3 class="subCategoryTitle">'+k+'</h3><div class="rowScroll">'+cards(a.slice(0,6),k)+'</div><div class="rowScroll">'+cards(a.slice(6,12),k)+'</div></div>'});el.innerHTML=html}document.getElementById('destGrid').innerHTML='<div class="rowScroll">'+cards(D.slice(0,10),'Destination')+'</div><div class="rowScroll">'+cards(D.slice(10,20),'Destination')+'</div>';rows(H,'hotelGrid');rows(T,'transportGrid')}function card(p){return `<article class="card"><div class="photo"><img src="${p.img}"><button class="heart ${state.wishlist.includes(p.id)?'saved':''}" onclick="wish('${p.id}')">${state.wishlist.includes(p.id)?'♥':'♡'}</button></div><div class="body"><div class="rating">★★★★★ <span>${p.rating} · ${p.reviews} reviews</span></div><h3>${p.name}</h3><div class="meta"><span>${p.dest}</span><span>${p.days}D</span></div><div class="price">Rp${p.price.toLocaleString('id-ID')} <small>/ person</small></div><button class="detail" onclick="details('${p.id}')">Lihat Detail →</button></div></article>`}function renderPackages(){let a=[...P],q=document.getElementById('q').value.toLowerCase(),max=+price.value,ds=[...document.querySelectorAll('.dur:checked')],ss=[...document.querySelectorAll('.sty:checked')],mr=+minRating.value;if(q)a=a.filter(p=>(p.name+p.dest+p.desc).toLowerCase().includes(q));a=a.filter(p=>p.price<=max&&(!ds.length||ds.some(x=>x.value==2?p.days<=2:x.value==4?p.days>=3&&p.days<=4:p.days>=5))&&(!ss.length||ss.some(x=>x.value===p.style))&&p.rating>=mr);if(sort.value==='low')a.sort((x,y)=>x.price-y.price);if(sort.value==='high')a.sort((x,y)=>y.price-x.price);if(sort.value==='rating')a.sort((x,y)=>y.rating-x.rating);count.textContent=a.length+' trips';pv.textContent='Rp'+max.toLocaleString('id-ID');packageGrid.innerHTML=a.map(card).join('')||'<div class="empty">Tidak ada paket yang cocok.</div>'}function filterDest(d){q.value=d;renderPackages()}function wish(id){state.wishlist=state.wishlist.includes(id)?state.wishlist.filter(x=>x!==id):[...state.wishlist,id];save();renderPackages();toast(state.wishlist.includes(id)?'Ditambahkan ke wishlist':'Dihapus dari wishlist')}function details(id){let p=P.find(x=>x.id===id);modalContent.innerHTML=`<img src="${p.img}" style="width:100%;height:280px;object-fit:cover;border-radius:9px"><div style="padding-top:20px"><div class="rating">★★★★★ ${p.rating} · ${p.reviews} reviews</div><h2 style="font:500 44px Playfair Display,serif;color:#671328">${p.name}</h2><p class="mini">${p.dest} · ${p.days}D</p><p>${p.desc}</p><h4>Itinerary</h4>${p.it.map(x=>`<div class="mini">✓ ${x}</div>`).join('')}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><b>Rp${p.price.toLocaleString('id-ID')} / person</b><button class="btn dark" onclick="book('${p.id}')">Booking sekarang</button></div></div>`;modal.classList.add('open')}function book(id){let p=P.find(x=>x.id===id);if(!state.profile.name){closeModal();page('account');toast('Isi nama akun dulu.');return}state.bookings.unshift({id:Date.now(),packageId:id,name:p.name,price:p.price,status:'confirmed',createdAt:new Date().toISOString(),reason:''});save();closeModal();page('orders');toast('Booking berhasil dibuat.')}function renderPages(){pages.innerHTML=`<section class="page" id="page-account"><div class="pageHero"><h1>Pengaturan akun</h1><p>Ganti nama, password dan foto profil.</p></div><div class="pageBody"><div class="panelCard"><h3>Profil</h3><div style="display:flex;gap:18px;align-items:center;margin-bottom:20px"><img class="avatarBig" id="profilePreview" src="${esc(state.profile.photo||'https://i.pravatar.cc/100?u=nusa')}"><label class="btn dark">Upload foto<input type="file" hidden accept="image/*" onchange="photo(this)"></label></div><div class="formGrid"><div class="formGroup"><label>Nama</label><input id="pn" value="${esc(state.profile.name||'')}"></div><div class="formGroup"><label>Email</label><input value="${esc(state.profile.email||'')}"></div></div><button class="btn dark" onclick="saveProfile()">Simpan</button></div><div class="panelCard"><h3>Keamanan</h3><div class="formGroup"><label>Password baru</label><input id="pw" type="password"></div><button class="outline" onclick="changePw()">Ganti password</button></div></div></section><section class="page" id="page-wishlist"><div class="pageHero"><h1>Wishlist</h1><p>Paket yang Anda simpan.</p></div><div class="pageBody"><div class="grid">${state.wishlist.map(id=>P.find(p=>p.id===id)).filter(Boolean).map(card).join('')||'<div class="empty">Wishlist masih kosong.</div>'}</div></div></section><section class="page" id="page-orders"><div class="pageHero"><h1>Pesanan & Booking</h1><p>Riwayat order, pembatalan dan pesan lagi.</p></div><div class="pageBody"><div class="panelCard">${state.bookings.length?state.bookings.map(b=>`<div class="listRow"><div><b>${esc(b.name)}</b><div class="mini">${new Date(b.createdAt).toLocaleString('id-ID')} · Rp${b.price.toLocaleString('id-ID')}</div>${b.reason?`<div class="mini">Alasan: ${esc(b.reason)}</div>`:''}</div><div style="text-align:right"><span class="status ${b.status==='cancelled'?'cancelled':''}">${b.status}</span><div class="pageActions"><button class="outline" onclick="rebook('${b.packageId}')">Pesan lagi</button>${b.status!=='cancelled'?`<button class="outline" onclick="cancel('${b.id}')">Batalkan</button>`:''}<button class="outline" onclick="newJournal('${b.name}')">Jurnal</button></div></div></div>`).join(''):'<div class="empty">Belum ada pesanan.</div>'}</div></div></section><section class="page" id="page-journal"><div class="pageHero"><h1>Jurnal Anda</h1><p>Opsional. Anda bebas menulis, mengedit, menghapus atau membagikannya.</p></div><div class="pageBody"><div class="panelCard"><button class="btn dark" onclick="newJournal()">+ Tulis jurnal</button></div>${state.journals.map((j,i)=>`<div class="panelCard journalCard"><img src="${esc(j.photo||D[0][1])}"><div><div class="mini">${j.public?'Publik':'Pribadi'} · ${new Date(j.createdAt).toLocaleDateString('id-ID')}</div><h3>${esc(j.title)}</h3><p class="mini">${esc(j.text)}</p><div class="pageActions"><button class="outline" onclick="editJournal(${i})">Edit</button><button class="outline" onclick="delJournal(${i})">Hapus</button>${j.public?`<button class="outline" onclick="shareJournal(${i})">Share</button>`:''}</div></div></div>`).join('')}</div></section><section class="page" id="page-notifications"><div class="pageHero"><h1>Notifikasi</h1><p>Update aktivitas akun dan booking.</p></div><div class="pageBody"><div class="panelCard">${state.notifications.map(n=>`<div class="listRow"><b>${esc(n.title)}</b><span class="mini">${esc(n.text)}</span></div>`).join('')||'<div class="empty">Belum ada notifikasi.</div>'}</div></div></section><section class="page" id="page-settings"><div class="pageHero"><h1>Pengaturan</h1><p>Preferensi pengalaman NUSA.</p></div><div class="pageBody"><div class="panelCard"><h3>Preferensi</h3><label class="check"><input type="checkbox" ${state.settings.notify?'checked':''} onchange="state.settings.notify=this.checked;save()"> Notifikasi booking</label><label class="check"><input type="checkbox" ${state.settings.publicJournal?'checked':''} onchange="state.settings.publicJournal=this.checked;save()"> Jurnal publik secara default</label></div><div class="panelCard"><h3>Demo</h3><p class="mini">Data masih 100% LocalStorage.</p><button class="outline" onclick="resetDemo()">Reset data demo</button></div></div></section><section class="page" id="page-help"><div class="pageHero"><h1>Bantuan</h1><p>Panduan singkat.</p></div><div class="pageBody"><div class="panelCard"><h3>Booking</h3><p class="mini">Pilih paket dan booking. Saat server aktif, data akan masuk ke sistem travel.</p><h3>Pembatalan</h3><p class="mini">Pilih alasan pembatalan. Alasan sudah disimpan di data booking dan nanti dapat diteruskan ke admin/pemilik.</p><h3>Jurnal</h3><p class="mini">Jurnal sepenuhnya pilihan client; tidak otomatis dibuat setelah perjalanan.</p></div></div></section>`}function page(n){openMenu(false);homePage.style.display='none';renderPages();document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');scrollTo(0,0)}function home(){homePage.style.display='block';document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));scrollTo(0,0)}function saveProfile(){state.profile.name=pn.value.trim()||'Guest';state.profile.email=state.profile.email||'';save();updateUser();toast('Profil disimpan.')}function photo(i){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{state.profile.photo=r.result;save();profilePreview.src=r.result;updateUser();toast('Foto profil diperbarui.')};r.readAsDataURL(f)}function changePw(){if(pw.value.length<6)return toast('Password minimal 6 karakter.');state.profile.password=pw.value;save();pw.value='';toast('Password demo diganti.')}function cancel(id){let b=state.bookings.find(x=>String(x.id)===String(id));modalContent.innerHTML=`<h2 style="font:500 34px Playfair Display,serif;color:#671328">Batalkan booking</h2><p class="mini">Pilih alasan. Saat server aktif alasan ini siap dikirim ke admin.</p><select id="reason" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:7px"><option>Perubahan rencana</option><option>Masalah jadwal</option><option>Budget tidak sesuai</option><option>Menemukan paket lain</option><option>Alasan pribadi</option><option>Lainnya</option></select><textarea id="note" placeholder="Catatan tambahan" style="width:100%;min-height:100px;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:7px"></textarea><button class="btn dark" style="margin-top:10px" onclick="confirmCancel('${b.id}')">Konfirmasi</button>`;modal.classList.add('open')}function confirmCancel(id){let b=state.bookings.find(x=>String(x.id)===String(id));b.status='cancelled';b.reason=reason.value+(note.value?' — '+note.value:'');state.notifications.unshift({title:'Booking dibatalkan',text:b.name+' · '+b.reason});save();closeModal();page('orders');toast('Booking dibatalkan.')}function rebook(id){book(id)}function newJournal(title=''){modalContent.innerHTML=`<h2 style="font:500 34px Playfair Display,serif;color:#671328">Tulis jurnal</h2><div class="formGroup"><label>Judul</label><input id="jt" value="${esc(title)}"></div><div class="formGroup"><label>Cerita</label><textarea id="jtext" placeholder="Ceritakan pengalamanmu..."></textarea></div><label class="check"><input id="jpub" type="checkbox" ${state.settings.publicJournal?'checked':''}> Jadikan publik</label><button class="btn dark" onclick="saveJournal()">Simpan</button>`;modal.classList.add('open')}function saveJournal(){if(!jtext.value.trim())return toast('Tulis ceritanya dulu.');state.journals.unshift({title:jt.value||'Perjalanan saya',text:jtext.value,public:jpub.checked,createdAt:new Date().toISOString()});save();closeModal();page('journal');toast('Jurnal disimpan.')}function editJournal(i){let j=state.journals[i];newJournal(j.title);setTimeout(()=>{jtext.value=j.text;jpub.checked=j.public;document.querySelector('#modalContent .dark').onclick=()=>{j.title=jt.value;j.text=jtext.value;j.public=jpub.checked;save();closeModal();page('journal');toast('Jurnal diperbarui.')}},0)}function delJournal(i){if(confirm('Hapus jurnal ini?')){state.journals.splice(i,1);save();page('journal')}}async function shareJournal(i){let j=state.journals[i],txt=j.title+' — '+j.text;if(navigator.share)try{await navigator.share({title:j.title,text:txt})}catch{}else{await navigator.clipboard?.writeText(txt);toast('Jurnal disalin untuk dibagikan.')}}function customTrip(){modalContent.innerHTML=`<h2 style="font:500 34px Playfair Display,serif;color:#671328">Request Custom Trip</h2><div class="formGroup"><label>Destinasi</label><input></div><div class="formGroup"><label>Keinginan</label><textarea placeholder="Ceritakan trip yang diinginkan..."></textarea></div><button class="btn dark" onclick="closeModal();toast('Request tersimpan di demo.')">Kirim request</button>`;modal.classList.add('open')}function toggleFilters(){document.getElementById('filterPanel').classList.toggle('open');document.getElementById('filterBtn').classList.toggle('active')}function toggleLang(){langs.classList.toggle('open')}function renderLang(){langs.innerHTML=LANGS.map(x=>`<button class="lang ${state.lang===x[0]?'active':''}" onclick="state.lang='${x[0]}';save();renderLang();toast('Bahasa: ${x[2]}')">${x[1]} ${x[2]}</button>`).join('')}function logout(){state.profile={name:'',email:'',photo:'',password:''};save();updateUser();openMenu(false);toast('Berhasil keluar.')}function resetDemo(){if(confirm('Reset semua data demo?')){localStorage.removeItem(KEY);location.reload()}}[price,...document.querySelectorAll('.dur,.sty')].forEach(x=>x.addEventListener('input',renderPackages));document.querySelectorAll('.dur,.sty').forEach(x=>x.addEventListener('change',renderPackages));minRating.addEventListener('change',renderPackages);sort.addEventListener('change',renderPackages);q.addEventListener('input',renderPackages);price.addEventListener('input',renderPackages);renderDest();renderPackages();renderPages();renderLang();updateUser();
+<script>
 (function(){
-  function bindMenu(){
-    var b=document.querySelector('.menuBtn');
-    var d=document.getElementById('drawer');
-    if(!b||!d)return;
-    b.onclick=function(e){e.preventDefault();e.stopPropagation();openMenu(true);};
-    d.addEventListener('click',function(e){
-      if(e.target===d)openMenu(false);
-    });
-    document.addEventListener('keydown',function(e){if(e.key==='Escape')openMenu(false);});
+var KEY='nusa_package_reviews_v1';
+function esc2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}}}
+function open(name,label){
+ var m={};try{m=JSON.parse(localStorage.getItem('nusa_catalog_data_v1')||'{}')[name]||{}}catch(e){}
+ var prices={Bali:1899000,Bromo:1499000,Lombok:2299000,'Labuan Bajo':2799000,'Raja Ampat':3999000,Yogyakarta:1299000,Bandung:1099000,Jakarta:999000,Malang:1399000,Komodo:2899000,Ubud:1799000,'Gili Trawangan':2199000,Flores:2499000,Belitung:1999000,Derawan:3599000,Toraja:2399000,Wakatobi:3299000,Dieng:1199000,'Labuan Bajo Premium':4999000,'Nusa Penida':2099000};
+ var price=Number(String(m.price||prices[name]||1499000).replace(/\D/g,'')),rating=m.rating||'4.8',desc=m.desc||('Paket wisata '+name+' dengan itinerary pilihan, aktivitas utama, dan waktu bebas untuk menikmati destinasi.');
+ var reviews=read()[name]||[],imgs={};try{imgs=JSON.parse(localStorage.getItem('nusa_custom_images_v1')||'{}')}catch(e){}
+ var src=imgs[name]||window.NUSA_CATALOG[name]||'';
+ var o=document.createElement('div');o.id='nusaPackageModal';o.style.cssText='position:fixed;inset:0;z-index:1000000;background:#000b;overflow:auto;padding:20px';
+ var reviewsHtml=reviews.length?reviews.map(function(r){return '<div style="border-top:1px solid #eee;padding:14px 0"><b>'+esc2(r.name||'Guest')+'</b> <span style="color:#b18a2b">★ '+esc2(r.rating||5)+'</span><p style="margin:7px 0;color:#555">'+esc2(r.text||'')+'</p>'+(r.media?'<div>'+(r.type==='video'?'<video controls style="max-width:100%;max-height:240px;border-radius:9px" src="'+r.media+'"></video>':'<img style="max-width:100%;max-height:240px;border-radius:9px;object-fit:cover" src="'+r.media+'">')+'</div>':'')+'</div>'}).join(''):'<p style="color:#777">Belum ada ulasan.</p>';
+ o.innerHTML='<div style="max-width:760px;margin:auto;background:#fff;border-radius:18px;overflow:hidden"><div style="position:relative"><img src="'+esc2(src)+'" style="width:100%;height:300px;object-fit:cover"><button id="npmx" style="position:absolute;right:14px;top:14px;border:0;border-radius:50%;width:40px;height:40px;font-size:22px">×</button></div><div style="padding:24px"><div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8a6b70">'+esc2(label)+'</div><h2 style="font:500 38px Georgia,serif;color:#671328;margin:8px 0">'+esc2(name)+'</h2><div style="color:#b18a2b;font-weight:700">★★★★★ <span style="color:#777;font-weight:400">'+esc2(rating)+' · '+reviews.length+' ulasan</span></div><p style="line-height:1.7;color:#555">'+esc2(desc)+'</p><div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:16px 0"><b style="font-size:22px;color:#671328">Rp'+price.toLocaleString('id-ID')+' <small style="font-size:11px;color:#777">/ orang</small></b><button id="npbook" style="border:0;border-radius:999px;padding:12px 17px;background:#671328;color:#fff">Pesan Paket</button></div><h3 style="font:500 24px Georgia,serif;margin:26px 0 10px">Ulasan & Pengalaman</h3>'+reviewsHtml+'<div style="background:#f7f3ef;border-radius:12px;padding:15px;margin-top:12px"><b>Tulis ulasan</b><input id="nrn" placeholder="Nama" style="display:block;width:100%;box-sizing:border-box;margin-top:9px;padding:10px;border:1px solid #ddd;border-radius:8px"><select id="nrr" style="margin-top:8px;padding:9px"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><textarea id="nrt" placeholder="Ceritakan pengalaman..." style="display:block;width:100%;box-sizing:border-box;margin-top:8px;min-height:80px;padding:10px;border:1px solid #ddd;border-radius:8px"></textarea><input id="nrf" type="file" accept="image/*,video/*" style="margin-top:10px"><button id="nrs" style="display:block;margin-top:10px;border:0;border-radius:999px;padding:10px 15px;background:#241c1d;color:#fff">Kirim Ulasan</button></div></div></div>';
+ document.body.appendChild(o);npmx.onclick=function(){o.remove()};
+ npbook.onclick=function(){if(typeof book==='function'&&typeof P!=='undefined'&&P.find(function(p){return p.name===name}))book(P.find(function(p){return p.name===name}).id);else{if(typeof page==='function')page('orders');o.remove();toast('Paket siap dipesan.')}};
+ nrs.onclick=function(){var f=nrf.files[0],save=function(media,type){var all=read();(all[name]||(all[name]=[])).unshift({name:nrn.value||'Guest',rating:nrr.value,text:nrt.value,media:media||'',type:type||''});localStorage.setItem(KEY,JSON.stringify(all));o.remove();open(name,label)};if(f){if(f.size>8*1024*1024)return alert('Maksimal 8 MB.');var rd=new FileReader();rd.onload=function(){save(rd.result,f.type.indexOf('video')===0?'video':'image')};rd.readAsDataURL(f)}else save('','')};
+}
+window.NUSA_OPEN_PACKAGE=open;
+})();
+</script></script><script src="auth-fix.js?v=2"></script><script>
+(function(){
+  function photo(q,n){
+    var s=String(q).toLowerCase();
+    var u=[
+      'https://images.unsplash.com/photo-1537996194471-e657df975ab4',
+      'https://images.unsplash.com/photo-1500534623283-312aade485b7',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+      'https://images.unsplash.com/photo-1548013146-72479768bada',
+      'https://images.unsplash.com/photo-1516690561799-46d8f74f0a3c',
+      'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86',
+      'https://images.unsplash.com/photo-1555899434-94d1368aa7af',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23',
+      'https://images.unsplash.com/photo-1528127269322-539801943592'
+    ];
+    var k=0;
+    if(/bromo|dieng|mount|gunung|toraja|malang/.test(s))k=2;
+    else if(/raja|derawan|wakatobi|gili|lombok|belitung|nusa|island|beach|flores/.test(s))k=3;
+    else if(/jakarta|bandung|yogyakarta|ubud|bali|labuan|komodo/.test(s))k=0;
+    else if(/hotel|villa|resort|motel|luxury|aman|st\.? regis|kempinski|ayana|mandapa|raffles|four seasons|alila|capella|legian|mulia|tentrem|bisma|kayon|ungasan|hoshinoya|anantara|sira|taaktana|plataran|sudamala|amnaya/.test(s))k=8;
+    else if(/airplane|pesawat|garuda|citilink|lion|airasia|batik air|super air|pelita|wings|transnusa/.test(s))k=9;
+    else if(/train|kereta|argo|taksaka|lodaya|jayabaya|bima|pangrango|serayu|kahuripan|malabar|gajayana/.test(s))k=5;
+    else if(/ship|ferry|kapal|pelni|asdp|fast boat|gili getaway|bluewater|marlin|sindo|dolphin|semaya|ostina/.test(s))k=6;
+    else if(/bus|damri|rosalia|sinar jaya|haryanto|harapan jaya|sugeng|handoyo|gunung harta|sumber alam|pahala|nusantara|eka/.test(s))k=7;
+    return u[k]+'?auto=format&fit=crop&w=700&q=82';
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMenu,{once:true});
-  else bindMenu();
+  var img={
+    bali:photo('Bali Indonesia',1),
+    beach:photo('Indonesia beach island',2),
+    hotel:photo('luxury hotel Indonesia',3),
+    villa:photo('luxury villa Indonesia',4),
+    plane:photo('airplane Indonesia',5),
+    ship:photo('ferry Indonesia',6),
+    train:photo('train Indonesia',7),
+    bus:photo('bus Indonesia',8)
+  };
+  var D=[
+    ['Bali',photo('Bali Indonesia',11)],['Bromo',photo('Mount Bromo Indonesia',12)],['Lombok',photo('Lombok Indonesia',13)],['Labuan Bajo',photo('Labuan Bajo Indonesia',14)],['Raja Ampat',photo('Raja Ampat Indonesia',15)],['Yogyakarta',photo('Yogyakarta Indonesia',16)],['Bandung',photo('Bandung Indonesia',17)],['Jakarta',photo('Jakarta Indonesia',18)],['Malang',photo('Malang Indonesia',19)],['Komodo',photo('Komodo Indonesia',20)],['Ubud',photo('Ubud Bali Indonesia',21)],['Gili Trawangan',photo('Gili Trawangan Indonesia',22)],['Flores',photo('Flores Indonesia',23)],['Belitung',photo('Belitung Indonesia',24)],['Derawan',photo('Derawan Indonesia',25)],['Toraja',photo('Toraja Indonesia',26)],['Wakatobi',photo('Wakatobi Indonesia',27)],['Dieng',photo('Dieng Indonesia',28)],['Labuan Bajo Premium',photo('Labuan Bajo Komodo Indonesia',29)],['Nusa Penida',photo('Nusa Penida Bali Indonesia',30)]
+  ];
+  var H={
+    'Hotel':[['Alila Seminyak',photo('Alila Seminyak Bali hotel',31)],['The St. Regis Bali Resort',photo('St Regis Bali resort',32)],['AYANA Komodo Waecicu Beach',photo('Ayana Komodo hotel',33)],['Mandarin Oriental Jakarta',photo('Mandarin Oriental Jakarta hotel',34)],['The Apurva Kempinski Bali',photo('Apurva Kempinski Bali',35)],['Hotel Tentrem Yogyakarta',photo('Hotel Tentrem Yogyakarta',36)],['Bisma Eight Ubud',photo('Bisma Eight Ubud',37)],['The Legian Seminyak',photo('Legian Seminyak Bali',38)],['The Mulia Bali',photo('Mulia Bali resort',39)],['Hotel Indonesia Kempinski Jakarta',photo('Hotel Indonesia Kempinski Jakarta',40)],['The Phoenix Hotel Yogyakarta',photo('Phoenix Hotel Yogyakarta',41)],['Capella Ubud',photo('Capella Ubud Bali',42)]],
+    'Villa':[['Aman Villas at Nusa Dua',photo('Aman Nusa Dua Bali villa',43)],['Bvlgari Resort Bali',photo('Bvlgari Bali resort',44)],['Mandapa, a Ritz-Carlton Reserve',photo('Mandapa Ubud Bali resort',45)],['Raffles Bali',photo('Raffles Bali resort',46)],['Four Seasons Resort Bali at Sayan',photo('Four Seasons Sayan Bali',47)],['AYANA Villas Bali',photo('Ayana Villas Bali',48)],['Umana Bali',photo('Umana Bali resort',49)],['Four Seasons Resort Bali at Jimbaran Bay',photo('Four Seasons Jimbaran Bali',50)],['The Kayon Jungle Resort',photo('Kayon Jungle Ubud Bali',51)],['The Ungasan Clifftop Resort',photo('Ungasan Bali resort',52)],['Hoshinoya Bali',photo('Hoshinoya Bali',53)],['Anantara Uluwatu Bali Resort',photo('Anantara Uluwatu Bali',54)]],
+    'Motel':[['Surf Motel Bali',photo('Surf Motel Bali',55)],['Cailendra Yogyakarta',photo('Yogyakarta hotel Indonesia',56)],['Penginapan Jangkar Luwuk',photo('Luwuk Indonesia hotel',57)],['Hotel Sarijadi Pangururan',photo('Pangururan Sumatra hotel',58)],['Motel Mexicola Bali',photo('Motel Bali Indonesia',59)],['The Farm Hostel Canggu',photo('Canggu Bali hostel',60)],['The Hideout Bali',photo('Hideout Bali',61)],['Bali Bobo',photo('Bali hostel',62)],['The Bene Hotel Kuta',photo('Kuta Bali hotel',63)],['M Boutique Hostel Seminyak',photo('Seminyak Bali hostel',64)],['Puri Rama Hostel Kuta',photo('Kuta Bali hostel',65)],['M Box Hostel Yogyakarta',photo('Yogyakarta hostel',66)]],
+    'Resort':[['Capella Ubud',photo('Capella Ubud Bali',67)],['The Sira, Lombok',photo('The Sira Lombok resort',68)],['Ta’aktana Komodo',photo('Taaktana Komodo resort',69)],['Plataran Komodo Resort & Spa',photo('Plataran Komodo resort',70)],['The Legian Seminyak',photo('Legian Seminyak resort',71)],['The Ungasan Clifftop Resort',photo('Ungasan Bali resort',72)],['Sudamala Resort, Komodo',photo('Sudamala Komodo resort',73)],['Amnaya Resort Kuta',photo('Amnaya Kuta Bali resort',74)],['AYANA Resort Bali',photo('Ayana Bali resort',75)],['Raffles Bali',photo('Raffles Bali resort',76)],['Four Seasons Resort Bali at Sayan',photo('Four Seasons Sayan Bali resort',77)],['Alila Ubud',photo('Alila Ubud Bali resort',78)]]
+  };
+  var T={
+    'Pesawat':[['Garuda Indonesia',photo('Garuda Indonesia airplane',81)],['Citilink',photo('Citilink airplane',82)],['Lion Air',photo('Lion Air airplane',83)],['AirAsia',photo('AirAsia airplane',84)],['Batik Air',photo('Batik Air airplane',85)],['Super Air Jet',photo('Super Air Jet airplane',86)],['Pelita Air',photo('Pelita Air airplane',87)],['Wings Air',photo('Wings Air airplane',88)],['TransNusa',photo('TransNusa airplane',89)],['Batik Air',photo('Batik Air aircraft',90)],['Pelita Air',photo('Pelita Air aircraft',91)],['Wings Air',photo('Wings Air aircraft',92)]],
+    'Travel':[['Traveloka',photo('travel bus Indonesia',141)],['Cititrans',photo('Cititrans travel Indonesia',142)],['DayTrans',photo('DayTrans travel Indonesia',143)],['Xtrans',photo('Xtrans travel Indonesia',144)],['Baraya Travel',photo('Baraya travel Bandung Jakarta',145)],['Cipaganti Travel',photo('Cipaganti travel Indonesia',146)],['Jackal Holidays',photo('Jackal Holidays travel Indonesia',147)],['Pasteur Trans',photo('Pasteur Trans travel Bandung',148)],['Lintas Shuttle',photo('Lintas Shuttle Indonesia',149)],['Sahabat Shuttle',photo('Sahabat Shuttle Indonesia',150)],['Bhinneka Shuttle',photo('Bhinneka Shuttle Indonesia',151)],['Daytrans Executive',photo('Daytrans Executive travel',152)]],
+    'Kapal':[['PELNI',photo('PELNI ship Indonesia',101)],['ASDP Indonesia Ferry',photo('ASDP ferry Indonesia',102)],['Eka Jaya Fast Ferry',photo('Eka Jaya fast boat Bali',103)],['Gili Getaway',photo('Gili Getaway fast boat',104)],['BlueWater Express',photo('BlueWater Express boat Bali',105)],['Marlin Fast Boat',photo('Marlin fast boat Bali',106)],['Golden Queen Fast Boat',photo('Golden Queen fast boat Bali',107)],['Sindo Ferry',photo('Sindo Ferry Indonesia',108)],['Dolphin Fast Ferry',photo('Dolphin fast ferry Indonesia',109)],['Semaya One',photo('Semaya One Bali boat',110)],['Gili Fast Boat',photo('Gili fast boat Bali',111)],['Ostina Fast Boat',photo('Ostina fast boat Bali',112)]],
+    'Kereta':[['Argo Bromo Anggrek',photo('Argo Bromo Anggrek train',121)],['Argo Parahyangan',photo('Argo Parahyangan train',122)],['Mutiara Selatan',photo('Mutiara Selatan train',123)],['Taksaka',photo('Taksaka train Indonesia',124)],['Lodaya',photo('Lodaya train Indonesia',125)],['Jayabaya',photo('Jayabaya train Indonesia',126)],['Bima',photo('Bima train Indonesia',127)],['Pangrango',photo('Pangrango train Indonesia',128)],['Serayu',photo('Serayu train Indonesia',129)],['Kahuripan',photo('Kahuripan train Indonesia',130)],['Malabar',photo('Malabar train Indonesia',131)],['Gajayana',photo('Gajayana train Indonesia',132)]],
+    'Bus':[['DAMRI',photo('DAMRI bus Indonesia',141)],['Rosalia Indah',photo('Rosalia Indah bus Indonesia',142)],['Sinar Jaya',photo('Sinar Jaya bus Indonesia',143)],['PO Haryanto',photo('PO Haryanto bus Indonesia',144)],['Harapan Jaya',photo('Harapan Jaya bus Indonesia',145)],['Sugeng Rahayu',photo('Sugeng Rahayu bus Indonesia',146)],['Handoyo',photo('Handoyo bus Indonesia',147)],['Gunung Harta',photo('Gunung Harta bus Indonesia',148)],['Sumber Alam',photo('Sumber Alam bus Indonesia',149)],['Pahala Kencana',photo('Pahala Kencana bus Indonesia',150)],['Nusantara',photo('Nusantara bus Indonesia',151)],['Eka',photo('Eka bus Indonesia',152)]]
+  };
+  function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function card(x,label){
+    var meta={};try{meta=JSON.parse(localStorage.getItem('nusa_catalog_data_v1')||'{}')[x[0]]||{}}catch(e){}
+    var src=x[1];try{var imgs=JSON.parse(localStorage.getItem('nusa_custom_images_v1')||'{}');if(imgs[x[0]])src=imgs[x[0]]}catch(e){}
+    var rating=meta.rating||'4.8';
+    return '<a href="#" data-nusa-name="'+esc(x[0])+'" data-nusa-label="'+esc(label)+'" class="dest nusaFallbackCard" style="display:flex!important;flex:0 0 180px!important;width:180px!important;min-width:180px!important;height:235px!important;position:relative!important;overflow:hidden!important;visibility:visible!important;opacity:1!important;border-radius:12px!important;background:#222!important;color:#fff!important;text-decoration:none!important;">'+
+      '<img loading="lazy" src="'+esc(src)+'" data-nusa-custom="'+(src!==x[1]?'1':'0')+'" style="display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;position:absolute!important;inset:0!important;">'+
+      '<span style="position:absolute!important;inset:0!important;padding:15px!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;background:linear-gradient(transparent 35%,rgba(0,0,0,.82))!important;color:#fff!important;z-index:2!important;"><small style="font:600 10px/1.2 sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;">'+esc(label)+'</small><strong style="font:500 20px/1.08 Georgia,serif!important;margin-top:5px!important;">'+esc(x[0])+'</strong><em style="display:block!important;font:600 11px/1.2 sans-serif!important;margin-top:6px!important;color:#fff!important;font-style:normal!important;">★ '+esc(rating)+'</em></span></a>';
+  }
+  function row(arr,label){return '<div class="nusaFallbackRow" style="display:flex!important;flex-flow:row nowrap!important;gap:14px!important;width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;padding:2px 2px 12px!important;box-sizing:border-box!important;scrollbar-width:none!important;">'+arr.map(function(x){return card(x,label)}).join('')+'</div>'}
+  window.NUSA_CATALOG={};
+  function exposeCatalog(){
+    [D].forEach(function(arr){arr.forEach(function(x){window.NUSA_CATALOG[x[0]]=x[1]})});
+    [H,T].forEach(function(obj){Object.keys(obj).forEach(function(k){obj[k].forEach(function(x){window.NUSA_CATALOG[x[0]]=x[1]})})});
+  }
+  exposeCatalog();
+  function renderFallback(){
+    var d=document.getElementById('destGrid'),h=document.getElementById('hotelGrid'),t=document.getElementById('transportGrid');
+    if(!d||!h||!t)return;
+    d.innerHTML=row(D.slice(0,10),'Destination')+row(D.slice(10,20),'Destination');
+    function groups(obj,el){
+      el.innerHTML=Object.keys(obj).map(function(k){
+        var a=obj[k];
+        return '<section style="display:block!important;width:100%!important;margin:0 0 42px!important;"><h3 style="display:block!important;margin:0 0 12px!important;font:500 23px/1.15 Georgia,serif!important;">'+esc(k)+'</h3>'+row(a.slice(0,6),k)+row(a.slice(6,12),k)+'</section>';
+      }).join('');
+    }
+    groups(H,h);groups(T,t);
+    if(window.NUSA_OWNER_APPLY)window.NUSA_OWNER_APPLY();
+  }
+  function imageHint(title){
+    var s=String(title).toLowerCase();
+    if(/garuda|citilink|lion air|airasia|batik air|super air jet|pelita air|wings air|transnusa|pesawat/.test(s))return 'aircraft airplane';
+    if(/pelni|asdp|ferry|fast ferry|fast boat|gili getaway|bluewater|marlin|sindo|dolphin|semaya|ostina|kapal/.test(s))return 'ship ferry boat';
+    if(/argo|parahyangan|taksaka|lodaya|jayabaya|bima|pangrango|serayu|kahuripan|malabar|gajayana|kereta/.test(s))return 'train railway';
+    if(/damri|rosalia|sinar jaya|haryanto|harapan jaya|sugeng|handoyo|gunung harta|sumber alam|pahala|nusantara|eka|bus/.test(s))return 'bus coach';
+    if(/hotel|villa|resort|motel|ayana|alila|st\. regis|kempinski|mandapa|raffles|four seasons|capella|legian|mulia|tentrem|bisma|kayon|ungasan|hoshinoya|anantara|sira|taaktana|plataran|sudamala|amnaya/.test(s))return 'hotel resort building';
+    return 'landscape travel';
+  }
+  function badImageName(s){
+    return /logo|icon|symbol|flag|map|diagram|chart|coat.of.arms|seal|emblem|wordmark|favicon|screenshot|poster|banner|signage|route map|location map/i.test(String(s));
+  }
+  async function commonsImage(title){
+    var q='"'+String(title).replace(/,?\\s*a\\s+Ritz-Carlton Reserve/i,'').trim()+'" '+imageHint(title);
+    var api='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(q)+'&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url|mime|size&iiurlwidth=1000&format=json&origin=*';
+    try{
+      var res=await fetch(api,{cache:'no-store'});
+      if(!res.ok)return '';
+      var j=await res.json();
+      var pages=j.query&&j.query.pages?Object.values(j.query.pages):[];
+      var scored=pages.map(function(p){
+        var n=String(p.title||'');
+        var ii=p.imageinfo&&p.imageinfo[0];
+        if(!ii||!ii.thumburl||badImageName(n))return null;
+        var low=n.toLowerCase(),score=0;
+        if(low.indexOf(String(title).toLowerCase())>=0)score+=8;
+        var h=imageHint(title).split(' ');
+        h.forEach(function(x){if(low.indexOf(x)>=0)score+=2;});
+        if(ii.width>=900)score+=2;
+        if(ii.height>=500)score+=2;
+        if(ii.width<500||ii.height<300)score-=5;
+        return {u:ii.thumburl,score:score};
+      }).filter(Boolean).sort(function(a,b){return b.score-a.score;});
+      return scored.length?scored[0].u:'';
+    }catch(e){return '';}
+  }
+  async function wikiImage(title){
+    var u=await commonsImage(title);
+    if(u)return u;
+    var clean=String(title).replace(/,?\\s*a\\s+Ritz-Carlton Reserve/i,'').trim();
+    var urls=[
+      'https://id.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(clean),
+      'https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(clean)
+    ];
+    for(var i=0;i<urls.length;i++){
+      try{
+        var res=await fetch(urls[i],{cache:'no-store'});
+        if(!res.ok)continue;
+        var j=await res.json();
+        var src=j.originalimage&&j.originalimage.source||j.thumbnail&&j.thumbnail.source||'';
+        if(src&&!badImageName(src))return src;
+      }catch(e){}
+    }
+    return '';
+  }
+  async function hydrateWikiImages(){
+    var imgs=[].slice.call(document.querySelectorAll('.nusaFallbackCard img'));
+    var cards=[].slice.call(document.querySelectorAll('.nusaFallbackCard'));
+    for(var i=0;i<cards.length;i++){
+      (async function(card,img){
+        var title=card.querySelector('strong');
+        var label=card.querySelector('small');
+        if(!title)return;
+        var u=await wikiImage(title.textContent);
+        if(u&&!img.dataset.nusaCustom){img.src=u;img.dataset.nusaReal='1';}
+      })(cards[i],imgs[i]);
+      if(i%8===7)await new Promise(function(r){setTimeout(r,180);});
+    }
+  }
+  document.addEventListener('click',function(e){
+    var link=e.target.closest&&e.target.closest('.nusaFallbackCard');if(!link)return;
+    e.preventDefault();e.stopPropagation();
+    if(window.NUSA_OPEN_PACKAGE)window.NUSA_OPEN_PACKAGE(link.getAttribute('data-nusa-name')||'',link.getAttribute('data-nusa-label')||'');
+  },true);
+  window.addEventListener('DOMContentLoaded',function(){renderFallback();setTimeout(hydrateWikiImages,80);});
+  window.addEventListener('load',function(){setTimeout(hydrateWikiImages,250);});
+
+  window.addEventListener('load',function(){setTimeout(renderFallback,100);});
+})();
+</script><script src="auth-fix.js"></script><script>
+/* NUSA OWNER V3 — direct trigger, independent of cached auth-fix */
+(function(){
+  var n=0,t=null;
+  function box(){
+    var old=document.getElementById('nusaOwnerV3'); if(old)old.remove();
+    var o=document.createElement('div');o.id='nusaOwnerV3';
+    o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px';
+    o.innerHTML='<div style="background:#fff;width:min(480px,100%);max-height:92vh;overflow:auto;border-radius:18px;padding:24px;box-shadow:0 25px 80px rgba(0,0,0,.3);font-family:Arial,sans-serif;color:#222">'+
+      '<button id="ov3x" style="float:right;border:0;background:none;font-size:28px;cursor:pointer">×</button>'+
+      '<div style="font-size:11px;letter-spacing:.15em;color:#671328;font-weight:bold">NUSA PRIVATE</div>'+
+      '<h2 style="font-family:Georgia,serif;color:#671328;font-size:36px;margin:8px 0">Owner Access</h2>'+
+      '<p style="font-size:13px;color:#777">Kelola akun Owner NUSA.</p>'+
+      '<div style="display:flex;gap:8px;margin:18px 0"><button id="ov3login" style="flex:1;padding:12px;border:1px solid #222;border-radius:9px;background:#222;color:#fff">Login</button><button id="ov3reg" style="flex:1;padding:12px;border:1px solid #ccc;border-radius:9px;background:#fff">Daftar</button></div>'+
+      '<div id="ov3body"></div></div>';
+    document.body.appendChild(o);
+    document.getElementById('ov3x').onclick=function(){o.remove()};
+    document.getElementById('ov3login').onclick=login;
+    document.getElementById('ov3reg').onclick=reg;
+    login();
+  }
+  function inp(id,label,type,ph){return '<label style="display:block;font-size:12px;font-weight:bold;margin:10px 0 5px">'+label+'</label><input id="'+id+'" type="'+type+'" placeholder="'+(ph||'')+'" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #ddd;border-radius:9px">'}
+  function login(){
+    ov3body.innerHTML=inp('v3u','Username','text','username')+inp('v3p','Kata Sandi','password','••••••••')+inp('v3pin','PIN','password','6 digit PIN')+
+      '<button id="v3go" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:9px;background:#222;color:#fff">Masuk sebagai Owner</button>'+
+      '<div style="text-align:center;margin-top:12px;font-size:12px"><button id="v3fp" style="border:0;background:none">Lupa kata sandi?</button> · <button id="v3fi" style="border:0;background:none">Lupa PIN?</button></div>';
+    v3go.onclick=function(){var a=JSON.parse(localStorage.getItem('nusa_owner_v2')||'null');if(!a)return alert('Owner belum terdaftar. Pilih Daftar.');if(a.username!==v3u.value.trim()||a.password!==v3p.value||a.pin!==v3pin.value)return alert('Username, password, atau PIN salah.');localStorage.setItem('nusa_owner_session_v2',JSON.stringify({username:a.username,name:a.name||a.username,email:a.email}));location.href='owner.html'};
+    v3fp.onclick=function(){alert('Gunakan email Owner untuk recovery. Backend email akan diaktifkan saat server tersedia.')};
+    v3fi.onclick=function(){alert('Gunakan email Owner untuk recovery. Backend email akan diaktifkan saat server tersedia.')};
+  }
+  function reg(){
+    ov3body.innerHTML=inp('v3wa','Nomor WhatsApp','tel','+62 8xx xxxx xxxx')+inp('v3ru','Username','text','username')+inp('v3e','Email','email','email@example.com')+inp('v3rp','Kata Sandi','password','minimal 6 karakter')+inp('v3rpin','PIN','password','6 digit PIN')+
+      '<button id="v3create" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:9px;background:#222;color:#fff">Buat Owner Account</button>';
+    v3create.onclick=function(){var wa=v3wa.value.trim(),u=v3ru.value.trim(),e=v3e.value.trim(),p=v3rp.value,pin=v3rpin.value;if(!wa||!u||!e||p.length<6||!/^[0-9]{6}$/.test(pin))return alert('Lengkapi data. Password min 6 karakter, PIN 6 digit.');if(localStorage.getItem('nusa_owner_v2'))return alert('Owner Account sudah terdaftar di perangkat ini.');localStorage.setItem('nusa_owner_v2',JSON.stringify({name:u,wa:wa,username:u,email:e,password:p,pin:pin,verified:false,createdAt:Date.now()}));alert('Owner Account berhasil dibuat. Silakan Login.');login()};
+  }
+  document.addEventListener('click',function(e){
+    var logo=e.target.closest&&e.target.closest('.logo');
+    if(!logo)return;
+    n++;clearTimeout(t);t=setTimeout(function(){n=0},3000);
+    if(n>=7){e.preventDefault();e.stopImmediatePropagation();n=0;box()}
+  },true);
+  window.NUSA_OWNER_V3={open:box};
+})();
+</script><script>
+<!-- NUSA CLICK FIX -->
+(function(){
+  function openCard(a){
+    if(!a)return;
+    var n=a.getAttribute('data-nusa-name'),l=a.getAttribute('data-nusa-label')||'Paket';
+    if(!n)return;
+    if(typeof window.NUSA_OPEN_PACKAGE==='function'){
+      window.NUSA_OPEN_PACKAGE(n,l);
+      return;
+    }
+    setTimeout(function(){if(typeof window.NUSA_OPEN_PACKAGE==='function')window.NUSA_OPEN_PACKAGE(n,l)},50);
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('.nusaFallbackCard,[data-nusa-name]');
+    if(!a)return;
+    e.preventDefault();
+    e.stopPropagation();
+    openCard(a);
+  },true);
+})();
+</script><script>
+/* NUSA PACKAGE BOOKING — interactive */
+(function(){
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  var prices={
+    'Bali':1899000,'Bromo':1499000,'Lombok':2299000,'Labuan Bajo':2799000,'Raja Ampat':3999000,
+    'Yogyakarta':1299000,'Bandung':1099000,'Jakarta':999000,'Malang':1399000,'Komodo':2899000,
+    'Ubud':1799000,'Gili Trawangan':2199000,'Flores':2499000,'Belitung':1999000,'Derawan':3599000,
+    'Toraja':2399000,'Wakatobi':3299000,'Dieng':1199000,'Labuan Bajo Premium':4999000,'Nusa Penida':2099000
+  };
+  function open(el){
+    var name=el.getAttribute('data-nusa-name')||((el.querySelector('h3,strong')||{}).textContent||'Paket').trim();
+    var label=el.getAttribute('data-nusa-label')||'Paket';
+    var img=el.querySelector('img'),src=img?(img.currentSrc||img.src):'';
+    var base=prices[name]||999000;
+    var old=document.getElementById('nusaBookingModal');if(old)old.remove();
+    var o=document.createElement('div');o.id='nusaBookingModal';
+    o.style.cssText='position:fixed;inset:0;z-index:9999999;background:rgba(20,5,10,.72);display:flex;align-items:center;justify-content:center;padding:14px;font-family:DM Sans,sans-serif';
+    o.innerHTML='<div style="width:min(760px,100%);max-height:94vh;overflow:auto;background:#fffafa;border-radius:16px;box-shadow:0 25px 90px #0007">'+
+      '<div style="position:relative"><img src="'+esc(src)+'" style="display:block;width:100%;height:250px;object-fit:cover;border-radius:16px 16px 0 0"><button id="nbx" style="position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#8f1530;font-size:24px">×</button></div>'+
+      '<div style="padding:22px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+esc(label)+'</div>'+
+      '<h2 style="font:500 34px Georgia,serif;margin:7px 0;color:#24171b">'+esc(name)+'</h2>'+
+      '<div style="color:#f2b900;font-weight:800">★ 4.8 <span style="color:#7b6c72;font-weight:400">· Rating perjalanan</span></div>'+
+      '<p style="color:#66585d;line-height:1.6">Atur detail perjalananmu sebelum melakukan pemesanan.</p>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+      '<label style="font-size:11px;font-weight:800;display:block">Tanggal berangkat<div class="nbDatePick"><input type="hidden" id="nbdate" value=""><button type="button" class="nbDateBtn" id="nbDateBtn"><span id="nbDateText">Pilih tanggal</span><b>▣</b></button></div></label>'+
+      '<label style="font-size:11px;font-weight:800;display:block">Jumlah orang<div class="nbPick" data-id="nbguest" data-value="1"><input type="hidden" id="nbguest" value="1"><button type="button" class="nbPickBtn"><span>1 orang</span><b>⌄</b></button></div></label>'+
+      '<label style="font-size:11px;font-weight:800;display:block">Durasi<div class="nbPick" data-id="nbduration" data-value="1"><input type="hidden" id="nbduration" value="1"><button type="button" class="nbPickBtn"><span>1 hari 1 malam</span><b>⌄</b></button></div></label>'+
+      '<label style="font-size:11px;font-weight:800;display:block">Tipe paket<div class="nbPick" data-id="nbtype" data-value="Standard"><input type="hidden" id="nbtype" value="Standard"><button type="button" class="nbPickBtn"><span>Standard</span><b>⌄</b></button></div></label>'+
+      '<label style="font-size:11px;font-weight:800;display:block">Penginapan<div class="nbPick" data-id="nbstay" data-value="Tidak pakai penginapan"><input type="hidden" id="nbstay" value="Tidak pakai penginapan"><button type="button" class="nbPickBtn"><span>Tidak pakai penginapan</span><b>⌄</b></button></div></label>'+
+      '<label style="font-size:11px;font-weight:800;display:block">Transportasi<div class="nbPick" data-id="nbtransport" data-value="Pesawat"><input type="hidden" id="nbtransport" value="Pesawat"><button type="button" class="nbPickBtn"><span>Pesawat</span><b>⌄</b></button></div></label>'+
+      '</div>'+
+      '<label style="display:block;font-size:11px;font-weight:800;margin-top:12px">Lokasi jemput<input id="nbpickup" type="text" placeholder="Contoh: Bandara Kualanamu, hotel, stasiun, atau alamat" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px;border:1px solid #e3cfd5;border-radius:10px;background:#fff;color:#2b2024"></label>'+
+      '<label style="display:block;font-size:11px;font-weight:800;margin-top:12px">Catatan perjalanan<textarea id="nbnote" placeholder="Contoh: jemput di hotel, makanan tertentu, dll." style="display:block;width:100%;box-sizing:border-box;margin-top:5px;min-height:80px;padding:11px;border:1px solid #eadcdf;border-radius:8px;resize:vertical"></textarea></label>'+
+      '<div style="margin-top:16px;padding:15px;background:#f8edf1;border-radius:12px">'+
+      '<div><div style="font-size:10px;color:#7b6c72;text-transform:uppercase;font-weight:800">Total paket</div><small id="nbPriceHint" style="color:#7b6c72">Dihitung otomatis dari pilihanmu.</small></div>'+
+      '<strong id="nbtotal" style="display:block;font-size:25px;color:#8f1530;margin-top:9px">Rp'+base.toLocaleString('id-ID')+'</strong>'+
+      '<div id="nbManualBox" style="display:none;margin-top:10px"><label style="font-size:11px;font-weight:800">Masukkan total harga<input id="nbmanual" type="number" min="0" step="10000" placeholder="Contoh: 2500000" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px;border:1px solid #e3cfd5;border-radius:10px;background:#fff"></label></div>'+
+      '</div>'+
+      '<button id="nbbook" style="width:100%;margin-top:12px;padding:14px;border:0;border-radius:9px;background:#8f1530;color:#fff;font-weight:800">Pesan Paket</button>'+
+      '<div id="nbstatus" style="text-align:center;color:#7b6c72;font-size:11px;margin-top:9px"></div></div></div>';
+    document.body.appendChild(o);
+    var $=function(id){return document.getElementById(id)};
+    (function(){
+      var isOwner=!!localStorage.getItem('nusa_owner_session_v2');
+      var manualBox=$('nbManualBox');
+      if(manualBox){
+        manualBox.classList.add('nusaOwnerPriceOnly');
+        if(isOwner){
+          manualBox.classList.add('open');
+          manualBox.insertAdjacentHTML('afterbegin','<div class="nbOwnerModeRow"><button type="button" class="nbMode active" data-mode="auto">Otomatis</button><button type="button" class="nbMode" data-mode="manual">Harga Manual</button></div>');
+          manualBox.style.display='block';
+          manualBox.querySelector('#nbmanual').parentElement.style.display='none';
+          manualBox.insertAdjacentHTML('afterbegin','<div style="font-size:10px;color:#17463d;font-weight:800;margin-bottom:7px">OWNER · Harga khusus</div>');
+        }else{
+          manualBox.remove();
+        }
+      }
+    })();
+    (function(){
+      var dateBtn=$('nbDateBtn'),dateText=$('nbDateText'),dateInput=$('nbdate');
+      var dp=document.createElement('div');dp.className='nbDatePop';dp.innerHTML='<div class="nbDateShade"></div><div class="nbDateBox"><div class="nbDateTop"><button type="button" id="nbPrev">‹</button><div><strong id="nbMonth"></strong><small id="nbYear"></small></div><button type="button" id="nbNext">›</button></div><div class="nbWeek"><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span></div><div class="nbDays" id="nbDays"></div><div class="nbDateActions"><button type="button" id="nbDateCancel">Batal</button><button type="button" id="nbDateOk">Pilih</button></div></div>';o.appendChild(dp);
+      var now=new Date(), selected=null, view=new Date(now.getFullYear(),now.getMonth(),1);
+      function pad(n){return String(n).padStart(2,'0')}
+      function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+      function pretty(d){return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
+      function draw(){
+        var months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        $('nbMonth').textContent=months[view.getMonth()];$('nbYear').textContent=view.getFullYear();
+        var days=$('nbDays'),first=(new Date(view.getFullYear(),view.getMonth(),1).getDay()+6)%7,last=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(),html='';
+        for(var i=0;i<first;i++)html+='<span class="nbEmpty"></span>';
+        for(var d=1;d<=last;d++){var x=new Date(view.getFullYear(),view.getMonth(),d), disabled=x<new Date(now.getFullYear(),now.getMonth(),now.getDate()), active=selected&&iso(selected)===iso(x);html+='<button type="button" class="nbDay'+(active?' active':'')+(disabled?' disabled':'')+'" data-date="'+iso(x)+'">'+d+'</button>'}
+        days.innerHTML=html;
+        days.querySelectorAll('.nbDay:not(.disabled)').forEach(function(b){b.onclick=function(){var p=b.getAttribute('data-date').split('-');selected=new Date(+p[0],+p[1]-1,+p[2]);draw()}})
+      }
+      function openDate(){dp.classList.add('open');if(dateInput.value){var p=dateInput.value.split('-');selected=new Date(+p[0],+p[1]-1,+p[2]);view=new Date(selected.getFullYear(),selected.getMonth(),1)}else{selected=null;view=new Date(now.getFullYear(),now.getMonth(),1)}draw()}
+      dateBtn.onclick=function(e){e.preventDefault();e.stopPropagation();openDate()};
+      dp.querySelector('.nbDateShade').onclick=function(){dp.classList.remove('open')};
+      $('nbPrev').onclick=function(){view.setMonth(view.getMonth()-1);draw()};
+      $('nbNext').onclick=function(){view.setMonth(view.getMonth()+1);draw()};
+      $('nbDateCancel').onclick=function(){dp.classList.remove('open')};
+      $('nbDateOk').onclick=function(){if(!selected)return;dateInput.value=iso(selected);dateText.textContent=pretty(selected);dp.classList.remove('open')};
+    })();
+    (function(){
+      var lists={
+        nbguest:[['1','1 orang'],['2','2 orang'],['3','3 orang'],['4','4 orang'],['5','5 orang'],['6','6 orang'],['7','7 orang'],['8','8 orang'],['9','9 orang'],['10','10 orang']],
+        nbduration:[['1','1 hari 1 malam'],['2','2 hari 1 malam'],['3','3 hari 2 malam'],['4','4 hari 3 malam'],['5','5 hari 4 malam'],['7','7 hari 6 malam']],
+        nbtype:[['Standard','Standard'],['Comfort','Comfort · +Rp300.000/orang'],['Premium','Premium · +Rp700.000/orang']],
+        nbstay:[['Tidak pakai penginapan','Tidak pakai penginapan'],['Hotel','Hotel'],['Villa','Villa'],['Resort','Resort'],['Motel','Motel']],
+        nbtransport:[['Pesawat','Pesawat'],['Kereta','Kereta'],['Bus','Bus'],['Kapal','Kapal'],['Travel','Travel']]
+      };
+      var pop=document.createElement('div');pop.className='nbPickerPop';pop.innerHTML='<div class="nbPickerShade"></div><div class="nbPickerBox"><div class="nbPickerHead"><span id="nbPickerTitle">Pilih</span><button type="button" id="nbPickerClose">×</button></div><div id="nbPickerList"></div></div>';o.appendChild(pop);
+      function closePick(){pop.classList.remove('open')}
+      pop.querySelector('.nbPickerShade').onclick=closePick;pop.querySelector('#nbPickerClose').onclick=closePick;
+      o.querySelectorAll('.nbPick').forEach(function(p){
+        p.querySelector('.nbPickBtn').onclick=function(e){
+          e.preventDefault();e.stopPropagation();
+          var id=p.getAttribute('data-id'),list=lists[id]||[],box=pop.querySelector('#nbPickerList');
+          pop.querySelector('#nbPickerTitle').textContent=p.parentElement.firstChild.textContent;
+          box.innerHTML=list.map(function(x){return '<button type="button" class="nbOption" data-value="'+esc(x[0])+'"><span>'+esc(x[1])+'</span><i>✓</i></button>'}).join('');
+          box.querySelectorAll('.nbOption').forEach(function(btn){
+            btn.onclick=function(){
+              var v=btn.getAttribute('data-value'),input=$(id);
+              input.value=v;p.setAttribute('data-value',v);p.querySelector('.nbPickBtn span').textContent=btn.querySelector('span').textContent;
+              box.querySelectorAll('.nbOption').forEach(function(x){x.classList.remove('active')});btn.classList.add('active');
+              closePick();total();
+            };
+          });
+          box.querySelectorAll('.nbOption').forEach(function(btn){if(btn.getAttribute('data-value')===p.getAttribute('data-value'))btn.classList.add('active')});
+          pop.classList.add('open');
+        };
+      });
+    })();
+    function total(){
+      var g=+$('nbguest').value,d=+$('nbduration').value,t=$('nbtype').value;
+      var extra=t==='Premium'?700000:t==='Comfort'?300000:0;
+      var durationExtra=Math.max(0,d-2)*75000;
+      if(document.querySelector('.nbMode.active')&&document.querySelector('.nbMode.active').getAttribute('data-mode')==='manual'){
+        var manual=+$('nbmanual').value||0;
+        $('nbtotal').textContent='Rp'+manual.toLocaleString('id-ID');
+        return;
+      }
+      $('nbtotal').textContent='Rp'+((base+extra+durationExtra)*g).toLocaleString('id-ID');
+    }
+    document.querySelectorAll('.nbMode').forEach(function(btn){
+      btn.onclick=function(){
+        document.querySelectorAll('.nbMode').forEach(function(x){x.classList.remove('active')});
+        btn.classList.add('active');
+        var manual=btn.getAttribute('data-mode')==='manual';
+        if($('nbManualBox')) $('nbManualBox').style.display='block';
+        if($('nbmanual')) $('nbmanual').parentElement.style.display=manual?'block':'none';
+        $('nbPriceHint').textContent=manual?'Harga ditentukan manual oleh admin/owner.':'Dihitung otomatis dari pilihanmu.';
+        total();
+        if(manual)$('nbmanual').focus();
+      };
+    });
+    if($('nbmanual')) $('nbmanual').addEventListener('input',total);
+    ['nbguest','nbduration','nbtype'].forEach(function(id){if($(id))$(id).addEventListener('change',total)});
+    $('nbx').onclick=function(){o.remove()};
+    o.addEventListener('click',function(e){if(e.target===o)o.remove()});
+    $('nbbook').onclick=function(){
+      var date=$('nbdate').value;
+      if(!date){$('nbstatus').textContent='Pilih tanggal keberangkatan dulu.';$('nbdate').focus();return}
+      var booking={name:name,label:label,date:date,pickup:$('nbpickup').value.trim(),guests:+$('nbguest').value,duration:+$('nbduration').value,type:$('nbtype').value,stay:$('nbstay').value,transport:$('nbtransport').value,note:$('nbnote').value,total:$('nbtotal').textContent,priceMode:document.querySelector('.nbMode.active')?.getAttribute('data-mode')||'auto',manualPrice:document.getElementById('nbmanual')?(+$('nbmanual').value||0):0,createdAt:new Date().toISOString()};
+      try{var a=JSON.parse(localStorage.getItem('nusa_package_orders_v1')||'[]');a.unshift(booking);localStorage.setItem('nusa_package_orders_v1',JSON.stringify(a))}catch(e){}
+      $('nbstatus').textContent='Pesanan tersimpan. Detail siap dilanjutkan.';
+      $('nbbook').textContent='Pesanan Tersimpan ✓';
+      $('nbbook').style.background='#27743a';
+    };
+    total();
+  }
+  document.addEventListener('click',function(e){
+    var el=e.target.closest&&e.target.closest('.dest[data-nusa-name],.nusaFallbackCard,.nusaMainCard');
+    if(!el)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    open(el);
+  },true);
 })();
 </script>
+
+
+
+</script><script id="nusaMenuFinalBinder">(function(){function bind(){var b=document.querySelector('.menuBtn'),d=document.getElementById('drawer');if(!b||!d)return;b.onclick=function(e){e.preventDefault();e.stopPropagation();openMenu(!d.classList.contains('open'));};d.addEventListener('click',function(e){if(e.target===d)openMenu(false);});document.addEventListener('keydown',function(e){if(e.key==='Escape')openMenu(false);});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();})();</script></body></html>
