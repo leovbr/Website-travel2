@@ -762,38 +762,82 @@ window.NUSA_OPEN_PACKAGE=open;
 
 
 <style id="nusaCleanInteraction">
-.nav{position:sticky!important;top:0!important;z-index:5000!important;isolation:auto!important}
-.searchDock{position:sticky!important;z-index:4000!important}
-.menuBtn{position:relative!important;z-index:6000!important;pointer-events:auto!important;touch-action:manipulation!important}
+/* Single, clean drawer layer: drawer above search, menu button remains usable. */
+.nav{
+  position:sticky!important;
+  top:0!important;
+  z-index:11000!important;
+}
+.searchDock{
+  position:sticky!important;
+  z-index:4000!important;
+}
+.menuBtn{
+  position:relative!important;
+  z-index:11001!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
 .menuBtn:before,.menuBtn:after{pointer-events:none!important}
-.drawer{position:fixed!important;inset:0!important;z-index:3000!important;pointer-events:none!important}
-.drawer.open{display:flex!important;pointer-events:auto!important}
+.drawer{
+  position:fixed!important;
+  inset:0!important;
+  z-index:10000!important;
+  pointer-events:none!important;
+}
+.drawer.open{
+  display:flex!important;
+  pointer-events:auto!important;
+}
 .drawer .panel,.drawer .panel *{pointer-events:auto!important}
+/* When open, only the hamburger remains above the drawer; the navbar itself becomes transparent. */
+body.nusaDrawerOpen .nav{
+  background:transparent!important;
+  box-shadow:none!important;
+  border-bottom-color:transparent!important;
+  pointer-events:none!important;
+}
+body.nusaDrawerOpen .nav .menuBtn{
+  pointer-events:auto!important;
+}
 </style>
 <script id="nusaCleanInteractionJS">
 (function(){
   var btn,drawer;
+  function sync(open){
+    if(!drawer)return;
+    drawer.classList.toggle('open',!!open);
+    document.body.classList.toggle('nusaDrawerOpen',!!open);
+  }
   function bind(){
     btn=document.querySelector('.menuBtn');
     drawer=document.getElementById('drawer');
     if(!btn||!drawer)return;
+
     btn.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
-      drawer.classList.toggle('open');
+      sync(!drawer.classList.contains('open'));
     };
+
     var close=drawer.querySelector('.x');
     if(close)close.onclick=function(e){
       e.preventDefault();
       e.stopPropagation();
-      drawer.classList.remove('open');
+      sync(false);
     };
+
     drawer.onclick=function(e){
-      if(e.target===drawer)drawer.classList.remove('open');
+      if(e.target===drawer)sync(false);
+    };
+
+    /* Keep legacy openMenu() calls compatible with the new single state. */
+    window.openMenu=function(v){
+      sync(v===undefined ? !drawer.classList.contains('open') : v);
     };
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
   else bind();
   window.addEventListener('load',bind,{once:true});
 })();
-</script></body></html>
+</script></script></body></html>
