@@ -795,7 +795,7 @@ window.NUSA_OPEN_PACKAGE=open;
       mb.dataset.nusaRepair='1';
       mb.addEventListener('click',function(e){
         e.preventDefault();e.stopImmediatePropagation();
-        if(typeof window.openMenu==='function') window.openMenu(true);
+        if(typeof window.openMenu==='function') window.openMenu(!dr || !dr.classList.contains('open'));
         else if(dr) dr.classList.add('open');
       },true);
     }
@@ -844,5 +844,34 @@ body{position:relative!important}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix();
   window.addEventListener('load',fix,{once:true});
+})();
+</script><style id="nusaMenuFinalFix">
+#drawer{z-index:2147482001!important}
+#drawer.open{pointer-events:auto!important}
+#drawer .panel{pointer-events:auto!important}
+#drawer .x,#drawer .menuItem{pointer-events:auto!important;touch-action:manipulation!important}
+.menuBtn{pointer-events:auto!important;touch-action:manipulation!important}
+</style>
+<script id="nusaMenuFinalFixJS">
+(function(){
+  function bind(){
+    var btn=document.querySelector('.menuBtn'), dr=document.getElementById('drawer');
+    if(!btn||!dr||btn.dataset.nusaFinal)return;
+    btn.dataset.nusaFinal='1';
+    btn.addEventListener('click',function(e){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(typeof window.openMenu==='function') window.openMenu(!dr.classList.contains('open'));
+      else dr.classList.toggle('open');
+    },true);
+    dr.addEventListener('click',function(e){
+      if(e.target===dr){
+        e.preventDefault();e.stopImmediatePropagation();
+        if(typeof window.openMenu==='function') window.openMenu(false);
+        else dr.classList.remove('open');
+      }
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  window.addEventListener('load',bind,{once:true});
 })();
 </script></body></html>
