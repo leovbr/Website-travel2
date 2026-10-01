@@ -263,12 +263,18 @@ T={
   };
   function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
   function card(x,label){
-    return '<a href="#" class="dest nusaFallbackCard" style="display:flex!important;flex:0 0 180px!important;width:180px!important;min-width:180px!important;height:235px!important;position:relative!important;overflow:hidden!important;visibility:visible!important;opacity:1!important;border-radius:12px!important;background:#222!important;color:#fff!important;text-decoration:none!important;">'+
+    return '<a href="#" data-nusa-name="'+esc(x[0])+'" class="dest nusaFallbackCard" style="display:flex!important;flex:0 0 180px!important;width:180px!important;min-width:180px!important;height:235px!important;position:relative!important;overflow:hidden!important;visibility:visible!important;opacity:1!important;border-radius:12px!important;background:#222!important;color:#fff!important;text-decoration:none!important;">'+
       '<img loading="lazy" src="'+x[1]+'" style="display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;position:absolute!important;inset:0!important;">'+
       '<span style="position:absolute!important;inset:0!important;padding:15px!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;background:linear-gradient(transparent 35%,rgba(0,0,0,.82))!important;color:#fff!important;z-index:2!important;">'+
       '<small style="font:600 10px/1.2 sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;">'+esc(label)+'</small><strong style="font:500 20px/1.08 Georgia,serif!important;margin-top:5px!important;">'+esc(x[0])+'</strong></span></a>';
   }
   function row(arr,label){return '<div class="nusaFallbackRow" style="display:flex!important;flex-flow:row nowrap!important;gap:14px!important;width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;padding:2px 2px 12px!important;box-sizing:border-box!important;scrollbar-width:none!important;">'+arr.map(function(x){return card(x,label)}).join('')+'</div>'}
+  window.NUSA_CATALOG={};
+  function exposeCatalog(){
+    [D].forEach(function(arr){arr.forEach(function(x){window.NUSA_CATALOG[x[0]]=x[1]})});
+    [H,T].forEach(function(obj){Object.keys(obj).forEach(function(k){obj[k].forEach(function(x){window.NUSA_CATALOG[x[0]]=x[1]})})});
+  }
+  exposeCatalog();
   function renderFallback(){
     var d=document.getElementById('destGrid'),h=document.getElementById('hotelGrid'),t=document.getElementById('transportGrid');
     if(!d||!h||!t)return;
@@ -280,6 +286,7 @@ T={
       }).join('');
     }
     groups(H,h);groups(T,t);
+    if(window.NUSA_OWNER_APPLY)window.NUSA_OWNER_APPLY();
   }
   function imageHint(title){
     var s=String(title).toLowerCase();
@@ -345,7 +352,7 @@ T={
         var label=card.querySelector('small');
         if(!title)return;
         var u=await wikiImage(title.textContent);
-        if(u){img.src=u;img.dataset.nusaReal='1';}
+        if(u&&!img.dataset.nusaCustom){img.src=u;img.dataset.nusaReal='1';}
       })(cards[i],imgs[i]);
       if(i%8===7)await new Promise(function(r){setTimeout(r,180);});
     }
