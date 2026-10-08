@@ -353,7 +353,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
     (function(){
       var wb=$('nbWish');
       if(wb){
-        var wk=(label||'')+'::'+(name||''), saved=[];
+        var wk=String(label||'')+'::'+String(name||''), saved=[];
         try{saved=JSON.parse(localStorage.getItem('nusa_wishlist_v1')||'[]')}catch(e){saved=[]}
         var on=saved.some(function(x){return x.key===wk});
         wb.classList.toggle('isSaved',on);
