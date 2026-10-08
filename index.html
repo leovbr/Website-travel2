@@ -326,7 +326,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
     o.style.cssText='position:fixed;inset:0;z-index:9999999;background:rgba(20,5,10,.72);display:flex;align-items:center;justify-content:center;padding:14px;font-family:DM Sans,sans-serif';
     o.innerHTML='<div style="width:min(760px,100%);max-height:94vh;overflow:auto;background:#fffafa;border-radius:16px;box-shadow:0 25px 90px #0007">'+
       '<div style="position:relative"><img src="'+esc(src)+'" style="display:block;width:100%;height:250px;object-fit:cover;border-radius:16px 16px 0 0"><button id="nbx" style="position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#8f1530;font-size:24px">×</button></div>'+
-      '<div style="padding:22px"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+esc(label)+'</div><button id="nbWish" type="button" aria-label="Tambah ke wishlist" style="position:static;display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;margin:0;border:1px solid rgba(143,21,48,.15);border-radius:50%;background:#fff;color:#8f1530;font-size:24px;line-height:1;box-shadow:0 6px 18px rgba(20,5,10,.12);cursor:pointer;pointer-events:auto;touch-action:manipulation">♥</button></div>'+
+      '<div style="padding:22px"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+esc(label)+'</div><button id="nbWish" type="button" class="nusaWishBtn" data-nusa-wish-key="'+esc(key(label,name))+'" data-nusa-wish-name="'+esc(name)+'" data-nusa-wish-label="'+esc(label)+'" data-nusa-wish-img="'+esc(src)+'" aria-label="Tambah ke wishlist" style="position:static;display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;margin:0;border:1px solid rgba(143,21,48,.15);border-radius:50%;background:#fff;color:#8f1530;font-size:24px;line-height:1;box-shadow:0 6px 18px rgba(20,5,10,.12);cursor:pointer;pointer-events:auto;touch-action:manipulation">♥</button></div>'+
       '<h2 style="font:500 34px Georgia,serif;margin:7px 0;color:#24171b">'+esc(name)+'</h2>'+
       '<div style="color:#f2b900;font-weight:800">★ 4.8 <span style="color:#7b6c72;font-weight:400">· Rating perjalanan</span></div>'+
       '<p style="color:#66585d;line-height:1.6">Atur detail perjalananmu sebelum melakukan pemesanan.</p>'+
@@ -355,9 +355,9 @@ button,a,input,select,textarea{touch-action:manipulation;}
       if(wb){
         var wk=(label||'')+'::'+(name||''), saved=[];
         try{saved=JSON.parse(localStorage.getItem('nusa_wishlist_v1')||'[]')}catch(e){saved=[]}
-        var syncWish=function(){var on=saved.some(function(x){return x.key===wk});wb.style.background=on?'#8f1530':'#fff';wb.style.color=on?'#fff':'#8f1530';wb.setAttribute('aria-label',on?'Hapus dari wishlist':'Tambah ke wishlist')};
-        syncWish();
-        wb.onclick=function(ev){ev.preventDefault();ev.stopImmediatePropagation();if(window.NUSA_WISHLIST_TOGGLE)window.NUSA_WISHLIST_TOGGLE(name,label,src);try{saved=JSON.parse(localStorage.getItem('nusa_wishlist_v1')||'[]')}catch(e){saved=[]}syncWish();return false};
+        var on=saved.some(function(x){return x.key===wk});
+        wb.classList.toggle('isSaved',on);
+        wb.setAttribute('aria-label',on?'Hapus dari wishlist':'Tambah ke wishlist');
       }
     })();
     (function(){
