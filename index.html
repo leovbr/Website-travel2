@@ -450,7 +450,7 @@ T={
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);
   else bind();
 })();function toggleLang(){langs.classList.toggle('open')}function renderLang(){langs.innerHTML=LANGS.map(x=>`<button class="lang ${state.lang===x[0]?'active':''}" onclick="state.lang='${x[0]}';save();renderLang();toast('Bahasa: ${x[2]}')">${x[1]} ${x[2]}</button>`).join('')}function logout(){state.profile={name:'',email:'',photo:'',password:''};save();updateUser();openMenu(false);toast('Berhasil keluar.')}function resetDemo(){if(confirm('Reset semua data demo?')){localStorage.removeItem(KEY);location.reload()}}[price,...document.querySelectorAll('.dur,.sty')].forEach(x=>x.addEventListener('input',renderPackages));document.querySelectorAll('.dur,.sty').forEach(x=>x.addEventListener('change',renderPackages));minRating.addEventListener('change',renderPackages);sort.addEventListener('change',renderPackages);q.addEventListener('input',renderPackages);price.addEventListener('input',renderPackages);renderDest();renderPackages();renderPages();renderLang();updateUser();
-<script>
+
 (function(){
 var KEY='nusa_package_reviews_v1';
 function esc2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
