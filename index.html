@@ -358,6 +358,15 @@ button,a,input,select,textarea{touch-action:manipulation;}
         var on=saved.some(function(x){return x.key===wk});
         wb.classList.toggle('isSaved',on);
         wb.setAttribute('aria-label',on?'Hapus dari wishlist':'Tambah ke wishlist');
+        wb.onclick=function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          var added=false;
+          if(window.NUSA_WISHLIST_TOGGLE) added=window.NUSA_WISHLIST_TOGGLE(name,label,src);
+          wb.classList.toggle('isSaved',!!added);
+          wb.setAttribute('aria-label',added?'Hapus dari wishlist':'Tambah ke wishlist');
+          return false;
+        };
       }
     })();
     (function(){
@@ -558,7 +567,7 @@ window.NUSA_NOTIFY=function(message,title){
 };
 </script>
 <style id="nusaWishlistStyle">
-.nusaCatalogCardWrap{position:relative;min-width:0;flex:0 0 calc((100% - 36px)/4);height:250px}.nusaCatalogCardWrap>.nusaMainCard{display:block;width:100%;height:100%}.nusaCatalogCardWrap>.nusaWishBtn{position:absolute;right:12px;bottom:12px;z-index:8}.rowScroll .nusaCatalogCardWrap{flex:0 0 190px;height:180px}@media(max-width:760px){.nusaCatalogCardWrap{flex-basis:calc((100% - 12px)/2);height:230px}}
+.nusaCatalogCardWrap{position:relative;min-width:0;flex:0 0 calc((100% - 36px)/4);height:250px}.nusaCatalogCardWrap>.nusaMainCard{display:block;width:100%;height:100%}.nusaCatalogCardWrap>.nusaWishBtn{position:absolute;right:12px;bottom:12px;z-index:20;pointer-events:auto;touch-action:manipulation}.rowScroll .nusaCatalogCardWrap{flex:0 0 190px;height:180px}@media(max-width:760px){.nusaCatalogCardWrap{flex-basis:calc((100% - 12px)/2);height:230px}}
 .nusaWishBtn{position:absolute;right:12px;bottom:12px;width:38px;height:38px;border:0;border-radius:50%;display:grid;place-items:center;background:rgba(255,253,248,.94);color:#8f1530;font-size:19px;line-height:1;box-shadow:0 7px 22px rgba(20,5,10,.18);cursor:pointer;z-index:4;transition:transform .18s ease,background .18s ease,color .18s ease}.nusaWishBtn:hover{transform:translateY(-2px) scale(1.04)}.nusaWishBtn.isSaved{background:#8f1530;color:#fff}.nusaWishBtn span{transform:translateY(-1px)}
 .nusaWishGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}.nusaWishRow{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid rgba(23,70,61,.1);border-radius:16px;background:#fffdfa;min-width:0}.nusaWishImg{width:96px;height:78px;border-radius:12px;object-fit:cover;flex:0 0 auto}.nusaWishInfo{min-width:0;flex:1}.nusaWishInfo h3{margin:0 0 5px;font-family:Georgia,serif;font-size:18px;color:#173f38}.nusaWishInfo p{margin:0;color:#71807b;font-size:12px;line-height:1.45}.nusaWishRemove{border:1px solid rgba(143,21,48,.2);background:transparent;color:#8f1530;border-radius:10px;padding:7px 9px;font-weight:800;cursor:pointer;flex:0 0 auto}@media(max-width:760px){.nusaWishGrid{grid-template-columns:1fr}}@media(max-width:560px){.nusaWishRow{gap:10px;padding:10px}.nusaWishImg{width:82px;height:70px}.nusaWishInfo h3{font-size:16px}.nusaWishRemove{font-size:11px;padding:7px 8px}}
 </style>
