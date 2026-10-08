@@ -297,6 +297,13 @@ button,a,input,select,textarea{touch-action:manipulation;}
       '<button id="v3create" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:9px;background:#222;color:#fff">Buat Owner Account</button>';
     v3create.onclick=function(){var wa=v3wa.value.trim(),u=v3ru.value.trim(),e=v3e.value.trim(),p=v3rp.value,pin=v3rpin.value;if(!wa||!u||!e||p.length<6||!/^[0-9]{6}$/.test(pin))return alert('Lengkapi data. Password min 6 karakter, PIN 6 digit.');if(localStorage.getItem('nusa_owner_v2'))return alert('Owner Account sudah terdaftar di perangkat ini.');localStorage.setItem('nusa_owner_v2',JSON.stringify({name:u,wa:wa,username:u,email:e,password:p,pin:pin,verified:false,createdAt:Date.now()}));alert('Owner Account berhasil dibuat. Silakan Login.');login()};
   }
+  window.NUSA_OPEN_PACKAGE=function(name,label){
+    var all=document.querySelectorAll('.nusaMainCard[data-nusa-name]');
+    for(var i=0;i<all.length;i++){
+      if(all[i].dataset.nusaName===name&&(all[i].dataset.nusaLabel||'Paket')===(label||'Paket')){open(all[i]);return true}
+    }
+    return false;
+  };
   document.addEventListener('click',function(e){
     var logo=e.target.closest&&e.target.closest('.logo');
     if(!logo)return;
@@ -785,7 +792,7 @@ box.innerHTML='<div class="panelCard" style="max-width:1000px"><div style="margi
   ].map(function(x){return {name:x[0],dest:x[1],days:+String(x[2]).replace(/\D/g,''),price:x[3],rating:x[4],reviews:0,img:x[5],desc:'Paket wisata '+x[1]+' dengan itinerary pilihan, aktivitas utama, dan waktu bebas untuk menikmati destinasi.',style:'Adventure'}});
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
   function card(a,label){
-    return '<a href="#" class="dest nusaMainCard" data-nusa-name="'+esc(a[0])+'" data-nusa-label="'+esc(label)+'" onclick="if(event.target.closest&&event.target.closest(\'.nusaWishBtn\'))return false;if(window.NUSA_OPEN_PACKAGE){window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel)};return false"><img loading="lazy" decoding="async" src="'+a[1]+'" alt="'+esc(a[0])+'">'+(window.NUSA_WISHLIST_BUTTON?window.NUSA_WISHLIST_BUTTON(a[0],label,a[1]):'')+'<span><small>'+label+'</small><h3>'+a[0]+'</h3><em>★ 4.8</em></span></a>';
+    return '<div class="dest nusaMainCard" role="button" tabindex="0" data-nusa-name="'+esc(a[0])+'" data-nusa-label="'+esc(label)+'" onclick="if(event.target.closest&&event.target.closest(\'.nusaWishBtn\'))return;if(window.NUSA_OPEN_PACKAGE)window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel);return false" onkeydown="if((event.key===\'Enter\'||event.key===\' \')&&window.NUSA_OPEN_PACKAGE){event.preventDefault();window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel)}"><img loading="lazy" decoding="async" src="'+a[1]+'" alt="'+esc(a[0])+'">'+(window.NUSA_WISHLIST_BUTTON?window.NUSA_WISHLIST_BUTTON(a[0],label,a[1]):'')+'<span><small>'+label+'</small><h3>'+a[0]+'</h3><em>★ 4.8</em></span></div>';
   }
   function renderDest(){
     var d=document.getElementById('destGrid'),h=document.getElementById('hotelGrid'),t=document.getElementById('transportGrid');
