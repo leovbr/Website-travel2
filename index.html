@@ -326,7 +326,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
     o.style.cssText='position:fixed;inset:0;z-index:9999999;background:rgba(20,5,10,.72);display:flex;align-items:center;justify-content:center;padding:14px;font-family:DM Sans,sans-serif';
     o.innerHTML='<div style="width:min(760px,100%);max-height:94vh;overflow:auto;background:#fffafa;border-radius:16px;box-shadow:0 25px 90px #0007">'+
       '<div style="position:relative"><img src="'+esc(src)+'" style="display:block;width:100%;height:250px;object-fit:cover;border-radius:16px 16px 0 0"><button id="nbx" style="position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;color:#8f1530;font-size:24px">×</button></div>'+
-      '<div style="padding:22px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+esc(label)+'</div>'+
+      '<div style="padding:22px"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px"><div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f1530;font-weight:800">'+esc(label)+'</div><button id="nbWish" type="button" aria-label="Tambah ke wishlist" style="position:static;width:40px;height:40px;flex:0 0 40px;border:1px solid rgba(143,21,48,.15);border-radius:50%;background:#fff;color:#8f1530;font-size:20px;line-height:1;box-shadow:0 5px 16px rgba(20,5,10,.12)">♥</button></div>'+
       '<h2 style="font:500 34px Georgia,serif;margin:7px 0;color:#24171b">'+esc(name)+'</h2>'+
       '<div style="color:#f2b900;font-weight:800">★ 4.8 <span style="color:#7b6c72;font-weight:400">· Rating perjalanan</span></div>'+
       '<p style="color:#66585d;line-height:1.6">Atur detail perjalananmu sebelum melakukan pemesanan.</p>'+
@@ -350,6 +350,16 @@ button,a,input,select,textarea{touch-action:manipulation;}
       '<section style="margin-top:24px;padding-top:20px;border-top:1px solid #eadfe2"><h3 style="font:500 24px Georgia,serif;color:#17463d;margin:0 0 10px">Ulasan &amp; Pengalaman</h3><div id="nbReviews">'+reviewsHtml+'</div><div style="background:#f7f3ef;border-radius:14px;padding:15px;margin-top:13px"><b>Tulis ulasan</b><input id="nvrn" placeholder="Nama" style="display:block;width:100%;box-sizing:border-box;margin-top:9px;padding:10px;border:1px solid #ddd;border-radius:9px"><select id="nvrr" style="margin-top:8px;padding:9px;border:1px solid #ddd;border-radius:9px"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><textarea id="nvrt" placeholder="Ceritakan pengalaman..." style="display:block;width:100%;box-sizing:border-box;margin-top:8px;min-height:75px;padding:10px;border:1px solid #ddd;border-radius:9px"></textarea><input id="nvrf" type="file" accept="image/*,video/*" style="margin-top:9px;max-width:100%"><button id="nvrs" type="button" style="display:block;margin-top:10px;border:0;border-radius:999px;padding:10px 15px;background:#17463d;color:#fff">Kirim Ulasan</button></div></section></div></div>'
     document.body.appendChild(o);
     var $=function(id){return document.getElementById(id)};
+    (function(){
+      var wb=$('nbWish');
+      if(wb){
+        var wk=(label||'')+'::'+(name||''), saved=[];
+        try{saved=JSON.parse(localStorage.getItem('nusa_wishlist_v1')||'[]')}catch(e){saved=[]}
+        var syncWish=function(){var on=saved.some(function(x){return x.key===wk});wb.style.background=on?'#8f1530':'#fff';wb.style.color=on?'#fff':'#8f1530';wb.setAttribute('aria-label',on?'Hapus dari wishlist':'Tambah ke wishlist')};
+        syncWish();
+        wb.onclick=function(ev){ev.preventDefault();ev.stopPropagation();if(window.NUSA_WISHLIST_TOGGLE)window.NUSA_WISHLIST_TOGGLE(name,label,src);try{saved=JSON.parse(localStorage.getItem('nusa_wishlist_v1')||'[]')}catch(e){saved=[]}syncWish()};
+      }
+    })();
     (function(){
       var isOwner=!!localStorage.getItem('nusa_owner_session_v2');
       var manualBox=$('nbManualBox');
@@ -763,7 +773,7 @@ box.innerHTML='<div class="panelCard" style="max-width:820px"><div style="margin
   ].map(function(x){return {name:x[0],dest:x[1],days:+String(x[2]).replace(/\D/g,''),price:x[3],rating:x[4],reviews:0,img:x[5],desc:'Paket wisata '+x[1]+' dengan itinerary pilihan, aktivitas utama, dan waktu bebas untuk menikmati destinasi.',style:'Adventure'}});
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
   function card(a,label){
-    return '<a href="javascript:void(0)" class="dest nusaMainCard" data-nusa-name="'+esc(a[0])+'" data-nusa-label="'+esc(label)+'" onclick="if(window.NUSA_OPEN_PACKAGE){window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel)};return false"><img loading="lazy" decoding="async" src="'+a[1]+'" alt="'+esc(a[0])+'">'+(window.NUSA_WISHLIST_BUTTON?window.NUSA_WISHLIST_BUTTON(a[0],label,a[1]):'')+'<span><small>'+label+'</small><h3>'+a[0]+'</h3><em>★ 4.8</em></span></a>';
+    return '<a href="javascript:void(0)" class="dest nusaMainCard" data-nusa-name="'+esc(a[0])+'" data-nusa-label="'+esc(label)+'" onclick="if(event.target.closest&&event.target.closest(\'.nusaWishBtn\'))return false;if(window.NUSA_OPEN_PACKAGE){window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel)};return false"><img loading="lazy" decoding="async" src="'+a[1]+'" alt="'+esc(a[0])+'">'+(window.NUSA_WISHLIST_BUTTON?window.NUSA_WISHLIST_BUTTON(a[0],label,a[1]):'')+'<span><small>'+label+'</small><h3>'+a[0]+'</h3><em>★ 4.8</em></span></a>';
   }
   function renderDest(){
     var d=document.getElementById('destGrid'),h=document.getElementById('hotelGrid'),t=document.getElementById('transportGrid');
