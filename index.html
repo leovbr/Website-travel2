@@ -491,20 +491,118 @@ button,a,input,select,textarea{touch-action:manipulation;}
     settings:['Pengaturan','Atur preferensi tampilan, bahasa, dan pengalaman NUSA.'],
     help:['Bantuan','Temukan jawaban dan bantuan untuk menggunakan NUSA.']
   };
-  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-  function render(n){
-    var p=document.getElementById('pages'); if(!p)return;
-    var x=labels[n]||['NUSA','Halaman NUSA'];
-    var cards={
-      account:'<div class="panelCard"><h3>Profil & akun</h3><p>Informasi akunmu dapat dikelola dari halaman ini.</p><button class="btn dark" onclick="window.NUSA_AUTH&&NUSA_AUTH.open(\'login\')">Kelola akun</button></div>',
-      wishlist:'<div class="panelCard"><h3>Wishlist kamu</h3><p>Belum ada destinasi yang disimpan.</p></div>',
-      orders:'<div class="panelCard"><h3>Perjalanan & booking</h3><p>Belum ada pesanan atau booking.</p></div>',
-      journal:'<div class="panelCard"><h3>Jurnal perjalanan</h3><p>Belum ada jurnal. Mulai tulis pengalaman perjalananmu.</p></div>',
-      notifications:'<div class="panelCard"><h3>Notifikasi</h3><p>Tidak ada notifikasi baru.</p></div>',
-      settings:'<div class="panelCard"><h3>Preferensi NUSA</h3><p>Pengaturan aplikasi dan preferensi perjalananmu akan muncul di sini.</p></div>',
-      help:'<div class="panelCard"><h3>Pusat bantuan</h3><p>Butuh bantuan? Pilih topik yang ingin kamu tanyakan atau hubungi tim NUSA.</p></div>'
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+  function get(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}}
+  function put(k,v){localStorage.setItem(k,JSON.stringify(v))}
+  function session(){return get('nusa_session_v2',null)}
+  function accountData(){
+    var a=session(); if(!a)return null;
+    var arr=get('nusa_users_v2',[]);
+    var u=arr.find(function(x){return x.username===a.username})||a;
+    return {a:a,u:u,arr:arr};
+  }
+  function field(id,label,value,type,placeholder,extra){
+    return '<label style="display:block;margin:0 0 6px;font-size:12px;font-weight:800;color:#17463d">'+label+'</label>'+
+      '<input id="'+id+'" type="'+(type||'text')+'" value="'+esc(value)+'" placeholder="'+esc(placeholder||'')+'" '+(extra||'')+
+      ' style="width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid rgba(23,70,61,.16);border-radius:12px;background:#fff;font:inherit;margin-bottom:14px">';
+  }
+  function renderAccount(){
+    var p=document.getElementById('accountEditor');if(!p)return;
+    var d=accountData();
+    if(!d){
+      p.innerHTML='<div class="panelCard"><h3>Belum masuk</h3><p>Masuk terlebih dahulu untuk mengatur profil.</p><button class="btn dark" onclick="window.NUSA_AUTH&&NUSA_AUTH.open(\'login\')">Masuk</button></div>';
+      return;
+    }
+    var u=d.u||{}, a=d.a||{};
+    p.innerHTML=
+      '<div class="panelCard" style="max-width:680px">'+
+        '<div style="display:flex;align-items:center;gap:16px;margin-bottom:22px">'+
+          '<div style="position:relative;flex:0 0 82px">'+
+            '<img id="accountPhotoPreview" src="'+esc(u.photo||a.photo||'https://i.pravatar.cc/100?u=nusa')+'" style="width:82px;height:82px;border-radius:50%;object-fit:cover;display:block;border:3px solid rgba(23,70,61,.12);background:#eee">'+
+          '</div>'+
+          '<div style="flex:1"><h3 style="margin:0 0 5px">Foto profil</h3><p class="mini" style="margin:0 0 10px">Gunakan foto yang ingin tampil di profil dan menu NUSA.</p>'+
+            '<label class="outline" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer">Ganti foto<input id="accountPhoto" type="file" accept="image/*" style="display:none"></label>'+
+            '<button id="accountPhotoRemove" type="button" class="linkBtn" style="margin-left:10px">Hapus foto</button>'+
+          '</div>'+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+
+          '<div>'+field('accountNameEdit','Nama',u.name||a.name||'','','Nama lengkap')+'</div>'+
+          '<div>'+field('accountWaEdit','Nomor WhatsApp',u.wa||a.wa||'','tel','+62 8xx xxxx xxxx')+'</div>'+
+        '</div>'+
+        field('accountEmailEdit','Email',u.email||a.email||'','email','email@example.com')+
+        field('accountUsernameEdit','Username',u.username||a.username||'','text','username','readonly')+
+        field('accountBioEdit','Bio',u.bio||a.bio||'','text','Ceritakan sedikit tentang dirimu...')+
+        '<button id="accountSave" class="btn dark" type="button" style="width:100%">Simpan perubahan profil</button>'+
+        '<div style="height:1px;background:rgba(23,70,61,.1);margin:24px 0"></div>'+
+        '<h3 style="margin:0 0 6px">Keamanan akun</h3><p class="mini" style="margin-top:0">Ganti kata sandi secara berkala untuk menjaga akunmu.</p>'+
+        field('accountCurrentPass','Kata sandi saat ini','','password','Masukkan kata sandi saat ini')+
+        field('accountNewPass','Kata sandi baru','','password','Minimal 6 karakter')+
+        field('accountConfirmPass','Konfirmasi kata sandi baru','','password','Ulangi kata sandi baru')+
+        '<button id="accountPassSave" class="outline" type="button" style="width:100%">Ganti kata sandi</button>'+
+        '<p class="mini" style="margin:18px 0 0">Perubahan disimpan di perangkat ini pada mode demo.</p>'+
+      '</div>';
+    var photoInput=document.getElementById('accountPhoto');
+    if(photoInput)photoInput.onchange=function(){
+      var f=this.files&&this.files[0];if(!f)return;
+      if(f.size>4*1024*1024)return alert('Foto maksimal 4 MB.');
+      var rd=new FileReader();rd.onload=function(){
+        var im=document.getElementById('accountPhotoPreview');if(im)im.src=rd.result;
+        p.__photo=rd.result;
+      };rd.readAsDataURL(f);
     };
-    p.innerHTML='<section class="page active" id="page-'+esc(n)+'"><div class="pageHero"><div class="kicker">NUSA</div><h1>'+esc(x[0])+'</h1><p>'+esc(x[1])+'</p></div><div class="pageBody">'+(cards[n]||'')+'<button class="outline" style="margin-top:14px" onclick="home()">← Kembali ke NUSA</button></div></section>';
+    var rm=document.getElementById('accountPhotoRemove');
+    if(rm)rm.onclick=function(){p.__photo='';var im=document.getElementById('accountPhotoPreview');if(im)im.src='https://i.pravatar.cc/100?u=nusa'};
+    var saveBtn=document.getElementById('accountSave');
+    if(saveBtn)saveBtn.onclick=function(){
+      var name=document.getElementById('accountNameEdit').value.trim();
+      var wa=document.getElementById('accountWaEdit').value.trim();
+      var email=document.getElementById('accountEmailEdit').value.trim();
+      var bio=document.getElementById('accountBioEdit').value.trim();
+      if(!name||!email)return alert('Nama dan email wajib diisi.');
+      var arr=get('nusa_users_v2',[]),idx=arr.findIndex(function(x){return x.username===d.a.username});
+      if(idx<0)return alert('Data akun tidak ditemukan.');
+      if(arr.some(function(x,i){return i!==idx&&x.email===email}))return alert('Email sudah digunakan akun lain.');
+      arr[idx]=Object.assign({},arr[idx],{name:name,wa:wa,email:email,bio:bio,photo:p.__photo!==undefined?p.__photo:(arr[idx].photo||'')});
+      put('nusa_users_v2',arr);
+      put('nusa_session_v2',{username:arr[idx].username,name:name,email:email,photo:arr[idx].photo||''});
+      if(window.updateAuthUI)window.updateAuthUI();
+      var nav=document.getElementById('profileNavPhoto');if(nav)nav.src=arr[idx].photo||'https://i.pravatar.cc/100?u=nusa';
+      var mp=document.getElementById('menuPhoto');if(mp)mp.src=arr[idx].photo||'https://i.pravatar.cc/100?u=nusa';
+      var mn=document.getElementById('menuName');if(mn)mn.textContent=name;
+      var me=document.getElementById('menuEmail');if(me)me.textContent=email;
+      alert('Profil berhasil diperbarui.');
+      renderAccount();
+    };
+    var ps=document.getElementById('accountPassSave');
+    if(ps)ps.onclick=function(){
+      var cur=document.getElementById('accountCurrentPass').value;
+      var np=document.getElementById('accountNewPass').value;
+      var cp=document.getElementById('accountConfirmPass').value;
+      var arr=get('nusa_users_v2',[]),idx=arr.findIndex(function(x){return x.username===d.a.username});
+      if(idx<0)return alert('Data akun tidak ditemukan.');
+      if(arr[idx].password!==cur)return alert('Kata sandi saat ini salah.');
+      if(np.length<6)return alert('Kata sandi baru minimal 6 karakter.');
+      if(np!==cp)return alert('Konfirmasi kata sandi tidak cocok.');
+      arr[idx].password=np;put('nusa_users_v2',arr);
+      document.getElementById('accountCurrentPass').value='';
+      document.getElementById('accountNewPass').value='';
+      document.getElementById('accountConfirmPass').value='';
+      alert('Kata sandi berhasil diganti.');
+    };
+  }
+  function render(n){
+    var p=document.getElementById('pages');if(!p)return;
+    var x=labels[n]||['NUSA','Halaman NUSA'];
+    var body='';
+    if(n==='account')body='<div id="accountEditor"></div>';
+    else if(n==='wishlist')body='<div class="panelCard"><h3>Wishlist kamu</h3><p>Belum ada destinasi yang disimpan.</p></div>';
+    else if(n==='orders')body='<div class="panelCard"><h3>Perjalanan & booking</h3><p>Belum ada pesanan atau booking.</p></div>';
+    else if(n==='journal')body='<div class="panelCard"><h3>Jurnal perjalanan</h3><p>Belum ada jurnal. Mulai tulis pengalaman perjalananmu.</p></div>';
+    else if(n==='notifications')body='<div class="panelCard"><h3>Notifikasi</h3><p>Tidak ada notifikasi baru.</p></div>';
+    else if(n==='settings')body='<div class="panelCard"><h3>Preferensi NUSA</h3><p>Pengaturan aplikasi dan preferensi perjalananmu akan muncul di sini.</p></div>';
+    else if(n==='help')body='<div class="panelCard"><h3>Pusat bantuan</h3><p>Butuh bantuan? Pilih topik yang ingin kamu tanyakan atau hubungi tim NUSA.</p></div>';
+    p.innerHTML='<section class="page active" id="page-'+esc(n)+'"><div class="pageHero"><div class="kicker">NUSA</div><h1>'+esc(x[0])+'</h1><p>'+esc(x[1])+'</p></div><div class="pageBody">'+body+'<button class="outline" style="margin-top:14px" onclick="home()">← Kembali ke NUSA</button></div></section>';
+    if(n==='account')renderAccount();
   }
   window.__NUSA_MENU=function(n){
     try{
@@ -512,9 +610,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
       var h=document.getElementById('homePage');if(h)h.style.display='none';
       render(n);
       window.scrollTo(0,0);
-    }catch(e){
-      var h=document.getElementById('homePage');if(h)h.style.display='block';
-    }
+    }catch(e){console.error(e)}
   };
 })();
 </script><script src="auth-fix.js"></script>
