@@ -270,8 +270,9 @@ d.addEventListener('click',function(e){
 var b=e.target.closest&&e.target.closest('.menuItem');if(!b||b.id==='authMenuBtn')return;
 var a=b.getAttribute('data-menu-action');if(!a)return;
 e.preventDefault();e.stopPropagation();
+if(b.id==='helpMenuBtn'||a==='help'){if(typeof window.page==='function'){window.page('help')}return}
 if(a==='lang'){if(typeof toggleLang==='function')toggleLang();return}
-if(typeof page==='function')page(a);
+if(typeof window.page==='function')window.page(a);
 },true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMenu);else bindMenu();
