@@ -480,6 +480,34 @@ button,a,input,select,textarea{touch-action:manipulation;}
   },true);
 })();
 </script>
+<style id="nusaPremiumAlertStyle">
+.nusaAlertShade{position:fixed;inset:0;background:rgba(8,25,22,.48);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:2147483646;display:flex;align-items:center;justify-content:center;padding:20px;animation:nusaShadeIn .18s ease}
+.nusaAlert{width:min(410px,100%);background:linear-gradient(145deg,#fffdf8,#f5f1e8);border:1px solid rgba(23,70,61,.12);border-radius:24px;box-shadow:0 25px 80px rgba(8,35,30,.28),0 2px 10px rgba(8,35,30,.08);padding:28px;transform:translateY(8px) scale(.97);animation:nusaAlertIn .22s cubic-bezier(.2,.8,.2,1) forwards;font-family:inherit}
+.nusaAlertMark{width:42px;height:42px;border-radius:14px;background:#0e5145;color:#f8c51c;display:grid;place-items:center;font-weight:900;font-size:18px;margin-bottom:17px;box-shadow:0 8px 22px rgba(14,81,69,.18)}
+.nusaAlertKicker{font-size:10px;letter-spacing:.18em;font-weight:900;color:#0e5145;text-transform:uppercase;margin-bottom:7px}
+.nusaAlertTitle{font-family:Georgia,serif;font-size:27px;line-height:1.1;color:#123f37;margin:0 0 9px}
+.nusaAlertText{font-size:14px;line-height:1.65;color:#68756f;margin:0 0 22px}
+.nusaAlertBtn{width:100%;border:0;border-radius:13px;padding:13px 16px;background:#0e5145;color:#fff;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(14,81,69,.18)}
+.nusaAlertBtn:active{transform:translateY(1px)}
+@keyframes nusaShadeIn{from{opacity:0}to{opacity:1}}
+@keyframes nusaAlertIn{to{transform:translateY(0) scale(1)}}
+</style>
+<script id="nusaPremiumNotify">
+window.NUSA_NOTIFY=function(message,title){
+  var old=document.getElementById('nusaPremiumAlert');if(old)old.remove();
+  var o=document.createElement('div');o.id='nusaPremiumAlert';o.className='nusaAlertShade';
+  o.innerHTML='<div class="nusaAlert" role="dialog" aria-modal="true">'+
+    '<div class="nusaAlertMark">✓</div>'+
+    '<div class="nusaAlertKicker">NUSA · BERHASIL</div>'+
+    '<h3 class="nusaAlertTitle">'+String(title||'Perubahan tersimpan').replace(/</g,'&lt;')+'</h3>'+
+    '<p class="nusaAlertText">'+String(message||'Perubahan berhasil disimpan.').replace(/</g,'&lt;')+'</p>'+
+    '<button class="nusaAlertBtn" type="button">Oke, lanjut</button></div>';
+  document.body.appendChild(o);
+  function close(){o.remove()}
+  o.querySelector('.nusaAlertBtn').onclick=close;
+  o.onclick=function(e){if(e.target===o)close()};
+};
+</script>
 <script id="nusaEmergencyMenuRouter">
 (function(){
   var labels={
@@ -558,10 +586,10 @@ button,a,input,select,textarea{touch-action:manipulation;}
       var wa=document.getElementById('accountWaEdit').value.trim();
       var email=document.getElementById('accountEmailEdit').value.trim();
       var bio=document.getElementById('accountBioEdit').value.trim();
-      if(!name||!email)return alert('Nama dan email wajib diisi.');
+      if(!name||!email)return NUSA_NOTIFY('Nama dan email wajib diisi.','Data belum lengkap');
       var arr=get('nusa_users_v2',[]),idx=arr.findIndex(function(x){return x.username===d.a.username});
-      if(idx<0)return alert('Data akun tidak ditemukan.');
-      if(arr.some(function(x,i){return i!==idx&&x.email===email}))return alert('Email sudah digunakan akun lain.');
+      if(idx<0)return NUSA_NOTIFY('Data akun tidak ditemukan.','Akun tidak ditemukan');
+      if(arr.some(function(x,i){return i!==idx&&x.email===email}))return NUSA_NOTIFY('Email sudah digunakan akun lain.','Email sudah dipakai');
       arr[idx]=Object.assign({},arr[idx],{name:name,wa:wa,email:email,bio:bio,photo:p.__photo!==undefined?p.__photo:(arr[idx].photo||'')});
       put('nusa_users_v2',arr);
       put('nusa_session_v2',{username:arr[idx].username,name:name,email:email,photo:arr[idx].photo||''});
@@ -570,7 +598,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
       var mp=document.getElementById('menuPhoto');if(mp)mp.src=arr[idx].photo||'https://i.pravatar.cc/100?u=nusa';
       var mn=document.getElementById('menuName');if(mn)mn.textContent=name;
       var me=document.getElementById('menuEmail');if(me)me.textContent=email;
-      alert('Profil berhasil diperbarui.');
+      NUSA_NOTIFY('Nama, foto profil, kontak, dan bio kamu sudah diperbarui.','Profil berhasil diperbarui');
       renderAccount();
     };
     var ps=document.getElementById('accountPassSave');
@@ -579,15 +607,15 @@ button,a,input,select,textarea{touch-action:manipulation;}
       var np=document.getElementById('accountNewPass').value;
       var cp=document.getElementById('accountConfirmPass').value;
       var arr=get('nusa_users_v2',[]),idx=arr.findIndex(function(x){return x.username===d.a.username});
-      if(idx<0)return alert('Data akun tidak ditemukan.');
-      if(arr[idx].password!==cur)return alert('Kata sandi saat ini salah.');
-      if(np.length<6)return alert('Kata sandi baru minimal 6 karakter.');
-      if(np!==cp)return alert('Konfirmasi kata sandi tidak cocok.');
+      if(idx<0)return NUSA_NOTIFY('Data akun tidak ditemukan.','Akun tidak ditemukan');
+      if(arr[idx].password!==cur)return NUSA_NOTIFY('Kata sandi saat ini tidak cocok.','Gagal mengganti kata sandi');
+      if(np.length<6)return NUSA_NOTIFY('Gunakan minimal 6 karakter untuk kata sandi baru.','Kata sandi terlalu pendek');
+      if(np!==cp)return NUSA_NOTIFY('Ketik ulang kata sandi baru dengan benar.','Konfirmasi tidak cocok');
       arr[idx].password=np;put('nusa_users_v2',arr);
       document.getElementById('accountCurrentPass').value='';
       document.getElementById('accountNewPass').value='';
       document.getElementById('accountConfirmPass').value='';
-      alert('Kata sandi berhasil diganti.');
+      NUSA_NOTIFY('Kata sandi akunmu sudah berhasil diganti.','Kata sandi diperbarui');
     };
   }
   function render(n){
