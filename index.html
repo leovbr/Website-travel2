@@ -552,7 +552,7 @@ if(window.NUSA_WISHLIST_REFRESH)window.NUSA_WISHLIST_REFRESH();
 };
 window.NUSA_WISHLIST_BUTTON=function(n,l,img){
 var saved=get().some(function(x){return x.key===key(n,l)});
-return '<button type="button" class="nusaWishBtn'+(saved?' isSaved':'')+'" data-nusa-wish-key="'+esc(key(n,l))+'" aria-label="'+(saved?'Hapus dari wishlist':'Tambah ke wishlist')+'" onclick="event.preventDefault();event.stopPropagation();window.NUSA_WISHLIST_TOGGLE('+JSON.stringify(String(n||''))+','+JSON.stringify(String(l||''))+','+JSON.stringify(String(img||''))+');return false"><span>♥</span></button>';
+return '<button type="button" class="nusaWishBtn'+(saved?' isSaved':'')+'" data-nusa-wish-key="'+esc(key(n,l))+'" data-nusa-wish-name="'+esc(n)+'" data-nusa-wish-label="'+esc(l)+'" data-nusa-wish-img="'+esc(img)+'" aria-label="'+(saved?'Hapus dari wishlist':'Tambah ke wishlist')+'"><span>♥</span></button>';
 };
 window.NUSA_WISHLIST_REFRESH=function(){
 var box=document.getElementById('wishlistEditor');if(!box)return;var a=get();
