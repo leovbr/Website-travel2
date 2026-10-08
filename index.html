@@ -268,7 +268,7 @@ if(txt.indexOf('Bahasa')===0)b.setAttribute('data-menu-action','lang');
 });
 d.addEventListener('click',function(e){
 var b=e.target.closest&&e.target.closest('.menuItem');if(!b||b.id==='authMenuBtn')return;
-var a=b.getAttribute('data-menu-action');if(!a)return;
+var a=b.getAttribute('data-menu-action');if(b.id==='helpMenuBtn')a='help';if(!a)return;
 e.preventDefault();e.stopPropagation();
 if(b.id==='helpMenuBtn'||a==='help'){if(typeof window.page==='function'){window.page('help')}return}
 if(a==='lang'){if(typeof toggleLang==='function')toggleLang();return}
@@ -282,7 +282,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function init(){
     var d=document.getElementById('drawer');
     if(!d)return;
-    var actions=['account','wishlist','orders','journal','notifications','settings'];
+    var actions=['account','wishlist','orders','journal','notifications','settings','help'];
     var bs=d.querySelectorAll('.menuList > .menuItem');
     actions.forEach(function(a,i){
       var b=bs[i];
