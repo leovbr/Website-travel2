@@ -492,6 +492,32 @@ button,a,input,select,textarea{touch-action:manipulation;}
 @keyframes nusaShadeIn{from{opacity:0}to{opacity:1}}
 @keyframes nusaAlertIn{to{transform:translateY(0) scale(1)}}
 </style>
+<script id="nusaProfileSync">
+(function(){
+  function read(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}}
+  function sync(){
+    var s=read('nusa_session_v2',null);
+    var arr=read('nusa_users_v2',[]);
+    if(!s)return;
+    var u=arr.find(function(x){return x.username===s.username})||s;
+    var photo=u.photo||s.photo||'';
+    var name=u.name||s.name||u.username||'Guest';
+    var email=u.email||s.email||'Belum masuk';
+    var nav=document.getElementById('profileNavPhoto');
+    var btn=nav&&nav.closest('.profileBtn');
+    if(nav){
+      if(photo){nav.src=photo;nav.style.display='block';if(btn)btn.classList.add('hasPhoto')}
+      else{nav.src='https://i.pravatar.cc/100?u=nusa';nav.style.display='none';if(btn)btn.classList.remove('hasPhoto')}
+    }
+    var account=document.getElementById('accountName');if(account)account.textContent=name;
+    var mp=document.getElementById('menuPhoto');if(mp)mp.src=photo||'https://i.pravatar.cc/100?u=nusa';
+    var mn=document.getElementById('menuName');if(mn)mn.textContent=name;
+    var me=document.getElementById('menuEmail');if(me)me.textContent=email;
+  }
+  window.NUSA_SYNC_PROFILE=sync;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+})();
+</script>
 <script id="nusaPremiumNotify">
 window.NUSA_NOTIFY=function(message,title){
   var old=document.getElementById('nusaPremiumAlert');if(old)old.remove();
@@ -594,7 +620,7 @@ window.NUSA_NOTIFY=function(message,title){
       put('nusa_users_v2',arr);
       put('nusa_session_v2',{username:arr[idx].username,name:name,email:email,photo:arr[idx].photo||''});
       if(window.updateAuthUI)window.updateAuthUI();
-      var nav=document.getElementById('profileNavPhoto');if(nav)nav.src=arr[idx].photo||'https://i.pravatar.cc/100?u=nusa';
+      var nav=document.getElementById('profileNavPhoto');if(nav){nav.src=arr[idx].photo||'https://i.pravatar.cc/100?u=nusa';nav.style.display=arr[idx].photo?'block':'none';var nb=nav.closest('.profileBtn');if(nb)nb.classList.toggle('hasPhoto',!!arr[idx].photo)}
       var mp=document.getElementById('menuPhoto');if(mp)mp.src=arr[idx].photo||'https://i.pravatar.cc/100?u=nusa';
       var mn=document.getElementById('menuName');if(mn)mn.textContent=name;
       var me=document.getElementById('menuEmail');if(me)me.textContent=email;
