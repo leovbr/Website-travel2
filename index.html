@@ -320,7 +320,8 @@ button,a,input,select,textarea{touch-action:manipulation;}
     var name=el.getAttribute('data-nusa-name')||((el.querySelector('h3,strong')||{}).textContent||'Paket').trim();
     var label=el.getAttribute('data-nusa-label')||'Paket';
     var img=el.querySelector('img'),src=img?(img.currentSrc||img.src):'';
-    var base=prices[name]||999000;\n    var reviewKey='nusa_package_reviews_v1', reviewData={}; try{reviewData=JSON.parse(localStorage.getItem(reviewKey)||'{}')}catch(e){} var reviews=Array.isArray(reviewData[name])?reviewData[name]:[]; var reviewsHtml=reviews.length?reviews.map(function(r){return '<div style="border-top:1px solid #eadfe2;padding:12px 0"><b>'+esc(r.name||'Guest')+'</b> <span style="color:#b18a2b">★ '+esc(r.rating||5)+'</span><p style="margin:6px 0;color:#66585d;line-height:1.5">'+esc(r.text||'')+'</p></div>'}).join(''):'<p style="color:#7b6c72;margin:0">Belum ada ulasan.</p>';
+    var base=prices[name]||999000;
+    var reviewKey='nusa_package_reviews_v1', reviewData={}; try{reviewData=JSON.parse(localStorage.getItem(reviewKey)||'{}')}catch(e){} var reviews=Array.isArray(reviewData[name])?reviewData[name]:[]; var reviewsHtml=reviews.length?reviews.map(function(r){return '<div style="border-top:1px solid #eadfe2;padding:12px 0"><b>'+esc(r.name||'Guest')+'</b> <span style="color:#b18a2b">★ '+esc(r.rating||5)+'</span><p style="margin:6px 0;color:#66585d;line-height:1.5">'+esc(r.text||'')+'</p></div>'}).join(''):'<p style="color:#7b6c72;margin:0">Belum ada ulasan.</p>';
     var old=document.getElementById('nusaBookingModal');if(old)old.remove();
     var o=document.createElement('div');o.id='nusaBookingModal';
     o.style.cssText='position:fixed;inset:0;z-index:9999999;background:rgba(20,5,10,.72);display:flex;align-items:center;justify-content:center;padding:14px;font-family:DM Sans,sans-serif';
@@ -346,7 +347,8 @@ button,a,input,select,textarea{touch-action:manipulation;}
       '<div id="nbManualBox" style="display:none;margin-top:10px"><label style="font-size:11px;font-weight:800">Masukkan total harga<input id="nbmanual" type="number" min="0" step="10000" placeholder="Contoh: 2500000" style="display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px;border:1px solid #e3cfd5;border-radius:10px;background:#fff"></label></div>'+
       '</div>'+
       '<button id="nbbook" style="width:100%;margin-top:12px;padding:14px;border:0;border-radius:9px;background:#8f1530;color:#fff;font-weight:800">Pesan Paket</button>'+
-      '<div id="nbstatus" style="text-align:center;color:#7b6c72;font-size:11px;margin-top:9px"></div>'+\n      '<section style="margin-top:24px;padding-top:20px;border-top:1px solid #eadfe2"><h3 style="font:500 24px Georgia,serif;color:#17463d;margin:0 0 10px">Ulasan &amp; Pengalaman</h3><div id="nbReviews">'+reviewsHtml+'</div><div style="background:#f7f3ef;border-radius:14px;padding:15px;margin-top:13px"><b>Tulis ulasan</b><input id="nvrn" placeholder="Nama" style="display:block;width:100%;box-sizing:border-box;margin-top:9px;padding:10px;border:1px solid #ddd;border-radius:9px"><select id="nvrr" style="margin-top:8px;padding:9px;border:1px solid #ddd;border-radius:9px"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><textarea id="nvrt" placeholder="Ceritakan pengalaman..." style="display:block;width:100%;box-sizing:border-box;margin-top:8px;min-height:75px;padding:10px;border:1px solid #ddd;border-radius:9px"></textarea><input id="nvrf" type="file" accept="image/*,video/*" style="margin-top:9px;max-width:100%"><button id="nvrs" type="button" style="display:block;margin-top:10px;border:0;border-radius:999px;padding:10px 15px;background:#17463d;color:#fff">Kirim Ulasan</button></div></section></div></div>'
+      '<div id="nbstatus" style="text-align:center;color:#7b6c72;font-size:11px;margin-top:9px"></div>'+
+      '<section style="margin-top:24px;padding-top:20px;border-top:1px solid #eadfe2"><h3 style="font:500 24px Georgia,serif;color:#17463d;margin:0 0 10px">Ulasan &amp; Pengalaman</h3><div id="nbReviews">'+reviewsHtml+'</div><div style="background:#f7f3ef;border-radius:14px;padding:15px;margin-top:13px"><b>Tulis ulasan</b><input id="nvrn" placeholder="Nama" style="display:block;width:100%;box-sizing:border-box;margin-top:9px;padding:10px;border:1px solid #ddd;border-radius:9px"><select id="nvrr" style="margin-top:8px;padding:9px;border:1px solid #ddd;border-radius:9px"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><textarea id="nvrt" placeholder="Ceritakan pengalaman..." style="display:block;width:100%;box-sizing:border-box;margin-top:8px;min-height:75px;padding:10px;border:1px solid #ddd;border-radius:9px"></textarea><input id="nvrf" type="file" accept="image/*,video/*" style="margin-top:9px;max-width:100%"><button id="nvrs" type="button" style="display:block;margin-top:10px;border:0;border-radius:999px;padding:10px 15px;background:#17463d;color:#fff">Kirim Ulasan</button></div></section></div></div>'
     document.body.appendChild(o);
     var $=function(id){return document.getElementById(id)};
     (function(){
@@ -494,4 +496,74 @@ window.__NUSA_MENU=function(n){
     if(p)p.innerHTML='<section class="page active"><div class="pageHero"><h1>'+n+'</h1></div><div class="pageBody"><div class="panelCard"><h3>Halaman NUSA</h3><p>Halaman ini berhasil dibuka.</p></div></div></section>';
   }
 };
-</script><script src="auth-fix.js"></script></body></html>
+</script><script src="auth-fix.js"></script>
+<script id="nusaCatalogRuntime">
+(function(){
+  var imgDest=[
+    'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&q=80'
+  ];
+  var imgHotel='https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80';
+  var imgVilla='https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80';
+  var imgTransport='https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=900&q=80';
+  var imgShip='https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&w=900&q=80';
+  var imgTrain='https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=900&q=80';
+  var imgBus='https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=80';
+
+  window.D=[
+    ['Bali',imgDest[0]],['Bromo',imgDest[1]],['Lombok',imgDest[2]],['Labuan Bajo',imgDest[3]],
+    ['Raja Ampat',imgDest[2]],['Yogyakarta',imgDest[1]],['Bandung',imgDest[1]],['Jakarta',imgDest[0]],
+    ['Malang',imgDest[1]],['Komodo',imgDest[3]],['Ubud',imgDest[0]],['Gili Trawangan',imgDest[2]],
+    ['Flores',imgDest[3]],['Belitung',imgDest[2]],['Derawan',imgDest[2]],['Toraja',imgDest[1]],
+    ['Wakatobi',imgDest[2]],['Dieng',imgDest[1]],['Labuan Bajo Premium',imgDest[3]],['Nusa Penida',imgDest[2]]
+  ];
+  window.H={
+    'Hotel':[['Alila Seminyak',imgHotel],['The St. Regis Bali Resort',imgHotel],['AYANA Komodo Waecicu Beach',imgHotel],['Mandarin Oriental Jakarta',imgHotel],['The Apurva Kempinski Bali',imgHotel],['Hotel Tentrem Yogyakarta',imgHotel],['Bisma Eight Ubud',imgHotel],['The Legian Seminyak',imgHotel],['The Mulia Bali',imgHotel],['Hotel Indonesia Kempinski Jakarta',imgHotel],['The Phoenix Hotel Yogyakarta',imgHotel],['Capella Ubud',imgHotel]],
+    'Villa':[['Aman Villas at Nusa Dua',imgVilla],['Bvlgari Resort Bali',imgVilla],['Mandapa, a Ritz-Carlton Reserve',imgVilla],['Raffles Bali',imgVilla],['Four Seasons Resort Bali at Sayan',imgVilla],['AYANA Villas Bali',imgVilla],['Umana Bali',imgVilla],['Four Seasons Resort Bali at Jimbaran Bay',imgVilla],['The Kayon Jungle Resort',imgVilla],['The Ungasan Clifftop Resort',imgVilla],['Hoshinoya Bali',imgVilla],['Anantara Uluwatu Bali Resort',imgVilla]],
+    'Motel':[['Surf Motel Bali',imgHotel],['Cailendra Yogyakarta',imgHotel],['Penginapan Jangkar Luwuk',imgHotel],['Hotel Sarijadi Pangururan',imgHotel],['Motel Mexicola Bali',imgHotel],['The Farm Hostel Canggu',imgHotel],['The Hideout Bali',imgHotel],['Bali Bobo',imgHotel],['The Bene Hotel Kuta',imgHotel],['M Boutique Hostel Seminyak',imgHotel],['Puri Rama Hostel Kuta',imgHotel],['M Box Hostel Yogyakarta',imgHotel]],
+    'Resort':[['Capella Ubud',imgVilla],['The Sira, Lombok',imgVilla],['Ta’aktana Komodo',imgVilla],['Plataran Komodo Resort & Spa',imgVilla],['The Legian Seminyak',imgVilla],['The Ungasan Clifftop Resort',imgVilla],['Sudamala Resort, Komodo',imgVilla],['Amnaya Resort Kuta',imgVilla],['AYANA Resort Bali',imgVilla],['Raffles Bali',imgVilla],['Four Seasons Resort Bali at Sayan',imgVilla],['Alila Ubud',imgVilla]]
+  };
+  window.T={
+    'Pesawat':[['Garuda Indonesia',imgTransport],['Citilink',imgTransport],['Lion Air',imgTransport],['AirAsia',imgTransport],['Batik Air',imgTransport],['Super Air Jet',imgTransport],['Pelita Air',imgTransport],['Wings Air',imgTransport],['TransNusa',imgTransport],['Batik Air',imgTransport],['Pelita Air',imgTransport],['Wings Air',imgTransport]],
+    'Travel':[['Traveloka',imgTransport],['Cititrans',imgTransport],['DayTrans',imgTransport],['Xtrans',imgTransport],['Baraya Travel',imgTransport],['Cipaganti Travel',imgTransport],['Jackal Holidays',imgTransport],['Pasteur Trans',imgTransport],['Lintas Shuttle',imgTransport],['Sahabat Shuttle',imgTransport],['Bhinneka Shuttle',imgTransport],['Daytrans Executive',imgTransport]],
+    'Kapal':[['PELNI',imgShip],['ASDP Indonesia Ferry',imgShip],['Eka Jaya Fast Ferry',imgShip],['Gili Getaway',imgShip],['BlueWater Express',imgShip],['Marlin Fast Boat',imgShip],['Golden Queen Fast Boat',imgShip],['Sindo Ferry',imgShip],['Dolphin Fast Ferry',imgShip],['Semaya One',imgShip],['Gili Fast Boat',imgShip],['Ostina Fast Boat',imgShip]],
+    'Kereta':[['Argo Bromo Anggrek',imgTrain],['Argo Parahyangan',imgTrain],['Mutiara Selatan',imgTrain],['Taksaka',imgTrain],['Lodaya',imgTrain],['Jayabaya',imgTrain],['Bima',imgTrain],['Pangrango',imgTrain],['Serayu',imgTrain],['Kahuripan',imgTrain],['Malabar',imgTrain],['Gajayana',imgTrain]],
+    'Bus':[['DAMRI',imgBus],['Rosalia Indah',imgBus],['Sinar Jaya',imgBus],['PO Haryanto',imgBus],['Harapan Jaya',imgBus],['Sugeng Rahayu',imgBus],['Handoyo',imgBus],['Gunung Harta',imgBus],['Sumber Alam',imgBus],['Pahala Kencana',imgBus],['Nusantara',imgBus],['Eka',imgBus]]
+  };
+
+  window.P=[
+    ['Bali Escape','Bali','4D3N',1899000,4.8,imgDest[0]],['Bromo Adventure','Bromo','3D2N',1499000,4.8,imgDest[1]],
+    ['Lombok Serenity','Lombok','5D4N',2299000,4.8,imgDest[2]],['Labuan Bajo Escape','Labuan Bajo','4D3N',2799000,4.8,imgDest[3]],
+    ['Raja Ampat Private','Raja Ampat','6D5N',3999000,4.9,imgDest[2]],['Jogja Culture','Yogyakarta','3D2N',1299000,4.8,imgDest[1]],
+    ['Bandung Weekend','Bandung','2D1N',1099000,4.8,imgDest[1]],['Jakarta City Escape','Jakarta','2D1N',999000,4.8,imgDest[0]],
+    ['Komodo Explorer','Komodo','4D3N',2899000,4.9,imgDest[3]],['Nusa Penida Escape','Nusa Penida','3D2N',2099000,4.8,imgDest[2]]
+  ].map(function(x){return {name:x[0],dest:x[1],days:+String(x[2]).replace(/\D/g,''),price:x[3],rating:x[4],reviews:0,img:x[5],desc:'Paket wisata '+x[1]+' dengan itinerary pilihan, aktivitas utama, dan waktu bebas untuk menikmati destinasi.',style:'Adventure'}});
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+  function card(a,label){
+    return '<a href="javascript:void(0)" class="dest nusaMainCard" data-nusa-name="'+esc(a[0])+'" data-nusa-label="'+esc(label)+'" onclick="if(window.NUSA_OPEN_PACKAGE){window.NUSA_OPEN_PACKAGE(this.dataset.nusaName,this.dataset.nusaLabel)};return false"><img loading="lazy" decoding="async" src="'+a[1]+'" alt="'+esc(a[0])+'"><span><small>'+label+'</small><h3>'+a[0]+'</h3><em>★ 4.8</em></span></a>';
+  }
+  function renderDest(){
+    var d=document.getElementById('destGrid'),h=document.getElementById('hotelGrid'),t=document.getElementById('transportGrid');
+    if(d)d.innerHTML='<div class="rowScroll">'+D.slice(0,10).map(function(x){return card(x,'Destination')}).join('')+'</div><div class="rowScroll">'+D.slice(10,20).map(function(x){return card(x,'Destination')}).join('')+'</div>';
+    function rows(obj,el){if(!el)return;el.innerHTML=Object.keys(obj).map(function(k){var a=obj[k];return '<div class="subCategory"><h3 class="subCategoryTitle">'+k+'</h3><div class="rowScroll">'+a.slice(0,6).map(function(x){return card(x,k)}).join('')+'</div><div class="rowScroll">'+a.slice(6,12).map(function(x){return card(x,k)}).join('')+'</div></div>'}).join('')}
+    rows(H,h);rows(T,t);
+  }
+  window.renderDest=renderDest;
+  window.renderPackages=function(){
+    var q=(document.getElementById('q')||{}).value.toLowerCase(),max=+(document.getElementById('price')||{}).value||10000000,mr=+(document.getElementById('minRating')||{}).value||0;
+    var a=P.filter(function(p){return p.price<=max&&p.rating>=mr&&(!q||((p.name+' '+p.dest+' '+p.desc).toLowerCase().indexOf(q)>=0))});
+    var g=document.getElementById('packageGrid');if(!g)return;
+    var c=document.getElementById('count');if(c)c.textContent=a.length+' trips';
+    g.innerHTML=a.map(function(p){return '<article class="card nusaMainCard" data-nusa-name="'+esc(p.dest)+'" data-nusa-label="Paket"><div class="photo"><img src="'+p.img+'"></div><div class="body"><div class="rating">★★★★★ <span>'+p.rating+' · '+p.reviews+' ulasan</span></div><h3>'+p.name+'</h3><div class="meta"><span>'+p.dest+'</span><span>'+p.days}+'D</span></div><div class="price">Rp'+p.price.toLocaleString('id-ID')+' <small>/ orang</small></div><button type="button" class="detail" onclick="window.NUSA_OPEN_PACKAGE&&window.NUSA_OPEN_PACKAGE(this.closest(\'.nusaMainCard\').dataset.nusaName,\'Paket\');return false">Pesan Paket →</button></div></article>'}).join('')||'<div class="empty">Tidak ada paket yang cocok.</div>';
+  };
+  function bind(){
+    renderDest();renderPackages();
+    ['q','price','minRating','sort'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',renderPackages);if(e)e.addEventListener('change',renderPackages)});
+    document.querySelectorAll('.dur,.sty').forEach(function(e){e.addEventListener('change',renderPackages)});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
+})();
+</script>
+</body></html>
