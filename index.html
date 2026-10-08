@@ -455,6 +455,7 @@ T={
   window.save=function(){
     try{localStorage.setItem(KEY,JSON.stringify(window.state))}catch(e){}
   };
+  window.esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')};
   window.toast=function(msg){
     var t=document.getElementById('toast');
     if(!t)return;
