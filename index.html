@@ -297,13 +297,6 @@ button,a,input,select,textarea{touch-action:manipulation;}
       '<button id="v3create" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:9px;background:#222;color:#fff">Buat Owner Account</button>';
     v3create.onclick=function(){var wa=v3wa.value.trim(),u=v3ru.value.trim(),e=v3e.value.trim(),p=v3rp.value,pin=v3rpin.value;if(!wa||!u||!e||p.length<6||!/^[0-9]{6}$/.test(pin))return alert('Lengkapi data. Password min 6 karakter, PIN 6 digit.');if(localStorage.getItem('nusa_owner_v2'))return alert('Owner Account sudah terdaftar di perangkat ini.');localStorage.setItem('nusa_owner_v2',JSON.stringify({name:u,wa:wa,username:u,email:e,password:p,pin:pin,verified:false,createdAt:Date.now()}));alert('Owner Account berhasil dibuat. Silakan Login.');login()};
   }
-  window.NUSA_OPEN_PACKAGE=function(name,label){
-    var all=document.querySelectorAll('.nusaMainCard[data-nusa-name]');
-    for(var i=0;i<all.length;i++){
-      if(all[i].dataset.nusaName===name&&(all[i].dataset.nusaLabel||'Paket')===(label||'Paket')){open(all[i]);return true}
-    }
-    return false;
-  };
   document.addEventListener('click',function(e){
     var logo=e.target.closest&&e.target.closest('.logo');
     if(!logo)return;
@@ -489,6 +482,13 @@ button,a,input,select,textarea{touch-action:manipulation;}
     };
     total();
   }
+  window.NUSA_OPEN_PACKAGE=function(name,label){
+    var all=document.querySelectorAll('.nusaMainCard[data-nusa-name]');
+    for(var i=0;i<all.length;i++){
+      if(all[i].dataset.nusaName===name&&(all[i].dataset.nusaLabel||'Paket')===(label||'Paket')){open(all[i]);return true}
+    }
+    return false;
+  };
   document.addEventListener('click',function(e){
     if(e.target.closest&&e.target.closest('.nusaWishBtn'))return;
     var el=e.target.closest&&e.target.closest('.dest[data-nusa-name],.nusaFallbackCard,.nusaMainCard');
