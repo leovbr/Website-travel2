@@ -481,20 +481,42 @@ button,a,input,select,textarea{touch-action:manipulation;}
 })();
 </script>
 <script id="nusaEmergencyMenuRouter">
-window.__NUSA_MENU=function(n){
-  try{
-    var d=document.getElementById('drawer');if(d)d.classList.remove('open');
-    var h=document.getElementById('homePage');if(h)h.style.display='none';
-    if(typeof window.renderPages==='function')window.renderPages();
-    document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active')});
-    var t=document.getElementById('page-'+n);
-    if(t)t.classList.add('active');
-    window.scrollTo(0,0);
-  }catch(e){
-    var p=document.getElementById('pages');
-    if(p)p.innerHTML='<section class="page active"><div class="pageHero"><h1>'+n+'</h1></div><div class="pageBody"><div class="panelCard"><h3>Halaman NUSA</h3><p>Halaman ini berhasil dibuka.</p></div></div></section>';
+(function(){
+  var labels={
+    account:['Pengaturan akun','Kelola nama, email, foto profil, dan informasi akunmu.'],
+    wishlist:['Wishlist','Simpan destinasi dan pengalaman yang ingin kamu kunjungi nanti.'],
+    orders:['Pesanan & Booking','Lihat perjalanan dan booking yang pernah kamu buat.'],
+    journal:['Jurnal Anda','Catat cerita, pengalaman, dan momen perjalananmu di NUSA.'],
+    notifications:['Notifikasi','Semua pemberitahuan penting tentang booking dan aktivitasmu.'],
+    settings:['Pengaturan','Atur preferensi tampilan, bahasa, dan pengalaman NUSA.'],
+    help:['Bantuan','Temukan jawaban dan bantuan untuk menggunakan NUSA.']
+  };
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function render(n){
+    var p=document.getElementById('pages'); if(!p)return;
+    var x=labels[n]||['NUSA','Halaman NUSA'];
+    var cards={
+      account:'<div class="panelCard"><h3>Profil & akun</h3><p>Informasi akunmu dapat dikelola dari halaman ini.</p><button class="btn dark" onclick="window.NUSA_AUTH&&NUSA_AUTH.open(\'login\')">Kelola akun</button></div>',
+      wishlist:'<div class="panelCard"><h3>Wishlist kamu</h3><p>Belum ada destinasi yang disimpan.</p></div>',
+      orders:'<div class="panelCard"><h3>Perjalanan & booking</h3><p>Belum ada pesanan atau booking.</p></div>',
+      journal:'<div class="panelCard"><h3>Jurnal perjalanan</h3><p>Belum ada jurnal. Mulai tulis pengalaman perjalananmu.</p></div>',
+      notifications:'<div class="panelCard"><h3>Notifikasi</h3><p>Tidak ada notifikasi baru.</p></div>',
+      settings:'<div class="panelCard"><h3>Preferensi NUSA</h3><p>Pengaturan aplikasi dan preferensi perjalananmu akan muncul di sini.</p></div>',
+      help:'<div class="panelCard"><h3>Pusat bantuan</h3><p>Butuh bantuan? Pilih topik yang ingin kamu tanyakan atau hubungi tim NUSA.</p></div>'
+    };
+    p.innerHTML='<section class="page active" id="page-'+esc(n)+'"><div class="pageHero"><div class="kicker">NUSA</div><h1>'+esc(x[0])+'</h1><p>'+esc(x[1])+'</p></div><div class="pageBody">'+(cards[n]||'')+'<button class="outline" style="margin-top:14px" onclick="home()">← Kembali ke NUSA</button></div></section>';
   }
-};
+  window.__NUSA_MENU=function(n){
+    try{
+      var d=document.getElementById('drawer');if(d)d.classList.remove('open');
+      var h=document.getElementById('homePage');if(h)h.style.display='none';
+      render(n);
+      window.scrollTo(0,0);
+    }catch(e){
+      var h=document.getElementById('homePage');if(h)h.style.display='block';
+    }
+  };
+})();
 </script><script src="auth-fix.js"></script>
 <script id="nusaHomeRecovery">
 (function(){
