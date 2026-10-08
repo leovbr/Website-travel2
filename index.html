@@ -554,10 +554,11 @@ window.NUSA_WISHLIST_BUTTON=function(n,l,img){
 var saved=get().some(function(x){return x.key===key(n,l)});
 return '<button type="button" class="nusaWishBtn'+(saved?' isSaved':'')+'" data-nusa-wish-key="'+esc(key(n,l))+'" data-nusa-wish-name="'+esc(n)+'" data-nusa-wish-label="'+esc(l)+'" data-nusa-wish-img="'+esc(img)+'" aria-label="'+(saved?'Hapus dari wishlist':'Tambah ke wishlist')+'"><span>♥</span></button>';
 };
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.nusaWishBtn,.nusaWishRemove');if(!b)return;e.preventDefault();e.stopPropagation();window.NUSA_WISHLIST_TOGGLE(b.dataset.nusaWishName||'',b.dataset.nusaWishLabel||'',b.dataset.nusaWishImg||'');},false);
 window.NUSA_WISHLIST_REFRESH=function(){
 var box=document.getElementById('wishlistEditor');if(!box)return;var a=get();
 if(!a.length){box.innerHTML='<div class="panelCard"><div style="font-size:38px;margin-bottom:10px">♡</div><h3>Wishlist masih kosong</h3><p>Simpan destinasi, penginapan, transportasi, atau paket favoritmu dengan menekan ikon ♥ pada kartu perjalanan.</p></div>';return}
-box.innerHTML='<div class="panelCard" style="max-width:820px"><div style="margin-bottom:6px"><h3 style="margin:0 0 4px">Perjalanan tersimpan</h3><p class="mini" style="margin:0">'+a.length+' item di wishlist</p></div>'+a.map(function(x){return '<div class="nusaWishRow"><img class="nusaWishImg" src="'+esc(x.img)+'" alt="'+esc(x.name)+'"><div class="nusaWishInfo"><h3>'+esc(x.name)+'</h3><p>'+esc(x.label)+' · Disimpan di wishlist</p></div><button type="button" class="nusaWishRemove" onclick="NUSA_WISHLIST_TOGGLE('+JSON.stringify(String(x.name||''))+','+JSON.stringify(String(x.label||''))+','+JSON.stringify(String(x.img||''))+')">Hapus</button></div>}).join('')+'</div>';
+box.innerHTML='<div class="panelCard" style="max-width:820px"><div style="margin-bottom:6px"><h3 style="margin:0 0 4px">Perjalanan tersimpan</h3><p class="mini" style="margin:0">'+a.length+' item di wishlist</p></div>'+a.map(function(x){return '<div class="nusaWishRow"><img class="nusaWishImg" src="'+esc(x.img)+'" alt="'+esc(x.name)+'"><div class="nusaWishInfo"><h3>'+esc(x.name)+'</h3><p>'+esc(x.label)+' · Disimpan di wishlist</p></div><button type="button" class="nusaWishRemove" data-nusa-wish-name="'+esc(x.name)+'" data-nusa-wish-label="'+esc(x.label)+'" data-nusa-wish-img="'+esc(x.img)+'">Hapus</button></div>}).join('')+'</div>';
 };
 })();
 </script>
